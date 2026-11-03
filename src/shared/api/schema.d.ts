@@ -64,6 +64,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/legal_pages/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves a LegalPage resource.
+         * @description Retrieves a LegalPage resource.
+         */
+        get: operations["api_legal_pages_slug_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/products": {
         parameters: {
             query?: never;
@@ -76,6 +96,26 @@ export interface paths {
          * @description Retrieves a ProductList resource.
          */
         get: operations["api_products_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/slides": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves the collection of Slide resources.
+         * @description Retrieves the collection of Slide resources.
+         */
+        get: operations["api_slides_get_collection"];
         put?: never;
         post?: never;
         delete?: never;
@@ -315,6 +355,32 @@ export interface components {
             "@id": string;
             "@type": string;
         };
+        /** @description Lit une page légale par son slug (mentions-legales, donnees-personnelles, accessibilite). */
+        LegalPage: {
+            slug: string;
+            title: string;
+            /** @description HTML placé avant la première section, vide s'il n'y en a pas. */
+            introduction: string;
+            sections: components["schemas"]["LegalSection"][];
+        };
+        /** @description Lit une page légale par son slug (mentions-legales, donnees-personnelles, accessibilite). */
+        "LegalPage.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
+            slug: string;
+            title: string;
+            /** @description HTML placé avant la première section, vide s'il n'y en a pas. */
+            introduction: string;
+            sections: components["schemas"]["LegalSection.jsonld"][];
+        };
+        LegalSection: {
+            title: string;
+            /** @description HTML de la section, sans son titre. Le HTML saisi dans l'admin est échappé. */
+            html: string;
+        };
+        "LegalSection.jsonld": {
+            title: string;
+            /** @description HTML de la section, sans son titre. Le HTML saisi dans l'admin est échappé. */
+            html: string;
+        };
         ProductFacets: {
             /** @description Toutes les expositions, y compris à 0. */
             exposure: components["schemas"]["FacetValue"][];
@@ -382,6 +448,24 @@ export interface components {
             /** @description Nombre de pages, 0 si aucun résultat. */
             totalPages: number;
             facets: components["schemas"]["ProductFacets.jsonld"];
+        };
+        /** @description Liste les diapositives dans l'ordre du carrousel, sans pagination. */
+        Slide: {
+            id: number;
+            slug: string;
+            title: string;
+            text: string;
+            /** @description Numéro du visuel livré avec les fronts, de 1 à 5. */
+            image: number;
+        };
+        /** @description Liste les diapositives dans l'ordre du carrousel, sans pagination. */
+        "Slide.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
+            id: number;
+            slug: string;
+            title: string;
+            text: string;
+            /** @description Numéro du visuel livré avec les fronts, de 1 à 5. */
+            image: number;
         };
         /** @description Liste toutes les tâches, sans pagination. */
         Task: {
@@ -499,6 +583,41 @@ export interface operations {
             };
         };
     };
+    api_legal_pages_slug_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description LegalPage identifier */
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description LegalPage resource */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LegalPage"];
+                    "application/ld+json": components["schemas"]["LegalPage.jsonld"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Error.jsonld"];
+                    "application/problem+json": components["schemas"]["Error"];
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
     api_products_get: {
         parameters: {
             query?: {
@@ -548,6 +667,29 @@ export interface operations {
                     "application/ld+json": components["schemas"]["Error.jsonld"];
                     "application/problem+json": components["schemas"]["Error"];
                     "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    api_slides_get_collection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Slide collection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Slide"][];
+                    "application/ld+json": components["schemas"]["HydraCollectionBaseSchemaNoPagination"] & {
+                        member: components["schemas"]["Slide.jsonld"][];
+                    };
                 };
             };
         };
