@@ -1,0 +1,40 @@
+.title {
+  margin-block-end: 0.35em;
+}
+
+.section {
+  margin-block-start: var(--bui-space-8);
+}
+
+/* HTML venu de l'API : sans classe, il reprend ici le texte et les liens de boilerplates-ui */
+.html {
+  color: var(--bui-color-text);
+  font-size: var(--bui-font-size-body);
+  line-height: var(--bui-font-line-height-normal);
+}
+
+.html > * {
+  margin: 0;
+}
+
+.html > * + * {
+  margin-block-start: var(--bui-space-3);
+}
+
+.html a {
+  color: var(--bui-color-primary);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.html a:hover {
+  color: var(--bui-color-primary-dark);
+  text-decoration-thickness: 2px;
+}
+
+.html a:focus-visible {
+  border-radius: 2px;
+  outline: var(--bui-focus-width) solid var(--bui-color-primary);
+  outline-offset: var(--bui-focus-offset);
+}

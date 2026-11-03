@@ -10,7 +10,7 @@ Les pages de démonstration montrent chaque brique en situation :
 | `/catalogue/[...]`                                                              | Catalogue à facettes rendu côté serveur, état dans l'URL, formulaire GET qui marche sans JavaScript         |
 | `/taches`                                                                       | Chargement côté client avec TanStack Query et ses trois états : chargement, erreur avec relance, liste vide |
 | `/contact`                                                                      | Formulaire validé par un schéma zod, erreurs liées aux champs, envoi par mutation TanStack Query            |
-| `/mentions-legales`, `/donnees-personnelles`, `/accessibilite`, `/plan-du-site` | Pages légales alimentées par la config du site, déclaration RGAA calculée                                   |
+| `/mentions-legales`, `/donnees-personnelles`, `/accessibilite`, `/plan-du-site` | Pages légales lues dans l'API (texte administré dans son `/admin`), plan du site tiré de la navigation      |
 | `/charte-graphique`                                                             | Charte graphique, **en développement uniquement** (404 sur le build de production)                          |
 
 Le header porte le logo, la navigation, le menu de catégories (cascade sur ordinateur, panneau par niveaux sur mobile) et le bouton du **mode accessibilité renforcée**.
@@ -129,7 +129,8 @@ Règles de dépendance, vérifiées par ESLint (`@boundaries/eslint-plugin`) :
 
 **Sources uniques** :
 
-- `src/shared/config/site.ts` : nom, description, URL, éditeur (valeurs fictives), état d'audit d'accessibilité.
+- `src/shared/config/site.ts` : nom, description, URL, éditeur (valeurs fictives, pour le SEO), état d'audit d'accessibilité (lien du footer).
+- `GET /api/slides` et `GET /api/legal_pages/{slug}` : carrousel de l'accueil et texte des pages légales, administrés dans l'admin de l'API Platform.
 - `src/shared/config/navigation.ts` : navigation principale et liens légaux. Le header, le footer, le plan du site, le sitemap XML et le fil d'Ariane en dérivent.
 - `GET /api/categories` : arbre des catégories, lu par le module catalogue. Le layout racine en tire le menu (`getCategoryMenu`), le plan du site et le sitemap leurs liens (`listCatalogPaths`).
 - `src/shared/seo/` : `buildMetadata` construit title, description, canonique, robots, Open Graph et Twitter de chaque route. Les JSON-LD (`Organization`, `WebSite`, `BreadcrumbList`, `ItemList`) en partagent les URL absolues.
@@ -189,7 +190,7 @@ Le script inline est dans `src/shared/ui/a11y-mode/a11yMode.ts` : il pose `data-
 
 ### Déclarer un audit d'accessibilité
 
-Renseigner `accessibility` dans `src/shared/config/site.ts` (date, taux de conformité, auditeur). L'état « non conforme », « partiellement conforme » ou « totalement conforme » est recalculé pour la déclaration et le lien du footer.
+Renseigner `accessibility` dans `src/shared/config/site.ts` (date, taux de conformité, auditeur). L'état « non conforme », « partiellement conforme » ou « totalement conforme » est recalculé pour le lien du footer. Le texte de la déclaration se modifie dans l'admin de l'API Platform (`/admin`, Pages légales).
 
 ### Passer le site en maintenance
 

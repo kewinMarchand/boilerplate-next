@@ -1,0 +1,60 @@
+import { notFound } from 'next/navigation'
+
+import { Alert, Stack, Text } from '@kewinmarchand/boilerplates-ui/react'
+
+import { LegalPageLoadError } from '../infrastructure/LegalPageLoadError'
+import { findLegalPage } from '../infrastructure/legalPageRepository'
+import styles from './LegalPageContent.module.css'
+
+import type { LegalPage } from '../domain/legalPage'
+
+interface LegalPageContentProps {
+  slug: LegalPage.Slug
+  /** Titre affiché si l'API ne répond pas. */
+  fallbackTitle: string
+}
+
+/**
+ * Titre et sections d'une page légale administrée. Le HTML vient de l'API, qui échappe le HTML saisi
+ * dans l'admin et retire les liens dangereux : il est injecté tel quel.
+ */
+export const LegalPageContent = async ({ slug, fallbackTitle }: LegalPageContentProps) => {
+  const page = await findLegalPage(slug).catch((error: unknown) => {
+    console.error(error)
+    return undefined
+  })
+
+  if (page === null) notFound()
+
+  if (page === undefined) {
+    return (
+      <>
+        <h1 className={`bui-text bui-text--h1 ${styles.title}`}>{fallbackTitle}</h1>
+        <div data-testid="legal-error">
+          <Alert variant="error">{new LegalPageLoadError().message}</Alert>
+        </div>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <h1 className={`bui-text bui-text--h1 ${styles.title}`}>{page.title}</h1>
+      {page.introduction && (
+        <div className={styles.html} dangerouslySetInnerHTML={{ __html: page.introduction }} />
+      )}
+      {page.sections.map((section) => (
+        <Stack
+          as="section"
+          gap="3"
+          className={styles.section}
+          key={section.title}
+          data-testid="legal-section"
+        >
+          <Text variant="h2">{section.title}</Text>
+          <div className={styles.html} dangerouslySetInnerHTML={{ __html: section.html }} />
+        </Stack>
+      ))}
+    </>
+  )
+}

@@ -27,18 +27,24 @@ test.describe('Pages légales', () => {
     ).toHaveCount(0)
   })
 
-  test("les mentions légales affichent l'éditeur de la configuration", async ({ page }) => {
+  test("les mentions légales affichent le texte de l'API, section par section", async ({
+    page,
+  }) => {
     await page.goto('/mentions-legales')
 
-    await expect(page.getByText(/Exemple SAS/).first()).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Mentions légales')
+    await expect(page.getByTestId('legal-section')).toHaveCount(4)
+    await expect(page.getByTestId('legal-section').first()).toContainText('Exemple SAS')
+    await expect(page.getByTestId('legal-error')).toHaveCount(0)
   })
 
   test('la déclaration est non conforme tant qu’aucun audit n’est renseigné', async ({ page }) => {
     await page.goto('/accessibilite')
 
     await expect(page.getByRole('heading', { level: 1 })).toHaveText("Déclaration d'accessibilité")
-    await expect(page.getByTestId('legal-compliance-status')).toContainText('non conforme')
-    await expect(page.getByText("Aucun audit n'a encore été réalisé.")).toBeVisible()
+    const compliance = page.getByTestId('legal-section').first()
+    await expect(compliance).toContainText('non conforme')
+    await expect(compliance).toContainText("Aucun audit n'a encore été réalisé.")
     await expect(page.getByTestId('layout-breadcrumb').getByRole('listitem').last()).toHaveText(
       'Déclaration d’accessibilité',
     )
