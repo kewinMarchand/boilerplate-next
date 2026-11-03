@@ -40,8 +40,9 @@ Boilerplate personnel. Les conventions générales sont dans `~/.claude/CLAUDE.m
 | Paquet       | Version | Raison                                                         |
 | ------------ | ------- | -------------------------------------------------------------- |
 | `typescript` | `~6.0`  | typescript-eslint 8 ne supporte pas TypeScript 7 (`peer <6.1`) |
-| `eslint`     | `^9`    | eslint-config-next 16 casse avec ESLint 10                     |
 | `vite`       | `^8`    | peer obligatoire de Vitest 5                                   |
+
+ESLint 10 : `eslint-plugin-import`, `eslint-plugin-jsx-a11y` et `eslint-plugin-react`, tirés par `eslint-config-next` 16.4, ne déclarent pas encore ESLint 10 dans leurs peer dependencies (avertissement à l'installation). Vérifié : leurs règles signalent toujours une faute volontaire (`jsx-a11y/alt-text`, `react/jsx-key`, `react-hooks/rules-of-hooks`, `@next/next/no-img-element`).
 
 ## Dépendances ajoutées
 
