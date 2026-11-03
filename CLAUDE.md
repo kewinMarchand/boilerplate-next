@@ -41,7 +41,6 @@ Boilerplate personnel. Les conventions générales sont dans `~/.claude/CLAUDE.m
 | ------------ | ------- | -------------------------------------------------------------- |
 | `typescript` | `~6.0`  | typescript-eslint 8 ne supporte pas TypeScript 7 (`peer <6.1`) |
 | `eslint`     | `^9`    | eslint-config-next 16 casse avec ESLint 10                     |
-| `jsdom`      | `^29`   | jsdom 30 exige Node ≥ 24.15                                    |
 | `vite`       | `^8`    | peer obligatoire de Vitest 5                                   |
 
 ## Dépendances ajoutées
