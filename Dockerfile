@@ -12,6 +12,9 @@ WORKDIR /app
 # Next inscrit les variables NEXT_PUBLIC_* dans le code au build : l'adresse du site doit être connue ici
 ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+# Origine de l'API pour le navigateur et la CSP, figée au build par next.config.ts ; le serveur relit API_URL à l'exécution
+ARG API_URL=http://localhost:8090
+ENV API_URL=$API_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1 NEXT_OUTPUT=standalone
