@@ -15,6 +15,12 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 # Origine de l'API pour le navigateur et la CSP, figée au build par next.config.ts ; le serveur relit API_URL à l'exécution
 ARG API_URL=http://localhost:8090
 ENV API_URL=$API_URL
+# Suivi des erreurs et mesure d'audience du navigateur, figés au build eux aussi ; vides : rien n'est chargé
+ARG NEXT_PUBLIC_GLITCHTIP_DSN= NEXT_PUBLIC_GLITCHTIP_ENVIRONMENT= NEXT_PUBLIC_MATOMO_URL= NEXT_PUBLIC_MATOMO_SITE_ID=
+ENV NEXT_PUBLIC_GLITCHTIP_DSN=$NEXT_PUBLIC_GLITCHTIP_DSN \
+    NEXT_PUBLIC_GLITCHTIP_ENVIRONMENT=$NEXT_PUBLIC_GLITCHTIP_ENVIRONMENT \
+    NEXT_PUBLIC_MATOMO_URL=$NEXT_PUBLIC_MATOMO_URL \
+    NEXT_PUBLIC_MATOMO_SITE_ID=$NEXT_PUBLIC_MATOMO_SITE_ID
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1 NEXT_OUTPUT=standalone
