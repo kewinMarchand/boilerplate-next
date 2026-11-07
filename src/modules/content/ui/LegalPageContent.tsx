@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation'
 
 import { Alert, Stack, Text } from '@kewinmarchand/boilerplates-ui/react'
 
+import { RichHtml } from '@/shared/ui/kit'
+
 import { LegalPageLoadError } from '../infrastructure/LegalPageLoadError'
 import { findLegalPage } from '../infrastructure/legalPageRepository'
 import styles from './LegalPageContent.module.css'
@@ -40,9 +42,7 @@ export const LegalPageContent = async ({ slug, fallbackTitle }: LegalPageContent
   return (
     <>
       <h1 className={`bui-text bui-text--h1 ${styles.title}`}>{page.title}</h1>
-      {page.introduction && (
-        <div className={styles.html} dangerouslySetInnerHTML={{ __html: page.introduction }} />
-      )}
+      {page.introduction && <RichHtml html={page.introduction} />}
       {page.sections.map((section) => (
         <Stack
           as="section"
@@ -52,7 +52,7 @@ export const LegalPageContent = async ({ slug, fallbackTitle }: LegalPageContent
           data-testid="legal-section"
         >
           <Text variant="h2">{section.title}</Text>
-          <div className={styles.html} dangerouslySetInnerHTML={{ __html: section.html }} />
+          <RichHtml html={section.html} />
         </Stack>
       ))}
     </>
