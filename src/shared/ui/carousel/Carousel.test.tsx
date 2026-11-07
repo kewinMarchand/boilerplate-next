@@ -1,12 +1,14 @@
 import { render, screen } from '@testing-library/react'
 
+import { staticImage } from '@/shared/ui/kit'
+
 import { Carousel } from './Carousel'
 
 const SLIDES: Carousel.Slide[] = [1, 2, 3, 4, 5].map((n) => ({
   id: String(n),
   title: `Diapositive ${n}`,
   text: `Texte ${n}`,
-  image: { src: `/images/slide-${n}`, widths: [640, 1280], width: 1280, height: 720 },
+  image: staticImage(`/media/slide-${n}`, [640, 1280], { width: 1280, height: 720, alt: '' }),
 }))
 
 class ObserverStub {

@@ -1,16 +1,18 @@
 import { SITE } from '@/shared/config'
-import { Link, Picture } from '@/shared/ui/kit'
+import { Link, Picture, staticImage } from '@/shared/ui/kit'
 
 import styles from './HomeHero.module.css'
+
+const HERO = staticImage('/images/hero', [640, 960, 1280, 1920], {
+  width: 1920,
+  height: 1080,
+  alt: '',
+})
 
 export const HomeHero = () => (
   <section aria-labelledby="home-hero-title" data-testid="home-hero" className={styles.hero}>
     <Picture
-      src="/images/hero"
-      widths={[640, 960, 1280, 1920]}
-      width={1920}
-      height={1080}
-      alt=""
+      image={HERO}
       isPriority
       sizes="100vw"
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}

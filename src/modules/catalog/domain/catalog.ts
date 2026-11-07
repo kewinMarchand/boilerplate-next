@@ -1,4 +1,5 @@
 import type { Price } from './price'
+import type { ResponsiveImage } from '@/shared/ui/kit'
 
 export const EXPOSURES = ['soleil', 'mi-ombre', 'ombre'] as const
 export const SIZES = ['S', 'M', 'L'] as const
@@ -35,7 +36,7 @@ export declare namespace Catalog {
     exposure: Exposure
     size: Size
     inStock: boolean
-    image: number
+    image: ResponsiveImage | null
   }
 
   interface Query {

@@ -9,12 +9,14 @@ import { AfterHydration, Icon, Picture } from '@/shared/ui/kit'
 import styles from './Carousel.module.css'
 import { useCarousel } from './hooks/useCarousel'
 
+import type { ResponsiveImage } from '@/shared/ui/kit'
+
 export declare namespace Carousel {
   interface Slide {
     id: string
     title: string
     text: string
-    image: { src: string; widths: number[]; width: number; height: number }
+    image: ResponsiveImage | null
   }
 }
 
@@ -86,13 +88,9 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
       >
         <div id={trackId} className={styles.track}>
           {slides.map((slide, position) => {
-            const slideImage = (
+            const slideImage = slide.image && (
               <Picture
-                src={slide.image.src}
-                widths={slide.image.widths}
-                width={slide.image.width}
-                height={slide.image.height}
-                alt=""
+                image={slide.image}
                 draggable={false}
                 sizes="(min-width: 1440px) 460px, (min-width: 1024px) 33vw, (min-width: 600px) 50vw, 100vw"
                 style={{ width: '100%', height: 'auto', borderRadius: 8 }}
@@ -107,9 +105,11 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
                 data-testid="carousel-slide"
                 className={styles.slide}
               >
-                <AfterHydration placeholder={<div className={styles.placeholder} />}>
-                  {slideImage}
-                </AfterHydration>
+                {slideImage && (
+                  <AfterHydration placeholder={<div className={styles.placeholder} />}>
+                    {slideImage}
+                  </AfterHydration>
+                )}
                 <h3 className={`bui-text bui-text--h3 ${styles.slideTitle}`}>{slide.title}</h3>
                 <p className="bui-text">{slide.text}</p>
               </div>

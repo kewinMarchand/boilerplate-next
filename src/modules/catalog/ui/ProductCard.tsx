@@ -14,19 +14,14 @@ interface ProductCardProps {
   isPriority: boolean
 }
 
-export const productImage = (product: Catalog.Product) => ({
-  src: `/images/products/product-${product.image}`,
-  widths: [400, 800],
-  sizes: '(min-width: 1024px) 300px, (min-width: 600px) 50vw, 100vw',
-})
+export const PRODUCT_IMAGE_SIZES = '(min-width: 1024px) 300px, (min-width: 600px) 50vw, 100vw'
 
 export const ProductCard = ({ product, position, isPriority }: ProductCardProps) => {
-  const image = (
+  const placeholder = <div className={styles.placeholder} />
+  const image = product.image && (
     <Picture
-      {...productImage(product)}
-      width={800}
-      height={800}
-      alt={product.name}
+      image={product.image}
+      sizes={PRODUCT_IMAGE_SIZES}
       loading={isPriority ? 'eager' : 'lazy'}
       fetchPriority={position === 1 ? 'high' : 'low'}
       style={{ display: 'block', width: '100%', height: 'auto' }}
@@ -40,13 +35,13 @@ export const ProductCard = ({ product, position, isPriority }: ProductCardProps)
       className={`bui-card ${styles.card}`}
     >
       <div className={styles.layout}>
-        {isPriority ? (
+        {!image ? (
+          placeholder
+        ) : isPriority ? (
           image
         ) : (
           // Au-delà des premières, l'image attend l'hydratation pour laisser la bande passante à l'image LCP.
-          <AfterHydration placeholder={<div className={styles.placeholder} />}>
-            {image}
-          </AfterHydration>
+          <AfterHydration placeholder={placeholder}>{image}</AfterHydration>
         )}
         <div className={styles.body}>
           <h2 className={`bui-text bui-text--h3 ${styles.name}`}>{product.name}</h2>

@@ -82,7 +82,7 @@ describe('toCatalogPage', () => {
             exposure: 'mi-ombre',
             size: 'L',
             inStock: true,
-            image: 3,
+            image: null,
           },
         ],
         totalItems: 1,

@@ -156,6 +156,8 @@ export interface components {
             excerpt: string;
             /** Format: date */
             publishedAt: string;
+            /** @description Image de l'article (16:9), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView"] | null;
         };
         /** @description Liste les articles, du plus récent au plus ancien, sans pagination. */
         "Article.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
@@ -165,6 +167,8 @@ export interface components {
             excerpt: string;
             /** Format: date */
             publishedAt: string;
+            /** @description Image de l'article (16:9), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView.jsonld"] | null;
         };
         /** @description Renvoie l'arbre des catégories : les catégories racines, chacune avec ses enfants, triées par position. */
         Category: {
@@ -355,6 +359,42 @@ export interface components {
             "@id": string;
             "@type": string;
         };
+        ImageSource: {
+            /** @enum {string} */
+            type: "image/avif" | "image/webp";
+            /** @description Valeur de l'attribut srcset : adresses absolues et largeurs, de la plus petite à la plus grande. */
+            srcset: string;
+        };
+        "ImageSource.jsonld": {
+            /** @enum {string} */
+            type: "image/avif" | "image/webp";
+            /** @description Valeur de l'attribut srcset : adresses absolues et largeurs, de la plus petite à la plus grande. */
+            srcset: string;
+        };
+        ImageView: {
+            /** @description Texte de remplacement. Vide : image décorative. */
+            alt: string;
+            /** @description Largeur de la plus grande variante, en pixels (attribut width). */
+            width: number;
+            /** @description Hauteur de la plus grande variante, en pixels (attribut height). */
+            height: number;
+            /** @description Sources du <picture>, AVIF puis WebP. */
+            sources: components["schemas"]["ImageSource"][];
+            /** @description Adresse absolue de la plus petite variante WebP (attribut src de l'<img>). */
+            src: string;
+        };
+        "ImageView.jsonld": {
+            /** @description Texte de remplacement. Vide : image décorative. */
+            alt: string;
+            /** @description Largeur de la plus grande variante, en pixels (attribut width). */
+            width: number;
+            /** @description Hauteur de la plus grande variante, en pixels (attribut height). */
+            height: number;
+            /** @description Sources du <picture>, AVIF puis WebP. */
+            sources: components["schemas"]["ImageSource.jsonld"][];
+            /** @description Adresse absolue de la plus petite variante WebP (attribut src de l'<img>). */
+            src: string;
+        };
         /** @description Lit une page légale par son slug (mentions-legales, donnees-personnelles, accessibilite). */
         LegalPage: {
             slug: string;
@@ -409,8 +449,8 @@ export interface components {
             /** @enum {string} */
             size: "S" | "M" | "L";
             inStock: boolean;
-            /** @description Index du visuel partagé, de 1 à 12. */
-            image: number;
+            /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView"] | null;
         };
         "ProductItem.jsonld": {
             id: number;
@@ -424,8 +464,8 @@ export interface components {
             /** @enum {string} */
             size: "S" | "M" | "L";
             inStock: boolean;
-            /** @description Index du visuel partagé, de 1 à 12. */
-            image: number;
+            /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView.jsonld"] | null;
         };
         /** @description Liste les produits du catalogue. Les filtres se combinent en ET, les valeurs d'une même facette en OU. Une valeur invalide (inconnue, non numérique, hors bornes) est ignorée et remplacée par la valeur par défaut. */
         ProductList: {
@@ -455,8 +495,8 @@ export interface components {
             slug: string;
             title: string;
             text: string;
-            /** @description Numéro du visuel livré avec les fronts, de 1 à 5. */
-            image: number;
+            /** @description Image de la diapositive (16:9), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView"] | null;
         };
         /** @description Liste les diapositives dans l'ordre du carrousel, sans pagination. */
         "Slide.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
@@ -464,8 +504,8 @@ export interface components {
             slug: string;
             title: string;
             text: string;
-            /** @description Numéro du visuel livré avec les fronts, de 1 à 5. */
-            image: number;
+            /** @description Image de la diapositive (16:9), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView.jsonld"] | null;
         };
         /** @description Liste toutes les tâches, sans pagination. */
         Task: {

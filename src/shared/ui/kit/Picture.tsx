@@ -1,13 +1,59 @@
 import type { CSSProperties } from 'react'
 
-interface PictureProps {
-  /** Chemin sans largeur ni extension : `/images/hero` sert `/images/hero-640.avif`, etc. */
-  src: string
-  widths: number[]
+/** Forme de l'objet `image` du contrat de l'API : variantes AVIF puis WebP, adresses prêtes à poser. */
+export interface ResponsiveImage {
+  alt: string
   width: number
   height: number
+  sources: { type: string; srcset: string }[]
+  src: string
+}
+
+/** Image livrée par le site lui-même : `/images/hero` et ses variantes `/images/hero-640.avif`, etc. */
+export const staticImage = (
+  base: string,
+  widths: number[],
+  { width, height, alt }: Pick<ResponsiveImage, 'width' | 'height' | 'alt'>,
+): ResponsiveImage => {
+  const srcset = (extension: string) =>
+    widths.map((size) => `${base}-${size}.${extension} ${size}w`).join(', ')
+  return {
+    alt,
+    width,
+    height,
+    sources: [
+      { type: 'image/avif', srcset: srcset('avif') },
+      { type: 'image/webp', srcset: srcset('webp') },
+    ],
+    src: `${base}-${widths.at(-1)}.webp`,
+  }
+}
+
+interface PicturePreloadProps {
+  image: ResponsiveImage
   sizes: string
-  alt: string
+}
+
+/** Précharge la première source (AVIF). À placer le plus haut possible dans la page pour l'image LCP. */
+export const PicturePreload = ({ image, sizes }: PicturePreloadProps) => {
+  const [first] = image.sources
+  return (
+    first && (
+      <link
+        rel="preload"
+        as="image"
+        type={first.type}
+        imageSrcSet={first.srcset}
+        imageSizes={sizes}
+        fetchPriority="high"
+      />
+    )
+  )
+}
+
+interface PictureProps {
+  image: ResponsiveImage
+  sizes: string
   isPriority?: boolean
   loading?: 'eager' | 'lazy'
   fetchPriority?: 'high' | 'low' | 'auto'
@@ -15,61 +61,33 @@ interface PictureProps {
   style?: CSSProperties
 }
 
-const srcSet = (src: string, widths: number[], extension: string) =>
-  widths.map((width) => `${src}-${width}.${extension} ${width}w`).join(', ')
-
-interface PicturePreloadProps {
-  src: string
-  widths: number[]
-  sizes: string
-}
-
-/** Précharge la variante AVIF. À placer le plus haut possible dans la page pour l'image LCP. */
-export const PicturePreload = ({ src, widths, sizes }: PicturePreloadProps) => (
-  <link
-    rel="preload"
-    as="image"
-    type="image/avif"
-    imageSrcSet={srcSet(src, widths, 'avif')}
-    imageSizes={sizes}
-    fetchPriority="high"
-  />
-)
-
 /** Variantes AVIF puis WebP générées à l'avance : aucun encodage à la volée par le serveur. */
 export const Picture = ({
-  src,
-  widths,
-  width,
-  height,
+  image,
   sizes,
-  alt,
   isPriority = false,
   loading = isPriority ? 'eager' : 'lazy',
   fetchPriority = isPriority ? 'high' : 'auto',
   draggable,
   style,
-}: PictureProps) => {
-  const avif = srcSet(src, widths, 'avif')
-
-  return (
-    <>
-      {isPriority && <PicturePreload src={src} widths={widths} sizes={sizes} />}
-      <picture>
-        <source type="image/avif" srcSet={avif} sizes={sizes} />
-        <source type="image/webp" srcSet={srcSet(src, widths, 'webp')} sizes={sizes} />
-        <img
-          src={`${src}-${widths.at(-1)}.webp`}
-          width={width}
-          height={height}
-          alt={alt}
-          loading={loading}
-          fetchPriority={fetchPriority}
-          decoding="async"
-          draggable={draggable}
-          style={style}
-        />
-      </picture>
-    </>
-  )
-}
+}: PictureProps) => (
+  <>
+    {isPriority && <PicturePreload image={image} sizes={sizes} />}
+    <picture>
+      {image.sources.map((source) => (
+        <source key={source.type} type={source.type} srcSet={source.srcset} sizes={sizes} />
+      ))}
+      <img
+        src={image.src}
+        width={image.width}
+        height={image.height}
+        alt={image.alt}
+        loading={loading}
+        fetchPriority={fetchPriority}
+        decoding="async"
+        draggable={draggable}
+        style={style}
+      />
+    </picture>
+  </>
+)

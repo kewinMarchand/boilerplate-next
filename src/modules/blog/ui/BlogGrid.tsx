@@ -54,15 +54,13 @@ export const BlogGrid = ({ status, articles, errorMessage }: BlogGridProps) => {
           data-testid="home-blog-card"
           className={`bui-card ${styles.card}`}
         >
-          <Picture
-            src={article.image}
-            widths={[480, 960]}
-            width={960}
-            height={540}
-            alt=""
-            sizes="(min-width: 1440px) 460px, (min-width: 1024px) 33vw, (min-width: 600px) 50vw, 100vw"
-            style={{ display: 'block', width: '100%', height: 'auto' }}
-          />
+          {article.image && (
+            <Picture
+              image={article.image}
+              sizes="(min-width: 1440px) 460px, (min-width: 1024px) 33vw, (min-width: 600px) 50vw, 100vw"
+              style={{ display: 'block', width: '100%', height: 'auto' }}
+            />
+          )}
           <div className={styles.body}>
             <h3 className={`bui-text bui-text--h3 ${styles.title}`}>{article.title}</h3>
             <p className={`bui-text ${styles.excerpt}`}>{article.excerpt}</p>

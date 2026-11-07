@@ -1,4 +1,4 @@
-import { Picture } from '@/shared/ui/kit'
+import { Picture, staticImage } from '@/shared/ui/kit'
 
 import { BlogGrid } from '@/modules/blog'
 import { Price, ProductCard } from '@/modules/catalog'
@@ -15,15 +15,18 @@ const PRODUCT = {
   exposure: 'soleil',
   size: 'M',
   inStock: false,
-  image: 1,
+  image: null,
 } as const
+
+/** Photo du site : la charte graphique est statique, elle ne lit pas l'API. */
+const PHOTO = staticImage('/images/hero', [640, 1280], { width: 1280, height: 720, alt: '' })
 
 const ARTICLE = {
   id: 'exemple',
   title: 'Carte de blog',
   excerpt: 'Illustration, titre, extrait et date lisible par les machines.',
   publishedAt: '2026-10-01',
-  image: '/images/blog-1',
+  image: PHOTO,
 }
 
 export const MediaSection = () => (
@@ -39,11 +42,7 @@ export const MediaSection = () => (
     </p>
     <div className={styles.media}>
       <Picture
-        src="/images/slide-2"
-        widths={[640, 1280]}
-        width={1280}
-        height={720}
-        alt=""
+        image={PHOTO}
         sizes="480px"
         style={{ width: '100%', height: 'auto', aspectRatio: '16 / 9', borderRadius: 8 }}
       />

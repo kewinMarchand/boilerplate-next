@@ -15,7 +15,7 @@ import { CatalogPagination } from './CatalogPagination'
 import { CatalogTitle } from './CatalogTitle'
 import { CatalogTransitionProvider, PendingResults } from './CatalogTransition'
 import styles from './CatalogView.module.css'
-import { productImage } from './ProductCard'
+import { PRODUCT_IMAGE_SIZES } from './ProductCard'
 import { ProductResults } from './ProductResults'
 import { SortSelect } from './SortSelect'
 import { ViewToggle } from './ViewToggle'
@@ -39,11 +39,11 @@ export const CatalogView = async ({ slugs, searchParams }: CatalogViewProps) => 
   const title = categoryPath.at(-1)?.name ?? 'Catalogue'
   const href = catalogHref(path, query)
 
-  const firstProduct = page?.products[0]
+  const firstImage = page?.products[0]?.image
 
   return (
     <>
-      {firstProduct && <PicturePreload {...productImage(firstProduct)} />}
+      {firstImage && <PicturePreload image={firstImage} sizes={PRODUCT_IMAGE_SIZES} />}
       <PageContainer breadcrumb={buildBreadcrumb(CATALOG_ROOT_PATH, categoryTrail(categoryPath))}>
         <CatalogTitle title={title} focusKey={href} />
         {subcategories.length > 0 && (

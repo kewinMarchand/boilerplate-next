@@ -97,6 +97,18 @@ test.describe('Accueil', () => {
     await expect(page.getByTestId('home-blog-error')).toHaveCount(0)
   })
 
+  test('affiche les illustrations des articles servies par l’API', async ({ page }) => {
+    await page.goto('/')
+
+    const image = page.getByTestId('home-blog-card').first().locator('img')
+    await image.scrollIntoViewIfNeeded()
+    const apiOrigin = new URL(process.env.API_URL ?? 'http://localhost:8090').origin
+    await expect(image).toHaveAttribute('src', new RegExp(`^${apiOrigin}/media/`))
+    await expect
+      .poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth))
+      .toBeGreaterThan(0)
+  })
+
   test.describe('sans JavaScript', () => {
     test.use({ javaScriptEnabled: false })
 
