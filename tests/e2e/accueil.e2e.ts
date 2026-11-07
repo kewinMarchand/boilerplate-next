@@ -66,6 +66,20 @@ test.describe('Accueil', () => {
 
     await expect(page.getByTestId('carousel-dot').first()).not.toHaveAttribute('aria-current')
     await expect(page.getByTestId('carousel-prev')).toBeEnabled()
+    // Le geste part d'une diapositive cliquable : il fait défiler sans ouvrir la fiche
+    await expect(page).toHaveURL('/')
+  })
+
+  test('une diapositive ouvre la fiche de son produit', async ({ page }) => {
+    await page.goto('/')
+    await waitForCarousel(page)
+
+    const link = page.getByTestId('carousel-slide-link').first()
+    const name = (await link.textContent()) ?? ''
+    await page.getByTestId('carousel-slide').first().click()
+
+    await expect(page).toHaveURL(/\/produit\/[a-z0-9-]+$/)
+    await expect(page.getByTestId('product-title')).toHaveText(name)
   })
 
   test('le carrousel avance à la molette horizontale', async ({ page }) => {

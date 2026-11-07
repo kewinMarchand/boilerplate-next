@@ -1,0 +1,35 @@
+.product {
+  display: grid;
+  gap: var(--bui-space-8);
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .product {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.title {
+  margin-block-end: 0.35em;
+  overflow-wrap: break-word;
+}
+
+.price {
+  font-weight: var(--bui-font-weight-bold);
+}
+
+.features {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--bui-space-2) var(--bui-space-6);
+  margin-block: var(--bui-space-6);
+}
+
+.features dt {
+  font-weight: var(--bui-font-weight-bold);
+}
+
+.features dd {
+  margin: 0;
+}

@@ -6,5 +6,6 @@ export {
   breadcrumbJsonLd,
   itemListJsonLd,
   organizationJsonLd,
+  productJsonLd,
   websiteJsonLd,
 } from './structuredData'

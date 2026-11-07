@@ -84,6 +84,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/featured-products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves the collection of FeaturedProduct resources.
+         * @description Retrieves the collection of FeaturedProduct resources.
+         */
+        get: operations["api_featured-products_get_collection"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/legal_pages/{slug}": {
         parameters: {
             query?: never;
@@ -96,6 +116,26 @@ export interface paths {
          * @description Retrieves a LegalPage resource.
          */
         get: operations["api_legal_pages_slug_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves a ProductDetail resource.
+         * @description Retrieves a ProductDetail resource.
+         */
+        get: operations["api_products_slug_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -245,6 +285,14 @@ export interface components {
             /** @description Nombre de produits de cette sous-catégorie qui respectent les autres filtres. */
             count: number;
         };
+        CategoryLink: {
+            slug: string;
+            name: string;
+        };
+        "CategoryLink.jsonld": {
+            slug: string;
+            name: string;
+        };
         /** @description Unprocessable entity */
         ConstraintViolation: {
             /** @default 422 */
@@ -354,6 +402,38 @@ export interface components {
             value: string;
             /** @description Nombre de produits obtenus en ajoutant cette valeur aux filtres des autres facettes. */
             count: number;
+        };
+        /** @description Liste les produits à la une par ordre alphabétique, sans pagination. */
+        "FeaturedProduct.ProductItem": {
+            id: number;
+            slug: string;
+            name: string;
+            categorySlug: string;
+            /** @description Prix en centimes. */
+            price: number;
+            /** @enum {string} */
+            exposure: "soleil" | "mi-ombre" | "ombre";
+            /** @enum {string} */
+            size: "S" | "M" | "L";
+            inStock: boolean;
+            /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView"] | null;
+        };
+        /** @description Liste les produits à la une par ordre alphabétique, sans pagination. */
+        "FeaturedProduct.ProductItem.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
+            id: number;
+            slug: string;
+            name: string;
+            categorySlug: string;
+            /** @description Prix en centimes. */
+            price: number;
+            /** @enum {string} */
+            exposure: "soleil" | "mi-ombre" | "ombre";
+            /** @enum {string} */
+            size: "S" | "M" | "L";
+            inStock: boolean;
+            /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView.jsonld"] | null;
         };
         HydraCollectionBaseSchema: components["schemas"]["HydraCollectionBaseSchemaNoPagination"] & {
             /**
@@ -466,6 +546,42 @@ export interface components {
             title: string;
             /** @description HTML de la section, sans son titre. Le HTML saisi dans l'admin est échappé. */
             html: string;
+        };
+        /** @description Lit un produit par son slug. */
+        ProductDetail: {
+            id: number;
+            slug: string;
+            name: string;
+            categorySlug: string;
+            /** @description Prix en centimes. */
+            price: number;
+            /** @enum {string} */
+            exposure: "soleil" | "mi-ombre" | "ombre";
+            /** @enum {string} */
+            size: "S" | "M" | "L";
+            inStock: boolean;
+            /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView"] | null;
+            /** @description Catégories de la racine à celle du produit, pour le fil d'Ariane. */
+            categoryPath: components["schemas"]["CategoryLink"][];
+        };
+        /** @description Lit un produit par son slug. */
+        "ProductDetail.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
+            id: number;
+            slug: string;
+            name: string;
+            categorySlug: string;
+            /** @description Prix en centimes. */
+            price: number;
+            /** @enum {string} */
+            exposure: "soleil" | "mi-ombre" | "ombre";
+            /** @enum {string} */
+            size: "S" | "M" | "L";
+            inStock: boolean;
+            /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView.jsonld"] | null;
+            /** @description Catégories de la racine à celle du produit, pour le fil d'Ariane. */
+            categoryPath: components["schemas"]["CategoryLink.jsonld"][];
         };
         ProductFacets: {
             /** @description Toutes les expositions, y compris à 0. */
@@ -704,6 +820,29 @@ export interface operations {
             };
         };
     };
+    "api_featured-products_get_collection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description FeaturedProduct collection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeaturedProduct.ProductItem"][];
+                    "application/ld+json": components["schemas"]["HydraCollectionBaseSchemaNoPagination"] & {
+                        member: components["schemas"]["FeaturedProduct.ProductItem.jsonld"][];
+                    };
+                };
+            };
+        };
+    };
     api_legal_pages_slug_get: {
         parameters: {
             query?: never;
@@ -724,6 +863,41 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["LegalPage"];
                     "application/ld+json": components["schemas"]["LegalPage.jsonld"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Error.jsonld"];
+                    "application/problem+json": components["schemas"]["Error"];
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    api_products_slug_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ProductDetail identifier */
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ProductDetail resource */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductDetail"];
+                    "application/ld+json": components["schemas"]["ProductDetail.jsonld"];
                 };
             };
             /** @description Not found */

@@ -8,6 +8,7 @@ import type { components, operations } from '@/shared/api/client'
 
 type CategoryDto = components['schemas']['Category']
 type ProductDto = components['schemas']['ProductItem']
+type ProductDetailDto = components['schemas']['ProductDetail']
 type ProductListDto = components['schemas']['ProductList']
 type FacetDto = components['schemas']['FacetValue']
 export type ProductsQuery = NonNullable<operations['api_products_get']['parameters']['query']>
@@ -35,6 +36,15 @@ export const toProduct = (dto: ProductDto): Catalog.Product => ({
   size: dto.size,
   inStock: dto.inStock,
   image: dto.image,
+})
+
+export const toProductDetail = (dto: ProductDetailDto): Catalog.ProductDetail => ({
+  ...toProduct(dto),
+  categoryPath: dto.categoryPath.map((link, index) => ({
+    slug: link.slug,
+    name: link.name,
+    href: categoryHref(dto.categoryPath.slice(0, index + 1).map((step) => step.slug)),
+  })),
 })
 
 const toFacetCounts = <T extends string>(values: readonly T[], dtos: FacetDto[]) =>

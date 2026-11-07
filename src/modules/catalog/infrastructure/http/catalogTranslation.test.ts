@@ -1,4 +1,4 @@
-import { toCatalogPage, toCategory, toProductsQuery } from './catalogTranslation'
+import { toCatalogPage, toCategory, toProductDetail, toProductsQuery } from './catalogTranslation'
 
 import type { Catalog } from '@/modules/catalog/domain/catalog'
 
@@ -126,5 +126,33 @@ describe('toCatalogPage', () => {
     )
 
     expect(page.pageCount).toBe(1)
+  })
+})
+
+describe('toProductDetail', () => {
+  it('relie chaque étape du chemin de la catégorie à sa page du catalogue', () => {
+    const detail = toProductDetail({
+      id: 1,
+      slug: 'monstera-deliciosa',
+      name: 'Monstera deliciosa',
+      categorySlug: 'monstera',
+      price: 3490,
+      exposure: 'mi-ombre',
+      size: 'M',
+      inStock: true,
+      image: null,
+      categoryPath: [
+        { slug: 'plantes-interieur', name: 'Plantes d’intérieur' },
+        { slug: 'feuillages', name: 'Feuillages' },
+        { slug: 'monstera', name: 'Monstera' },
+      ],
+    })
+
+    expect(detail.id).toBe('1')
+    expect(detail.categoryPath.map((link) => link.href)).toEqual([
+      '/catalogue/plantes-interieur',
+      '/catalogue/plantes-interieur/feuillages',
+      '/catalogue/plantes-interieur/feuillages/monstera',
+    ])
   })
 })

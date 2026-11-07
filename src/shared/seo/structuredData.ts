@@ -63,3 +63,29 @@ export const blogPostingJsonLd = (article: {
   inLanguage: 'fr-FR',
   publisher: { '@type': 'Organization', name: SITE.publisher.legalName },
 })
+
+export const productJsonLd = (product: {
+  name: string
+  path: string
+  sku: string
+  category: string | undefined
+  image?: string | undefined
+  /** Prix en euros, deux décimales (« 34.90 »). */
+  price: string
+  inStock: boolean
+}) => ({
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.name,
+  sku: product.sku,
+  url: absoluteUrl(product.path),
+  ...(product.category && { category: product.category }),
+  ...(product.image && { image: product.image }),
+  offers: {
+    '@type': 'Offer',
+    url: absoluteUrl(product.path),
+    priceCurrency: 'EUR',
+    price: product.price,
+    availability: `https://schema.org/${product.inStock ? 'InStock' : 'OutOfStock'}`,
+  },
+})

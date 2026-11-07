@@ -4,7 +4,7 @@ import { useId } from 'react'
 
 import { Cluster } from '@kewinmarchand/boilerplates-ui/react'
 
-import { AfterHydration, Icon, Picture } from '@/shared/ui/kit'
+import { AfterHydration, Icon, Link, Picture } from '@/shared/ui/kit'
 
 import styles from './Carousel.module.css'
 import { useCarousel } from './hooks/useCarousel'
@@ -17,6 +17,8 @@ export declare namespace Carousel {
     title: string
     text: string
     image: ResponsiveImage | null
+    /** Destination de la diapositive : son titre devient un lien étiré sur toute la diapositive. */
+    href?: string
   }
 }
 
@@ -105,12 +107,33 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
                 data-testid="carousel-slide"
                 className={styles.slide}
               >
-                {slideImage && (
-                  <AfterHydration placeholder={<div className={styles.placeholder} />}>
+                {slide.image && (
+                  <AfterHydration
+                    placeholder={
+                      <div
+                        className={styles.placeholder}
+                        style={{ aspectRatio: `${slide.image.width} / ${slide.image.height}` }}
+                      />
+                    }
+                  >
                     {slideImage}
                   </AfterHydration>
                 )}
-                <h3 className={`bui-text bui-text--h3 ${styles.slideTitle}`}>{slide.title}</h3>
+                <h3 className={`bui-text bui-text--h3 ${styles.slideTitle}`}>
+                  {slide.href ? (
+                    // Après un glisser, Embla annule le clic : la diapositive ne s'ouvre pas en fin de geste.
+                    <Link
+                      href={slide.href}
+                      draggable={false}
+                      className={`bui-link ${styles.slideLink}`}
+                      data-testid="carousel-slide-link"
+                    >
+                      {slide.title}
+                    </Link>
+                  ) : (
+                    slide.title
+                  )}
+                </h3>
                 <p className="bui-text">{slide.text}</p>
               </div>
             )

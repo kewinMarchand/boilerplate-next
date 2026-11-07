@@ -1,7 +1,8 @@
 import { Badge } from '@kewinmarchand/boilerplates-ui/react'
 
-import { AfterHydration, Picture } from '@/shared/ui/kit'
+import { AfterHydration, Link, Picture } from '@/shared/ui/kit'
 
+import { productHref } from '../domain/catalog'
 import { formatPrice } from '../domain/price'
 import { EXPOSURE_LABELS } from './labels'
 import styles from './ProductCard.module.css'
@@ -44,7 +45,15 @@ export const ProductCard = ({ product, position, isPriority }: ProductCardProps)
           <AfterHydration placeholder={placeholder}>{image}</AfterHydration>
         )}
         <div className={styles.body}>
-          <h2 className={`bui-text bui-text--h3 ${styles.name}`}>{product.name}</h2>
+          <h2 className={`bui-text bui-text--h3 ${styles.name}`}>
+            <Link
+              href={productHref(product.slug)}
+              className={`bui-link ${styles.link}`}
+              data-testid="catalog-product-link"
+            >
+              {product.name}
+            </Link>
+          </h2>
           <p className={`bui-text ${styles.price}`} data-testid="catalog-product-price">
             {formatPrice(product.price)}
           </p>

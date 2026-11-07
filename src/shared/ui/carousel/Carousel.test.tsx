@@ -9,6 +9,7 @@ const SLIDES: Carousel.Slide[] = [1, 2, 3, 4, 5].map((n) => ({
   title: `Diapositive ${n}`,
   text: `Texte ${n}`,
   image: staticImage(`/media/slide-${n}`, [640, 1280], { width: 1280, height: 720, alt: '' }),
+  ...(n === 1 && { href: '/produit/un' }),
 }))
 
 class ObserverStub {
@@ -53,5 +54,15 @@ describe('Carousel', () => {
     expect(
       screen.getAllByTestId('carousel-slide').map((slide) => slide.getAttribute('aria-label')),
     ).toEqual(['1 sur 5', '2 sur 5', '3 sur 5', '4 sur 5', '5 sur 5'])
+  })
+
+  it('fait du titre un lien quand la diapositive a une destination', () => {
+    render(<Carousel title="À la une" slides={SLIDES} />)
+
+    expect(screen.getByRole('link', { name: 'Diapositive 1' })).toHaveAttribute(
+      'href',
+      '/produit/un',
+    )
+    expect(screen.getAllByTestId('carousel-slide-link')).toHaveLength(1)
   })
 })

@@ -1,6 +1,14 @@
 .card {
+  position: relative;
   height: 100%;
   container-type: inline-size;
+}
+
+/* Lien étiré sur toute la carte : un seul lien, nommé par le nom du produit */
+.link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
 }
 
 .layout {

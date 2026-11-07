@@ -6,6 +6,10 @@ export const SIZES = ['S', 'M', 'L'] as const
 export const SORTS = ['pertinence', 'prix-asc', 'prix-desc', 'nom'] as const
 export const VIEWS = ['grille', 'liste'] as const
 export const PAGE_SIZE = 12
+/** Plus grande page acceptée par l'API. */
+export const MAX_PAGE_SIZE = 48
+
+export const productHref = (slug: string) => `/produit/${slug}`
 
 export declare namespace Catalog {
   type Exposure = (typeof EXPOSURES)[number]
@@ -37,6 +41,11 @@ export declare namespace Catalog {
     size: Size
     inStock: boolean
     image: ResponsiveImage | null
+  }
+
+  /** Fiche : le produit et le chemin de sa catégorie, de la racine à elle (fil d'Ariane). */
+  interface ProductDetail extends Product {
+    categoryPath: CategoryPath
   }
 
   interface Query {

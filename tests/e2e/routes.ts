@@ -10,6 +10,7 @@ export const ROUTES = [
   '/accessibilite',
   '/plan-du-site',
   '/blog/le-mode-accessibilite-renforcee',
+  '/produit/monstera-deliciosa',
 ] as const
 
 /** Affichages testés : clair (standard), sombre forcé, accessibilité renforcée. */
