@@ -9,6 +9,7 @@ export const ROUTES = [
   '/donnees-personnelles',
   '/accessibilite',
   '/plan-du-site',
+  '/blog/le-mode-accessibilite-renforcee',
 ] as const
 
 /** Affichages testés : clair (standard), sombre forcé, accessibilité renforcée. */

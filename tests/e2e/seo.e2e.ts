@@ -21,7 +21,10 @@ for (const route of ROUTES) {
     expect(await page.locator('link[rel="canonical"]').getAttribute('href')).toMatch(/^https?:\/\//)
     expect(await meta(page, 'meta[property="og:title"]')).toBeTruthy()
     expect(await meta(page, 'meta[property="og:description"]')).toBeTruthy()
-    expect(await meta(page, 'meta[property="og:image"]')).toMatch(/^https?:\/\/.+og-image\.jpg$/)
+    // Image par défaut, ou celle de l'article servie par l'API
+    expect(await meta(page, 'meta[property="og:image"]')).toMatch(
+      /^https?:\/\/.+(og-image\.jpg|\/media\/[0-9a-f]{32}-\d+\.webp)$/,
+    )
     expect(await meta(page, 'meta[name="twitter:card"]')).toBe('summary_large_image')
 
     for (const text of await page.locator('script[type="application/ld+json"]').allTextContents()) {

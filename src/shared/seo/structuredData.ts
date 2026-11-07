@@ -45,3 +45,21 @@ export const itemListJsonLd = (pagePath: string, names: string[]) => ({
     url: absoluteUrl(`${pagePath}#produit-${index + 1}`),
   })),
 })
+
+export const blogPostingJsonLd = (article: {
+  title: string
+  description: string
+  path: string
+  publishedAt: string
+  image?: string | undefined
+}) => ({
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: article.title,
+  description: article.description,
+  datePublished: article.publishedAt,
+  url: absoluteUrl(article.path),
+  ...(article.image && { image: article.image }),
+  inLanguage: 'fr-FR',
+  publisher: { '@type': 'Organization', name: SITE.publisher.legalName },
+})

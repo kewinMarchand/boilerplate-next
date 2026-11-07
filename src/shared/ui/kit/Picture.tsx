@@ -29,6 +29,14 @@ export const staticImage = (
   }
 }
 
+/** Plus grande variante WebP, aux dimensions `width` × `height` de l'image (partage social, données structurées). */
+export const largestWebp = (image: ResponsiveImage) =>
+  image.sources
+    .find((source) => source.type === 'image/webp')
+    ?.srcset.split(', ')
+    .at(-1)
+    ?.split(' ')[0] ?? image.src
+
 interface PicturePreloadProps {
   image: ResponsiveImage
   sizes: string

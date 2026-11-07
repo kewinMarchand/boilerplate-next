@@ -23,6 +23,7 @@ const PHOTO = staticImage('/images/hero', [640, 1280], { width: 1280, height: 72
 
 const ARTICLE = {
   id: 'exemple',
+  slug: 'exemple',
   title: 'Carte de blog',
   excerpt: 'Illustration, titre, extrait et date lisible par les machines.',
   publishedAt: '2026-10-01',

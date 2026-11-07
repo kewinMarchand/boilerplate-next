@@ -24,6 +24,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/articles/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves a ArticleDetail resource.
+         * @description Retrieves a ArticleDetail resource.
+         */
+        get: operations["api_articles_slug_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/categories": {
         parameters: {
             query?: never;
@@ -169,6 +189,32 @@ export interface components {
             publishedAt: string;
             /** @description Image de l'article (16:9), null tant que l'admin n'en a pas envoyé. */
             image: components["schemas"]["ImageView.jsonld"] | null;
+        };
+        /** @description Lit un article par son slug. */
+        ArticleDetail: {
+            id: number;
+            slug: string;
+            title: string;
+            excerpt: string;
+            /** Format: date */
+            publishedAt: string;
+            /** @description Image de l'article (16:9), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView"] | null;
+            /** @description Texte de l'article en HTML, converti du Markdown saisi (HTML saisi échappé, liens dangereux retirés). Vide s'il n'y en a pas. */
+            html: string;
+        };
+        /** @description Lit un article par son slug. */
+        "ArticleDetail.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
+            id: number;
+            slug: string;
+            title: string;
+            excerpt: string;
+            /** Format: date */
+            publishedAt: string;
+            /** @description Image de l'article (16:9), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView.jsonld"] | null;
+            /** @description Texte de l'article en HTML, converti du Markdown saisi (HTML saisi échappé, liens dangereux retirés). Vide s'il n'y en a pas. */
+            html: string;
         };
         /** @description Renvoie l'arbre des catégories : les catégories racines, chacune avec ses enfants, triées par position. */
         Category: {
@@ -547,6 +593,41 @@ export interface operations {
                     "application/ld+json": components["schemas"]["HydraCollectionBaseSchemaNoPagination"] & {
                         member: components["schemas"]["Article.jsonld"][];
                     };
+                };
+            };
+        };
+    };
+    api_articles_slug_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ArticleDetail identifier */
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ArticleDetail resource */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArticleDetail"];
+                    "application/ld+json": components["schemas"]["ArticleDetail.jsonld"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Error.jsonld"];
+                    "application/problem+json": components["schemas"]["Error"];
+                    "application/json": components["schemas"]["Error"];
                 };
             };
         };

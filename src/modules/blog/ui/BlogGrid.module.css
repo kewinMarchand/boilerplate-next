@@ -17,7 +17,15 @@
 }
 
 .card {
+  position: relative;
   container-type: inline-size;
+}
+
+/* Lien étiré sur toute la carte : un seul lien, nommé par le titre */
+.link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
 }
 
 .body {

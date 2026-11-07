@@ -1,5 +1,6 @@
 import { SITE, SITE_MAP } from '@/shared/config'
 
+import { listArticlePaths } from '@/modules/blog'
 import { listCatalogPaths } from '@/modules/catalog'
 
 import type { MetadataRoute } from 'next'
@@ -7,7 +8,8 @@ import type { MetadataRoute } from 'next'
 export const revalidate = 300
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  return [...SITE_MAP.map(({ href }) => href), ...(await listCatalogPaths())].map((href) => ({
+  const [catalog, articles] = await Promise.all([listCatalogPaths(), listArticlePaths()])
+  return [...SITE_MAP.map(({ href }) => href), ...catalog, ...articles].map((href) => ({
     url: `${SITE.url}${href}`,
   }))
 }

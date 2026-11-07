@@ -1,8 +1,8 @@
 import { Alert, Skeleton } from '@kewinmarchand/boilerplates-ui/react'
 
-import { Picture } from '@/shared/ui/kit'
+import { Link, Picture } from '@/shared/ui/kit'
 
-import { formatPublishedAt } from '../domain/article'
+import { articleHref, formatPublishedAt } from '../domain/article'
 import styles from './BlogGrid.module.css'
 
 import type { Article } from '../domain/article'
@@ -62,7 +62,11 @@ export const BlogGrid = ({ status, articles, errorMessage }: BlogGridProps) => {
             />
           )}
           <div className={styles.body}>
-            <h3 className={`bui-text bui-text--h3 ${styles.title}`}>{article.title}</h3>
+            <h3 className={`bui-text bui-text--h3 ${styles.title}`}>
+              <Link href={articleHref(article.slug)} className={`bui-link ${styles.link}`}>
+                {article.title}
+              </Link>
+            </h3>
             <p className={`bui-text ${styles.excerpt}`}>{article.excerpt}</p>
             <p className={`bui-text bui-text--body-sm ${styles.date}`}>
               <time dateTime={article.publishedAt}>{formatPublishedAt(article.publishedAt)}</time>

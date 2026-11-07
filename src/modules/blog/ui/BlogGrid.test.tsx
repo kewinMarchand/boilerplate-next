@@ -7,6 +7,7 @@ import { BlogGrid } from './BlogGrid'
 const ARTICLES = [
   {
     id: '1',
+    slug: 'premier',
     title: 'Premier',
     excerpt: 'Extrait 1',
     publishedAt: '2026-09-29',
@@ -18,6 +19,7 @@ const ARTICLES = [
   },
   {
     id: '2',
+    slug: 'second',
     title: 'Second',
     excerpt: 'Extrait 2',
     publishedAt: '2026-09-15',
@@ -48,6 +50,12 @@ describe('BlogGrid', () => {
     expect(screen.getAllByTestId('home-blog-card')).toHaveLength(2)
     expect(screen.getByRole('heading', { level: 3, name: 'Premier' })).toBeInTheDocument()
     expect(screen.getByText('29 septembre 2026')).toHaveAttribute('datetime', '2026-09-29')
+  })
+
+  it('relie chaque carte à sa fiche par son titre', () => {
+    render(<BlogGrid status="success" articles={ARTICLES} />)
+
+    expect(screen.getByRole('link', { name: 'Premier' })).toHaveAttribute('href', '/blog/premier')
   })
 
   it('pose l’image de l’API, et aucune image quand l’article n’en a pas', () => {

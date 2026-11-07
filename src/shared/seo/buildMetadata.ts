@@ -16,6 +16,8 @@ interface PageSeo {
   noindex?: boolean
   image?: typeof DEFAULT_OG_IMAGE
   isAbsoluteTitle?: boolean
+  /** Page d'article : `og:type` article et date de publication (AAAA-MM-JJ). */
+  publishedTime?: string
 }
 
 export const absoluteUrl = (path: string) => new URL(path, SITE.url).toString()
@@ -27,13 +29,14 @@ export const buildMetadata = ({
   noindex = false,
   image = DEFAULT_OG_IMAGE,
   isAbsoluteTitle = false,
+  publishedTime,
 }: PageSeo): Metadata => ({
   title: isAbsoluteTitle ? { absolute: title } : title,
   description,
   alternates: { canonical: path },
   robots: noindex ? { index: false, follow: true } : { index: true, follow: true },
   openGraph: {
-    type: 'website',
+    ...(publishedTime ? { type: 'article', publishedTime } : { type: 'website' }),
     siteName: SITE.name,
     title,
     description,

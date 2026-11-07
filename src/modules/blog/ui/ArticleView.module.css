@@ -1,0 +1,20 @@
+.article {
+  max-width: 760px;
+}
+
+.title {
+  margin-block-end: 0.35em;
+}
+
+.date {
+  margin-block-end: var(--bui-space-6);
+  color: var(--bui-color-text-muted);
+}
+
+.excerpt {
+  margin-block: var(--bui-space-6);
+}
+
+.back {
+  margin-block-start: var(--bui-space-12);
+}
