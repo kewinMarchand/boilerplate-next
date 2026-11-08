@@ -29,7 +29,7 @@ export const NavigationSection = () => (
     />
     <CatalogPagination
       path="/catalogue"
-      query={{ ...QUERY, exposures: [], sizes: [] }}
+      query={{ ...QUERY, exposures: [], sizes: [], attributes: {} }}
       page={5}
       pageCount={10}
     />

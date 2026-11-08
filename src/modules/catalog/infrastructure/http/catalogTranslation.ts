@@ -11,6 +11,8 @@ type ProductDto = components['schemas']['Product']
 type ProductDetailDto = components['schemas']['ProductDetail']
 type ProductFacetsDto = components['schemas']['ProductFacets']
 type FacetDto = components['schemas']['FacetValue']
+type AttributeFacetDto = components['schemas']['AttributeFacet']
+type AttributeValueDto = components['schemas']['AttributeValue']
 export type ProductsQuery = NonNullable<
   operations['api_products_get_collection']['parameters']['query']
 >
@@ -55,7 +57,27 @@ export const toProductDetail = (dto: ProductDetailDto): Catalog.ProductDetail =>
     .split(/\n\s*\n/)
     .map((paragraph) => paragraph.trim())
     .filter((paragraph) => paragraph !== ''),
+  attributes: dto.attributes.map(toProductAttribute),
 })
+
+const toProductAttribute = (dto: AttributeValueDto): Catalog.ProductAttribute => ({
+  code: dto.code,
+  label: dto.label,
+  value: dto.valueLabel,
+  unit: dto.unit,
+})
+
+const toAttributeFacet = (dto: AttributeFacetDto): Catalog.AttributeFacet => ({
+  code: dto.code,
+  label: dto.label,
+  values: dto.values.map(({ value, label, count }) => ({ value, label, count })),
+})
+
+// openapi-fetch sérialise un tableau dans un deepObject en liste à virgules : les clés `attributes[<code>][]` sont posées à plat.
+const toAttributeParams = (attributes: Catalog.Query['attributes']) =>
+  Object.fromEntries(
+    Object.entries(attributes).map(([code, values]) => [`attributes[${code}][]`, values]),
+  )
 
 const toFacetCounts = <T extends string>(values: readonly T[], dtos: FacetDto[]) =>
   values.map((value) => ({
@@ -70,6 +92,7 @@ export const toFacetsQuery = (slugs: string[], query: Catalog.Query): ProductFac
     ...(category && { category }),
     ...(query.exposures.length > 0 && { 'exposure[]': query.exposures }),
     ...(query.sizes.length > 0 && { 'size[]': query.sizes }),
+    ...toAttributeParams(query.attributes),
     ...(query.priceMin !== null && { priceMin: eurosToCents(query.priceMin) }),
     ...(query.priceMax !== null && { priceMax: eurosToCents(query.priceMax) }),
     ...(query.inStock && { inStock: true }),
@@ -97,6 +120,7 @@ export const toCatalogPage = (
   facets: {
     exposure: toFacetCounts(EXPOSURES, facets.exposure),
     size: toFacetCounts(SIZES, facets.size),
+    attributes: facets.attributes.map(toAttributeFacet),
   },
   subcategories: facets.category.map((child) => ({
     href: categoryHref([...slugs, child.slug]),

@@ -72,7 +72,11 @@ export const CatalogView = async ({ slugs, searchParams }: CatalogViewProps) => 
               )}
             </div>
             <div>
-              <ActiveFilters path={path} query={query} />
+              <ActiveFilters
+                path={path}
+                query={query}
+                attributeFacets={page?.facets.attributes ?? []}
+              />
               <Cluster justify="between" gap="4" className={styles.toolbar}>
                 <p role="status" className={styles.count} data-testid="catalog-results-count">
                   {page ? productCount(page.total) : ''}

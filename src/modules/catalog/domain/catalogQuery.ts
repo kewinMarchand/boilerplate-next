@@ -5,6 +5,7 @@ export type SearchParams = Record<string, string | string[] | undefined>
 export const DEFAULT_QUERY: Catalog.Query = {
   exposures: [],
   sizes: [],
+  attributes: {},
   priceMin: null,
   priceMax: null,
   inStock: false,
@@ -13,10 +14,17 @@ export const DEFAULT_QUERY: Catalog.Query = {
   page: 1,
 }
 
+export const ATTRIBUTE_PARAM_PREFIX = 'attr-'
+
+export const attributeParam = (code: string) => `${ATTRIBUTE_PARAM_PREFIX}${code}`
+
 export const serializeCatalogQuery = (query: Catalog.Query) => {
   const params = new URLSearchParams()
   query.exposures.forEach((value) => params.append('exposition', value))
   query.sizes.forEach((value) => params.append('taille', value))
+  Object.entries(query.attributes).forEach(([code, values]) =>
+    values.forEach((value) => params.append(attributeParam(code), value)),
+  )
   if (query.priceMin !== null) params.set('prix_min', String(query.priceMin))
   if (query.priceMax !== null) params.set('prix_max', String(query.priceMax))
   if (query.inStock) params.set('en_stock', '1')
@@ -41,6 +49,14 @@ export const withFilter = (
   page: 1,
 })
 
+/** Remplace les valeurs retenues d'un attribut ; un attribut sans valeur quitte la requête. */
+export const withAttribute = (query: Catalog.Query, code: string, values: string[]) =>
+  withFilter(query, {
+    attributes: Object.fromEntries(
+      Object.entries({ ...query.attributes, [code]: values }).filter(([, kept]) => kept.length > 0),
+    ),
+  })
+
 export const clearFilters = (query: Catalog.Query): Catalog.Query => ({
   ...DEFAULT_QUERY,
   view: query.view,
@@ -49,6 +65,7 @@ export const clearFilters = (query: Catalog.Query): Catalog.Query => ({
 export const countActiveFilters = (query: Catalog.Query) =>
   query.exposures.length +
   query.sizes.length +
+  Object.values(query.attributes).flat().length +
   (query.priceMin !== null ? 1 : 0) +
   (query.priceMax !== null ? 1 : 0) +
   (query.inStock ? 1 : 0)

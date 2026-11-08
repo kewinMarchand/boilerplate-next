@@ -31,7 +31,7 @@ const PAGE: CatalogPage = {
   total: 0,
   page: 1,
   pageCount: 1,
-  facets: { exposure: [], size: [] },
+  facets: { exposure: [], size: [], attributes: [] },
   subcategories: [],
 }
 

@@ -51,11 +51,22 @@ export declare namespace Catalog {
     categoryPath: CategoryPath
     /** Paragraphes de la description, vide si l'admin n'en a pas écrit. */
     description: string[]
+    attributes: ProductAttribute[]
+  }
+
+  /** Attribut configurable renseigné sur un produit, valeur déjà en libellé. */
+  interface ProductAttribute {
+    code: string
+    label: string
+    value: string
+    unit: string | null
   }
 
   interface Query {
     exposures: Exposure[]
     sizes: Size[]
+    /** Valeurs retenues par code d'attribut filtrable. */
+    attributes: Record<string, string[]>
     priceMin: number | null
     priceMax: number | null
     inStock: boolean
@@ -69,9 +80,16 @@ export declare namespace Catalog {
     count: number
   }
 
+  interface AttributeFacet {
+    code: string
+    label: string
+    values: (Facet<string> & { label: string })[]
+  }
+
   interface Facets {
     exposure: Facet<Exposure>[]
     size: Facet<Size>[]
+    attributes: AttributeFacet[]
   }
 
   interface CategoryLink {

@@ -45,6 +45,38 @@ test.describe('Catalogue', () => {
     )
   })
 
+  test('filtrer par attribut remet la page à 1, met à jour l’URL, le compteur et les puces', async ({
+    page,
+    isMobile,
+  }) => {
+    await page.goto('/catalogue?page=2')
+    await waitForHydration(page)
+    await openFiltersIfMobile(page, isMobile)
+
+    await page.getByTestId('catalog-filter-attribute-feuillage-caduc').check()
+
+    await expect(page).toHaveURL(/\/catalogue\?attr-feuillage=caduc$/)
+    await expect(page.getByTestId('catalog-results-count')).toHaveText('2 produits')
+    await expect(page.getByTestId('catalog-filter-attribute-feuillage-caduc')).toBeFocused()
+    if (isMobile) await page.keyboard.press('Escape')
+    await expect(page.getByTestId('catalog-active-filter')).toHaveAccessibleName(
+      'Retirer le filtre : Caduc',
+    )
+
+    await page.getByTestId('catalog-active-filter').click()
+    await expect(page).toHaveURL(/\/catalogue$/)
+    await expect(page.getByTestId('catalog-active-filters')).toHaveCount(0)
+  })
+
+  test('n’affiche aucune facette d’attribut dans une branche sans attribut filtrable', async ({
+    page,
+  }) => {
+    await page.goto('/catalogue/plantes-exterieur/arbustes-a-fleurs')
+
+    await expect(page.getByTestId('catalog-filter-exposure-soleil').first()).toBeAttached()
+    await expect(page.getByTestId(/^catalog-filter-attribute-/)).toHaveCount(0)
+  })
+
   test('retirer une puce supprime le filtre', async ({ page }) => {
     await page.goto('/catalogue?exposition=soleil&taille=M')
 
@@ -147,6 +179,20 @@ test.describe('Catalogue', () => {
 
       await expect(page).toHaveURL(/\/catalogue\?tri=nom&taille=L&prix_min=&prix_max=$/)
       await expect(page.getByTestId('catalog-results-count')).toHaveText('9 produits')
+    })
+
+    test('le formulaire GET applique une facette d’attribut', async ({ page, isMobile }) => {
+      await page.goto('/catalogue')
+      if (isMobile) await page.getByTestId('catalog-filters-summary').click()
+
+      await page
+        .getByTestId('catalog-filter-attribute-feuillage-persistant')
+        .locator('visible=true')
+        .check()
+      await page.getByTestId('catalog-filters-submit').locator('visible=true').click()
+
+      await expect(page).toHaveURL(/\/catalogue\?attr-feuillage=persistant&prix_min=&prix_max=$/)
+      await expect(page.getByTestId('catalog-results-count')).toHaveText('6 produits')
     })
   })
 })

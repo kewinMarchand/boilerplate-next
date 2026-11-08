@@ -276,6 +276,56 @@ export interface components {
             /** @description Texte de l'article en HTML, converti du Markdown saisi (HTML saisi échappé, liens dangereux retirés). Vide s'il n'y en a pas. */
             html: string;
         };
+        AttributeFacet: {
+            /** @description Code de l'attribut, clé du filtre attributes[<code>][]. */
+            code: string;
+            label: string;
+            /** @description Toutes les valeurs de l'attribut, dans leur ordre, y compris à 0. */
+            values: components["schemas"]["AttributeFacetValue"][];
+        };
+        "AttributeFacet.jsonld": {
+            /** @description Code de l'attribut, clé du filtre attributes[<code>][]. */
+            code: string;
+            label: string;
+            /** @description Toutes les valeurs de l'attribut, dans leur ordre, y compris à 0. */
+            values: components["schemas"]["AttributeFacetValue.jsonld"][];
+        };
+        AttributeFacetValue: {
+            value: string;
+            label: string;
+            /** @description Nombre de produits obtenus en ajoutant cette valeur aux filtres des autres facettes et des autres attributs. */
+            count: number;
+        };
+        "AttributeFacetValue.jsonld": {
+            value: string;
+            label: string;
+            /** @description Nombre de produits obtenus en ajoutant cette valeur aux filtres des autres facettes et des autres attributs. */
+            count: number;
+        };
+        AttributeValue: {
+            code: string;
+            label: string;
+            /** @enum {string} */
+            type: "choice" | "number" | "text";
+            /** @description Valeur en chaîne : code de la valeur pour choice, nombre ou texte sinon. */
+            value: string;
+            /** @description Libellé de la valeur pour choice, la valeur elle-même sinon. */
+            valueLabel: string;
+            /** @description Unité (« cm », « km »), null si l'attribut n'en a pas. */
+            unit: string | null;
+        };
+        "AttributeValue.jsonld": {
+            code: string;
+            label: string;
+            /** @enum {string} */
+            type: "choice" | "number" | "text";
+            /** @description Valeur en chaîne : code de la valeur pour choice, nombre ou texte sinon. */
+            value: string;
+            /** @description Libellé de la valeur pour choice, la valeur elle-même sinon. */
+            valueLabel: string;
+            /** @description Unité (« cm », « km »), null si l'attribut n'en a pas. */
+            unit: string | null;
+        };
         /** @description Renvoie l'arbre des catégories : les catégories racines, chacune avec ses enfants, triées par position. */
         Category: {
             slug: string;
@@ -550,6 +600,8 @@ export interface components {
             inStock: boolean;
             /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
             image: components["schemas"]["ImageView"] | null;
+            /** @description Attributs configurables renseignés sur le produit, par position ; tableau vide si aucun. */
+            attributes: components["schemas"]["AttributeValue"][];
         };
         /** @description Liste une page de produits. Les filtres se combinent en ET, les valeurs d'une même facette en OU. Une valeur invalide (inconnue, non numérique, hors bornes) est ignorée et remplacée par la valeur par défaut. Le total et les compteurs de facettes : GET /api/product-facets avec les mêmes filtres. */
         "Product.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
@@ -566,6 +618,8 @@ export interface components {
             inStock: boolean;
             /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
             image: components["schemas"]["ImageView.jsonld"] | null;
+            /** @description Attributs configurables renseignés sur le produit, par position ; tableau vide si aucun. */
+            attributes: components["schemas"]["AttributeValue.jsonld"][];
         };
         /** @description Lit un produit par son slug. */
         ProductDetail: {
@@ -586,6 +640,8 @@ export interface components {
             categoryPath: components["schemas"]["CategoryLink"][];
             /** @description Texte brut, paragraphes séparés par une ligne vide ; chaîne vide si l'admin n'en a pas écrit. */
             description: string;
+            /** @description Attributs configurables renseignés sur le produit, par position ; tableau vide si aucun. */
+            attributes: components["schemas"]["AttributeValue"][];
         };
         /** @description Lit un produit par son slug. */
         "ProductDetail.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
@@ -606,6 +662,8 @@ export interface components {
             categoryPath: components["schemas"]["CategoryLink.jsonld"][];
             /** @description Texte brut, paragraphes séparés par une ligne vide ; chaîne vide si l'admin n'en a pas écrit. */
             description: string;
+            /** @description Attributs configurables renseignés sur le produit, par position ; tableau vide si aucun. */
+            attributes: components["schemas"]["AttributeValue.jsonld"][];
         };
         /** @description Compte les produits filtrés, au total et par valeur de facette. Mêmes filtres que GET /api/products, sans tri ni pagination. */
         ProductFacets: {
@@ -617,6 +675,8 @@ export interface components {
             size: components["schemas"]["FacetValue"][];
             /** @description Sous-catégories directes de la catégorie filtrée (catégories racines sans filtre). Vide sur une feuille. */
             category: components["schemas"]["CategoryFacetValue"][];
+            /** @description Attributs filtrables portés par au moins un produit de la branche de catégorie, par position. */
+            attributes: components["schemas"]["AttributeFacet"][];
         };
         /** @description Compte les produits filtrés, au total et par valeur de facette. Mêmes filtres que GET /api/products, sans tri ni pagination. */
         "ProductFacets.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
@@ -628,6 +688,8 @@ export interface components {
             size: components["schemas"]["FacetValue.jsonld"][];
             /** @description Sous-catégories directes de la catégorie filtrée (catégories racines sans filtre). Vide sur une feuille. */
             category: components["schemas"]["CategoryFacetValue.jsonld"][];
+            /** @description Attributs filtrables portés par au moins un produit de la branche de catégorie, par position. */
+            attributes: components["schemas"]["AttributeFacet.jsonld"][];
         };
         /** @description Lit l'identité du site. */
         SiteIdentity: {
@@ -913,6 +975,10 @@ export interface operations {
                 "exposure[]"?: ("soleil" | "mi-ombre" | "ombre")[];
                 /** @description Tailles acceptées, clé répétée : size[]=S&size[]=M. */
                 "size[]"?: ("S" | "M" | "L")[];
+                /** @description Valeurs acceptées des attributs filtrables, par code, clé répétée : attributes[feuillage][]=persistant&attributes[feuillage][]=caduc. Valeurs d'un même attribut en OU, attributs entre eux en ET. Code ou valeur inconnus : ignorés. Les attributs filtrables et leurs valeurs : attributes de GET /api/product-facets. */
+                attributes?: {
+                    [key: string]: string[];
+                };
                 /** @description Prix minimum inclus, en centimes. */
                 priceMin?: number;
                 /** @description Prix maximum inclus, en centimes. */
@@ -992,6 +1058,10 @@ export interface operations {
                 "exposure[]"?: ("soleil" | "mi-ombre" | "ombre")[];
                 /** @description Tailles acceptées, clé répétée : size[]=S&size[]=M. */
                 "size[]"?: ("S" | "M" | "L")[];
+                /** @description Valeurs acceptées des attributs filtrables, par code, clé répétée : attributes[feuillage][]=persistant&attributes[feuillage][]=caduc. Valeurs d'un même attribut en OU, attributs entre eux en ET. Code ou valeur inconnus : ignorés. Les attributs filtrables et leurs valeurs : attributes de GET /api/product-facets. */
+                attributes?: {
+                    [key: string]: string[];
+                };
                 /** @description Prix minimum inclus, en centimes. */
                 priceMin?: number;
                 /** @description Prix maximum inclus, en centimes. */

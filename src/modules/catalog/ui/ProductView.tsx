@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { Fragment } from 'react'
 
 import { Alert, Badge } from '@kewinmarchand/boilerplates-ui/react'
 
@@ -93,6 +94,18 @@ export const ProductView = async ({ slug, purchase }: ProductViewProps) => {
             <dt>Disponibilité</dt>
             <dd>{product.inStock ? 'En stock' : <Badge>Rupture de stock</Badge>}</dd>
           </dl>
+          {product.attributes.length > 0 && (
+            <dl className={styles.features} data-testid="product-attributes">
+              {product.attributes.map((attribute) => (
+                <Fragment key={attribute.code}>
+                  <dt>{attribute.label}</dt>
+                  <dd>
+                    {attribute.unit ? `${attribute.value} ${attribute.unit}` : attribute.value}
+                  </dd>
+                </Fragment>
+              ))}
+            </dl>
+          )}
           {purchase?.(product)}
           {category && (
             <p>

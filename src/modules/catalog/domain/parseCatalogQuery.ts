@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { EXPOSURES, SIZES, SORTS, VIEWS } from './catalog'
+import { ATTRIBUTE_PARAM_PREFIX } from './catalogQuery'
 
 import type { Catalog } from './catalog'
 import type { SearchParams } from './catalogQuery'
@@ -8,6 +9,8 @@ import type { SearchParams } from './catalogQuery'
 // Séparé de catalogQuery.ts pour que zod reste côté serveur : les composants client n'importent que les fonctions d'URL.
 const exposureSchema = z.enum(EXPOSURES)
 const sizeSchema = z.enum(SIZES)
+const attributeCodeSchema = z.string().regex(/^[a-z][a-z0-9-]{0,39}$/)
+const attributeValueSchema = z.string().regex(/^[a-z0-9][a-z0-9-]{0,39}$/)
 const priceSchema = z.coerce.number().int().min(0).nullable().catch(null)
 
 const toArray = (value: string | string[] | undefined) =>
@@ -27,6 +30,18 @@ const validValues = <T extends string>(
   ),
 ]
 
+const parseAttributes = (params: SearchParams) =>
+  Object.fromEntries(
+    Object.entries(params).flatMap(([key, value]) => {
+      if (!key.startsWith(ATTRIBUTE_PARAM_PREFIX)) return []
+      const code = key.slice(ATTRIBUTE_PARAM_PREFIX.length)
+      const values = validValues(attributeValueSchema, value)
+      return attributeCodeSchema.safeParse(code).success && values.length > 0
+        ? [[code, values]]
+        : []
+    }),
+  )
+
 export const parseCatalogQuery = (params: SearchParams): Catalog.Query => {
   const price = (key: string) => {
     const raw = first(params[key])
@@ -36,6 +51,7 @@ export const parseCatalogQuery = (params: SearchParams): Catalog.Query => {
   return {
     exposures: validValues(exposureSchema, params.exposition),
     sizes: validValues(sizeSchema, params.taille),
+    attributes: parseAttributes(params),
     priceMin: price('prix_min'),
     priceMax: price('prix_max'),
     inStock: first(params.en_stock) === '1',

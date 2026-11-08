@@ -38,6 +38,21 @@ test.describe('Fiche produit', () => {
     )
   })
 
+  test('affiche ses attributs : libellé, valeur et unité', async ({ page }) => {
+    await page.goto(PRODUCT)
+
+    const attributes = page.getByTestId('product-attributes')
+    await expect(attributes.locator('dt')).toHaveText(['Feuillage', 'Hauteur adulte'])
+    await expect(attributes.locator('dd')).toHaveText(['Persistant', '300 cm'])
+  })
+
+  test('n’affiche pas de liste d’attributs pour un produit qui n’en a pas', async ({ page }) => {
+    await page.goto('/produit/monstera-thai-constellation')
+
+    await expect(page.getByTestId('product-title')).toBeVisible()
+    await expect(page.getByTestId('product-attributes')).toHaveCount(0)
+  })
+
   test('expose ses données structurées de produit', async ({ page }) => {
     await page.goto(PRODUCT)
 

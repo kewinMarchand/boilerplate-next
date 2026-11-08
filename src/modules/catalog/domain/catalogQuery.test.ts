@@ -1,8 +1,10 @@
 import {
   catalogHref,
   clearFilters,
+  countActiveFilters,
   DEFAULT_QUERY,
   serializeCatalogQuery,
+  withAttribute,
   withFilter,
 } from './catalogQuery'
 import { parseCatalogQuery } from './parseCatalogQuery'
@@ -31,6 +33,46 @@ describe('parseCatalogQuery', () => {
       inStock: true,
       view: 'liste',
     })
+  })
+})
+
+describe('attributs dans l’URL', () => {
+  it('lit attr-<code> répété, sans doublon, et ignore code ou valeur invalides', () => {
+    const query = parseCatalogQuery({
+      'attr-feuillage': ['persistant', 'caduc', 'persistant', 'Caduc!'],
+      'attr-hauteur-adulte': '',
+      'attr-Mauvais': 'x',
+      attr: 'x',
+    })
+
+    expect(query.attributes).toEqual({ feuillage: ['persistant', 'caduc'] })
+  })
+
+  it('fait l’aller-retour URL ↔ requête', () => {
+    const query = {
+      ...DEFAULT_QUERY,
+      attributes: { feuillage: ['caduc'], couleur: ['rouge', 'blanc'] },
+    }
+    const search = serializeCatalogQuery(query)
+
+    expect(search.toString()).toBe('attr-feuillage=caduc&attr-couleur=rouge&attr-couleur=blanc')
+    expect(
+      parseCatalogQuery(
+        Object.fromEntries([...new Set(search.keys())].map((key) => [key, search.getAll(key)])),
+      ),
+    ).toEqual(query)
+  })
+
+  it('withAttribute revient à la page 1 et retire un attribut vidé', () => {
+    const query = { ...DEFAULT_QUERY, page: 3, attributes: { feuillage: ['caduc'] } }
+
+    expect(withAttribute(query, 'feuillage', ['caduc', 'persistant'])).toEqual({
+      ...query,
+      page: 1,
+      attributes: { feuillage: ['caduc', 'persistant'] },
+    })
+    expect(withAttribute(query, 'feuillage', []).attributes).toEqual({})
+    expect(countActiveFilters({ ...query, attributes: { a: ['x', 'y'], b: ['z'] } })).toBe(3)
   })
 })
 

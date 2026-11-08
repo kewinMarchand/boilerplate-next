@@ -6,7 +6,7 @@ import { Button, Checkbox, Switch } from '@kewinmarchand/boilerplates-ui/react'
 
 import { Link } from '@/shared/ui/kit'
 
-import { withFilter } from '../domain/catalogQuery'
+import { attributeParam, withAttribute, withFilter } from '../domain/catalogQuery'
 import styles from './FiltersForm.module.css'
 import { EXPOSURE_LABELS, sizeLabel } from './labels'
 import { QueryHiddenFields } from './QueryHiddenFields'
@@ -101,7 +101,10 @@ export const FiltersForm = ({
 
   return (
     <form method="get" action={path} onSubmit={onSubmit} data-testid="catalog-filters">
-      <QueryHiddenFields query={query} omit={FILTER_KEYS} />
+      <QueryHiddenFields
+        query={query}
+        omit={[...FILTER_KEYS, ...facets.attributes.map((facet) => attributeParam(facet.code))]}
+      />
 
       <div className="bui-accordion">
         {subcategories.length > 0 && (
@@ -159,6 +162,32 @@ export const FiltersForm = ({
             )
           })}
         </FacetGroup>
+
+        {facets.attributes.map((attribute) => {
+          const selected = query.attributes[attribute.code] ?? []
+          return (
+            <FacetGroup key={attribute.code} legend={attribute.label}>
+              {attribute.values.map((facet) => {
+                const checked = selected.includes(facet.value)
+                return (
+                  <Checkbox
+                    key={facet.value}
+                    id={`${idPrefix}-${attributeParam(attribute.code)}-${facet.value}`}
+                    label={`${facet.label} (${facet.count})`}
+                    name={attributeParam(attribute.code)}
+                    value={facet.value}
+                    checked={checked}
+                    disabled={facet.count === 0 && !checked}
+                    onChange={() =>
+                      onApply(withAttribute(query, attribute.code, toggle(selected, facet.value)))
+                    }
+                    data-testid={`catalog-filter-attribute-${attribute.code}-${facet.value}`}
+                  />
+                )
+              })}
+            </FacetGroup>
+          )
+        })}
 
         <FacetGroup legend="Prix (en euros)">
           <div key={`${query.priceMin}-${query.priceMax}`} className={styles.prices}>
