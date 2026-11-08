@@ -22,6 +22,11 @@ export const ArticleCard = ({
   <article data-testid={testId} className={`bui-card ${styles.card}`}>
     {article.image && <Picture image={article.image} sizes={sizes} />}
     <div className={styles.body}>
+      {article.section && (
+        <p className={`bui-text bui-text--body-sm ${styles.section}`} data-testid="article-section">
+          {article.section.name}
+        </p>
+      )}
       <Heading className={`bui-text bui-text--h3 ${styles.title}`}>
         <Link href={articleHref(article.slug)} className={`bui-link ${styles.link}`}>
           {article.title}

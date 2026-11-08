@@ -52,6 +52,15 @@ test("l'accueil déclare Organization et WebSite", async ({ page }) => {
   expect(types).toEqual(expect.arrayContaining(['Organization', 'WebSite']))
 })
 
+test('sans icône saisie, le logo de l’Organization est l’icône 512 du site', async ({ page }) => {
+  await page.goto('/')
+  const organization = (await page.locator('script[type="application/ld+json"]').allTextContents())
+    .map((text) => JSON.parse(text) as { '@type': string; logo?: string })
+    .find((item) => item['@type'] === 'Organization')
+
+  expect(organization?.logo).toMatch(/^https?:\/\/.+\/icons\/icon-512\.png$/)
+})
+
 test('une page de catalogue filtrée est noindex et canonique sans filtres', async ({ page }) => {
   await page.goto('/catalogue/plantes-interieur?exposition=soleil&tri=nom')
 
@@ -82,4 +91,70 @@ test('le sitemap liste les pages statiques et chaque catégorie', async ({ reque
     expect(body).toContain(path)
   }
   expect(body).not.toContain('/charte-graphique')
+})
+
+test.describe('Métadonnées sans saisie dans l’admin (fixtures)', () => {
+  test('les pages gardent leurs titres, descriptions et l’image de partage du site', async ({
+    page,
+  }) => {
+    await page.goto('/contact')
+
+    await expect(page).toHaveTitle(/^Contact · /)
+    expect(await meta(page, 'meta[name="description"]')).toMatch(/^Démo de formulaire/)
+    expect(await meta(page, 'meta[property="og:image"]')).toMatch(/\/images\/og-image\.jpg$/)
+    expect(await meta(page, 'meta[name="twitter:image"]')).toMatch(/\/images\/og-image\.jpg$/)
+  })
+
+  test('la description saisie pour la page « blog » remplace la sienne, le titre reste', async ({
+    page,
+    request,
+  }) => {
+    const apiUrl = process.env.API_URL || 'http://localhost:8090'
+    const metas = (await (await request.get(`${apiUrl}/api/page-metas`)).json()) as {
+      page: string
+      description: string
+    }[]
+    const description = metas.find((item) => item.page === 'blog')?.description ?? ''
+    expect(description).not.toBe('')
+
+    await page.goto('/blog')
+
+    await expect(page).toHaveTitle(/^Blog · /)
+    expect(await meta(page, 'meta[name="description"]')).toBe(description)
+    expect(await meta(page, 'meta[property="og:description"]')).toBe(description)
+  })
+
+  test('une fiche produit sans métadonnées saisies garde son titre et sa description construite', async ({
+    page,
+  }) => {
+    await page.goto('/produit/monstera-deliciosa')
+
+    await expect(page).toHaveTitle(/^Monstera deliciosa · /)
+    expect(await meta(page, 'meta[name="description"]')).toMatch(/^Monstera deliciosa : exposition/)
+  })
+
+  test('les favicons et le manifeste servent les fichiers du site', async ({ page, request }) => {
+    await page.goto('/')
+
+    await expect(page.locator('link[rel="icon"]')).toHaveCount(2)
+    await expect(page.locator('link[rel="icon"]').first()).toHaveAttribute('href', '/favicon.ico')
+    await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute(
+      'href',
+      '/icon.svg',
+    )
+    await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute(
+      'href',
+      '/apple-icon.png',
+    )
+    for (const path of ['/favicon.ico', '/icon.svg', '/apple-icon.png']) {
+      expect((await request.get(path)).status()).toBe(200)
+    }
+    const manifest = (await (await request.get('/manifest.webmanifest')).json()) as {
+      icons: { src: string }[]
+    }
+    expect(manifest.icons.map((icon) => icon.src)).toEqual([
+      '/icons/icon-192.png',
+      '/icons/icon-512.png',
+    ])
+  })
 })

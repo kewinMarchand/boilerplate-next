@@ -18,12 +18,13 @@ export const breadcrumbJsonLd = (items: BreadcrumbItem[]) => ({
   })),
 })
 
-export const organizationJsonLd = (name: string) => ({
+/** `logo` : adresse absolue de l'icône saisie dans l'admin, sinon l'icône 512 du site. */
+export const organizationJsonLd = (name: string, logo?: string) => ({
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name,
   url: absoluteUrl('/'),
-  logo: absoluteUrl('/icons/icon-512.png'),
+  logo: logo ?? absoluteUrl('/icons/icon-512.png'),
   email: SITE.publisher.email,
 })
 

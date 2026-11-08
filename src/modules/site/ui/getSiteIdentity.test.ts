@@ -14,6 +14,8 @@ describe('getSiteIdentity', () => {
       name: SITE.name,
       tagline: SITE.description,
       logo: null,
+      icon: null,
+      shareImage: null,
       defaultColorScheme: 'auto',
       theme: null,
     })

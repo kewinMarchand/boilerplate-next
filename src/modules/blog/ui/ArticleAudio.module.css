@@ -1,0 +1,9 @@
+.audio {
+  display: grid;
+  gap: var(--bui-space-2);
+  margin: var(--bui-space-6) 0;
+}
+
+.player {
+  width: 100%;
+}

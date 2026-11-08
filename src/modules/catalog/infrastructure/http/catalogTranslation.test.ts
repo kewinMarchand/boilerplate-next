@@ -193,6 +193,9 @@ describe('toProductDetail', () => {
       size: 'M',
       inStock: true,
       image: null,
+      gallery: [],
+      metaTitle: '',
+      metaDescription: '',
       categoryPath: [
         { slug: 'plantes-interieur', name: 'Plantes d’intérieur' },
         { slug: 'feuillages', name: 'Feuillages' },
@@ -222,6 +225,9 @@ describe('toProductDetail', () => {
       size: 'M',
       inStock: true,
       image: null,
+      gallery: [],
+      metaTitle: '',
+      metaDescription: '',
       categoryPath: [{ slug: 'palmiers', name: 'Palmiers' }],
       description: 'Rustique.\n\n  \nRésiste au vent,\naux embruns.',
       attributes: [],
@@ -241,6 +247,9 @@ describe('toProductDetail', () => {
       size: 'L',
       inStock: true,
       image: null,
+      gallery: [],
+      metaTitle: '',
+      metaDescription: '',
       categoryPath: [{ slug: 'strelitzia', name: 'Strelitzia' }],
       description: '',
       attributes: [
@@ -267,5 +276,38 @@ describe('toProductDetail', () => {
       { code: 'feuillage', label: 'Feuillage', value: 'Persistant', unit: null },
       { code: 'hauteur-adulte', label: 'Hauteur adulte', value: '600', unit: 'cm' },
     ])
+  })
+
+  it('garde la galerie dans l’ordre et les métadonnées saisies', () => {
+    const image = (name: string) => ({
+      alt: name,
+      width: 800,
+      height: 800,
+      sources: [{ type: 'image/webp' as const, srcset: `https://api.test/${name}-800.webp 800w` }],
+      src: `https://api.test/${name}-800.webp`,
+    })
+    const detail = toProductDetail({
+      id: 1,
+      slug: 'strelitzia-reginae',
+      name: 'Strelitzia reginae',
+      categorySlug: 'strelitzia',
+      price: 4990,
+      exposure: 'soleil',
+      size: 'L',
+      inStock: true,
+      image: image('principale'),
+      gallery: [image('fleur'), image('feuille')],
+      metaTitle: 'Strelitzia reginae, l’oiseau de paradis',
+      metaDescription: 'Fleurs orange et bleu.',
+      categoryPath: [{ slug: 'strelitzia', name: 'Strelitzia' }],
+      description: '',
+      attributes: [],
+    })
+
+    expect(detail.gallery.map((item) => item.alt)).toEqual(['fleur', 'feuille'])
+    expect(detail).toMatchObject({
+      metaTitle: 'Strelitzia reginae, l’oiseau de paradis',
+      metaDescription: 'Fleurs orange et bleu.',
+    })
   })
 })

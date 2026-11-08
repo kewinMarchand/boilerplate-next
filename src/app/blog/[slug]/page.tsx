@@ -1,4 +1,5 @@
 import { ArticleView, buildArticleMetadata, listArticlePaths } from '@/modules/blog'
+import { getSeoSettings } from '@/modules/site'
 
 import type { Metadata } from 'next'
 
@@ -12,7 +13,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
-  return buildArticleMetadata((await params).slug)
+  const [{ slug }, settings] = await Promise.all([params, getSeoSettings()])
+  return buildArticleMetadata(slug, settings)
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {

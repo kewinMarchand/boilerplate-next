@@ -9,7 +9,7 @@ import { HomeHero } from './HomeHero'
 import styles from './HomeView.module.css'
 
 export const HomeView = async () => {
-  const { name, tagline } = await getSiteIdentity()
+  const { name, tagline, icon } = await getSiteIdentity()
 
   return (
     <>
@@ -20,7 +20,7 @@ export const HomeView = async () => {
           <BlogSection />
         </div>
       </PageContainer>
-      <JsonLd data={organizationJsonLd(name)} />
+      <JsonLd data={organizationJsonLd(name, icon?.png512)} />
       <JsonLd data={websiteJsonLd(name)} />
     </>
   )

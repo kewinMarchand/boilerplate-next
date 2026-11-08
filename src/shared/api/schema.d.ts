@@ -44,6 +44,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/article-formats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves the collection of ArticleTerm resources.
+         * @description Retrieves the collection of ArticleTerm resources.
+         */
+        get: operations["api_article-formats_get_collection"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/article-sections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves the collection of ArticleTerm resources.
+         * @description Retrieves the collection of ArticleTerm resources.
+         */
+        get: operations["api_article-sections_get_collection"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/categories": {
         parameters: {
             query?: never;
@@ -96,6 +136,26 @@ export interface paths {
          * @description Retrieves a LegalPage resource.
          */
         get: operations["api_legal_pages_slug_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/page-metas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves the collection of PageMeta resources.
+         * @description Retrieves the collection of PageMeta resources.
+         */
+        get: operations["api_page-metas_get_collection"];
         put?: never;
         post?: never;
         delete?: never;
@@ -238,6 +298,14 @@ export interface components {
             publishedAt: string;
             /** @description Image de l'article (16:9), null tant que l'admin n'en a pas envoyé. */
             image: components["schemas"]["ImageView"] | null;
+            /** @description Rubrique de l'article, null s'il n'en a pas. */
+            section: components["schemas"]["ArticleTermLink"] | null;
+            /** @description Format de l'article, null s'il n'en a pas. */
+            format: components["schemas"]["ArticleTermLink"] | null;
+            /** @description Fichier audio de l'article, null s'il n'en a pas. */
+            audio: components["schemas"]["AudioView"] | null;
+            /** @description Intervenant (« Présenté par … »), 80 caractères au plus ; chaîne vide s'il n'y en a pas. */
+            speaker: string;
         };
         /** @description Liste les articles, du plus récent au plus ancien, sans pagination. */
         "Article.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
@@ -249,6 +317,14 @@ export interface components {
             publishedAt: string;
             /** @description Image de l'article (16:9), null tant que l'admin n'en a pas envoyé. */
             image: components["schemas"]["ImageView.jsonld"] | null;
+            /** @description Rubrique de l'article, null s'il n'en a pas. */
+            section: components["schemas"]["ArticleTermLink.jsonld"] | null;
+            /** @description Format de l'article, null s'il n'en a pas. */
+            format: components["schemas"]["ArticleTermLink.jsonld"] | null;
+            /** @description Fichier audio de l'article, null s'il n'en a pas. */
+            audio: components["schemas"]["AudioView.jsonld"] | null;
+            /** @description Intervenant (« Présenté par … »), 80 caractères au plus ; chaîne vide s'il n'y en a pas. */
+            speaker: string;
         };
         /** @description Lit un article par son slug. */
         ArticleDetail: {
@@ -262,6 +338,18 @@ export interface components {
             image: components["schemas"]["ImageView"] | null;
             /** @description Texte de l'article en HTML, converti du Markdown saisi (HTML saisi échappé, liens dangereux retirés). Vide s'il n'y en a pas. */
             html: string;
+            /** @description Rubrique de l'article, null s'il n'en a pas. */
+            section: components["schemas"]["ArticleTermLink"] | null;
+            /** @description Format de l'article, null s'il n'en a pas. */
+            format: components["schemas"]["ArticleTermLink"] | null;
+            /** @description Fichier audio de l'article, null s'il n'en a pas. */
+            audio: components["schemas"]["AudioView"] | null;
+            /** @description Intervenant (« Présenté par … »), 80 caractères au plus ; chaîne vide s'il n'y en a pas. */
+            speaker: string;
+            /** @description Titre pour les moteurs de recherche, 60 caractères au plus ; chaîne vide si l'admin n'en a pas saisi. */
+            metaTitle: string;
+            /** @description Description pour les moteurs de recherche, 160 caractères au plus ; chaîne vide si l'admin n'en a pas saisi. */
+            metaDescription: string;
         };
         /** @description Lit un article par son slug. */
         "ArticleDetail.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
@@ -275,6 +363,38 @@ export interface components {
             image: components["schemas"]["ImageView.jsonld"] | null;
             /** @description Texte de l'article en HTML, converti du Markdown saisi (HTML saisi échappé, liens dangereux retirés). Vide s'il n'y en a pas. */
             html: string;
+            /** @description Rubrique de l'article, null s'il n'en a pas. */
+            section: components["schemas"]["ArticleTermLink.jsonld"] | null;
+            /** @description Format de l'article, null s'il n'en a pas. */
+            format: components["schemas"]["ArticleTermLink.jsonld"] | null;
+            /** @description Fichier audio de l'article, null s'il n'en a pas. */
+            audio: components["schemas"]["AudioView.jsonld"] | null;
+            /** @description Intervenant (« Présenté par … »), 80 caractères au plus ; chaîne vide s'il n'y en a pas. */
+            speaker: string;
+            /** @description Titre pour les moteurs de recherche, 60 caractères au plus ; chaîne vide si l'admin n'en a pas saisi. */
+            metaTitle: string;
+            /** @description Description pour les moteurs de recherche, 160 caractères au plus ; chaîne vide si l'admin n'en a pas saisi. */
+            metaDescription: string;
+        };
+        /** @description Liste les rubriques par position, y compris celles qu'aucun article ne porte. */
+        ArticleTerm: {
+            /** @description Slug, unique dans sa liste : valeur des filtres section et format de GET /api/articles. */
+            slug: string;
+            name: string;
+        };
+        /** @description Liste les rubriques par position, y compris celles qu'aucun article ne porte. */
+        "ArticleTerm.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
+            /** @description Slug, unique dans sa liste : valeur des filtres section et format de GET /api/articles. */
+            slug: string;
+            name: string;
+        };
+        ArticleTermLink: {
+            slug: string;
+            name: string;
+        };
+        "ArticleTermLink.jsonld": {
+            slug: string;
+            name: string;
         };
         AttributeFacet: {
             /** @description Code de l'attribut, clé du filtre attributes[<code>][]. */
@@ -325,6 +445,22 @@ export interface components {
             valueLabel: string;
             /** @description Unité (« cm », « km »), null si l'attribut n'en a pas. */
             unit: string | null;
+        };
+        AudioView: {
+            /** @description Adresse absolue du fichier, immuable. */
+            src: string;
+            /** @enum {string} */
+            type: "audio/mpeg" | "audio/mp4" | "audio/ogg";
+            /** @description Durée en secondes, arrondie, lue à l'envoi. */
+            durationSeconds: number;
+        };
+        "AudioView.jsonld": {
+            /** @description Adresse absolue du fichier, immuable. */
+            src: string;
+            /** @enum {string} */
+            type: "audio/mpeg" | "audio/mp4" | "audio/ogg";
+            /** @description Durée en secondes, arrondie, lue à l'envoi. */
+            durationSeconds: number;
         };
         /** @description Renvoie l'arbre des catégories : les catégories racines, chacune avec ses enfants, triées par position. */
         Category: {
@@ -585,6 +721,24 @@ export interface components {
             /** @description HTML de la section, sans son titre. Le HTML saisi dans l'admin est échappé. */
             html: string;
         };
+        /** @description Liste les pages fixes, toutes les clés, chaînes vides quand rien n'est saisi : le front garde alors ses valeurs. */
+        PageMeta: {
+            /** @enum {string} */
+            page: "home" | "catalog" | "blog" | "contact" | "sitemap" | "legal-notice" | "privacy" | "accessibility";
+            /** @description Titre pour les moteurs de recherche, 60 caractères au plus ; chaîne vide si non saisi. */
+            title: string;
+            /** @description Description pour les moteurs de recherche, 160 caractères au plus ; chaîne vide si non saisie. */
+            description: string;
+        };
+        /** @description Liste les pages fixes, toutes les clés, chaînes vides quand rien n'est saisi : le front garde alors ses valeurs. */
+        "PageMeta.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
+            /** @enum {string} */
+            page: "home" | "catalog" | "blog" | "contact" | "sitemap" | "legal-notice" | "privacy" | "accessibility";
+            /** @description Titre pour les moteurs de recherche, 60 caractères au plus ; chaîne vide si non saisi. */
+            title: string;
+            /** @description Description pour les moteurs de recherche, 160 caractères au plus ; chaîne vide si non saisie. */
+            description: string;
+        };
         /** @description Liste une page de produits. Les filtres se combinent en ET, les valeurs d'une même facette en OU. Une valeur invalide (inconnue, non numérique, hors bornes) est ignorée et remplacée par la valeur par défaut. Le total et les compteurs de facettes : GET /api/product-facets avec les mêmes filtres. */
         Product: {
             id: number;
@@ -642,6 +796,12 @@ export interface components {
             description: string;
             /** @description Attributs configurables renseignés sur le produit, par position ; tableau vide si aucun. */
             attributes: components["schemas"]["AttributeValue"][];
+            /** @description Images de la galerie (carrées, 8 au plus), dans l'ordre, sans l'image principale ; tableau vide si aucune. */
+            gallery: components["schemas"]["ImageView"][];
+            /** @description Titre pour les moteurs de recherche, 60 caractères au plus ; chaîne vide si l'admin n'en a pas saisi. */
+            metaTitle: string;
+            /** @description Description pour les moteurs de recherche, 160 caractères au plus ; chaîne vide si l'admin n'en a pas saisi. */
+            metaDescription: string;
         };
         /** @description Lit un produit par son slug. */
         "ProductDetail.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
@@ -664,6 +824,12 @@ export interface components {
             description: string;
             /** @description Attributs configurables renseignés sur le produit, par position ; tableau vide si aucun. */
             attributes: components["schemas"]["AttributeValue.jsonld"][];
+            /** @description Images de la galerie (carrées, 8 au plus), dans l'ordre, sans l'image principale ; tableau vide si aucune. */
+            gallery: components["schemas"]["ImageView.jsonld"][];
+            /** @description Titre pour les moteurs de recherche, 60 caractères au plus ; chaîne vide si l'admin n'en a pas saisi. */
+            metaTitle: string;
+            /** @description Description pour les moteurs de recherche, 160 caractères au plus ; chaîne vide si l'admin n'en a pas saisi. */
+            metaDescription: string;
         };
         /** @description Compte les produits filtrés, au total et par valeur de facette. Mêmes filtres que GET /api/products, sans tri ni pagination. */
         ProductFacets: {
@@ -691,6 +857,26 @@ export interface components {
             /** @description Attributs filtrables portés par au moins un produit de la branche de catégorie, par position. */
             attributes: components["schemas"]["AttributeFacet.jsonld"][];
         };
+        SiteIcon: {
+            /** @description PNG de 32 px : <link rel="icon" sizes="32x32">. */
+            png32: string;
+            /** @description PNG de 180 px : <link rel="apple-touch-icon">. */
+            png180: string;
+            /** @description PNG de 192 px : icône du manifeste. */
+            png192: string;
+            /** @description PNG de 512 px : icône du manifeste. */
+            png512: string;
+        };
+        "SiteIcon.jsonld": {
+            /** @description PNG de 32 px : <link rel="icon" sizes="32x32">. */
+            png32: string;
+            /** @description PNG de 180 px : <link rel="apple-touch-icon">. */
+            png180: string;
+            /** @description PNG de 192 px : icône du manifeste. */
+            png192: string;
+            /** @description PNG de 512 px : icône du manifeste. */
+            png512: string;
+        };
         /** @description Lit l'identité du site. */
         SiteIdentity: {
             /** @description Nom du site, 1 à 60 caractères. */
@@ -699,6 +885,10 @@ export interface components {
             tagline: string;
             /** @description Logo, ratio du fichier gardé (largeurs 200 et 400), null sans logo : les fronts affichent alors le pictogramme et le nom. */
             logo: components["schemas"]["ImageView"] | null;
+            /** @description Image de partage (og:image, twitter:image) par défaut, 1200 × 630, null sans image : les fronts gardent la leur. */
+            shareImage: components["schemas"]["ImageView"] | null;
+            /** @description Favicons en PNG (32, 180, 192 et 512 px), null sans icône : les fronts gardent leurs fichiers. */
+            icon: components["schemas"]["SiteIcon"] | null;
             /** @enum {string} */
             defaultColorScheme: "auto" | "light" | "dark";
             /** @description Jetons de couleur de marque calculés, null sans couleurs saisies : le front garde alors ceux de boilerplates-ui. */
@@ -712,6 +902,10 @@ export interface components {
             tagline: string;
             /** @description Logo, ratio du fichier gardé (largeurs 200 et 400), null sans logo : les fronts affichent alors le pictogramme et le nom. */
             logo: components["schemas"]["ImageView.jsonld"] | null;
+            /** @description Image de partage (og:image, twitter:image) par défaut, 1200 × 630, null sans image : les fronts gardent la leur. */
+            shareImage: components["schemas"]["ImageView.jsonld"] | null;
+            /** @description Favicons en PNG (32, 180, 192 et 512 px), null sans icône : les fronts gardent leurs fichiers. */
+            icon: components["schemas"]["SiteIcon.jsonld"] | null;
             /** @enum {string} */
             defaultColorScheme: "auto" | "light" | "dark";
             /** @description Jetons de couleur de marque calculés, null sans couleurs saisies : le front garde alors ceux de boilerplates-ui. */
@@ -720,13 +914,13 @@ export interface components {
         SiteTheme: {
             /** @description Jetons du thème clair (fond #ffffff). */
             light: components["schemas"]["ThemeTokens"];
-            /** @description Jetons du thème sombre (fond #0f141d), couleurs éclaircies jusqu'à 7:1 sur le fond. */
+            /** @description Jetons du thème sombre (fond #0f141d), couleurs éclaircies jusqu'à 4,5:1 sur le fond. */
             dark: components["schemas"]["ThemeTokens"];
         };
         "SiteTheme.jsonld": {
             /** @description Jetons du thème clair (fond #ffffff). */
             light: components["schemas"]["ThemeTokens.jsonld"];
-            /** @description Jetons du thème sombre (fond #0f141d), couleurs éclaircies jusqu'à 7:1 sur le fond. */
+            /** @description Jetons du thème sombre (fond #0f141d), couleurs éclaircies jusqu'à 4,5:1 sur le fond. */
             dark: components["schemas"]["ThemeTokens.jsonld"];
         };
         /** @description Liste toutes les tâches, sans pagination. */
@@ -780,7 +974,12 @@ export type $defs = Record<string, never>;
 export interface operations {
     api_articles_get_collection: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Slug de rubrique (GET /api/article-sections). Slug inconnu : liste vide. */
+                section?: string;
+                /** @description Slug de format (GET /api/article-formats). Slug inconnu : liste vide. */
+                format?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -832,6 +1031,52 @@ export interface operations {
                     "application/ld+json": components["schemas"]["Error.jsonld"];
                     "application/problem+json": components["schemas"]["Error"];
                     "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    "api_article-formats_get_collection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ArticleTerm collection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArticleTerm"][];
+                    "application/ld+json": components["schemas"]["HydraCollectionBaseSchemaNoPagination"] & {
+                        member: components["schemas"]["ArticleTerm.jsonld"][];
+                    };
+                };
+            };
+        };
+    };
+    "api_article-sections_get_collection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ArticleTerm collection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArticleTerm"][];
+                    "application/ld+json": components["schemas"]["HydraCollectionBaseSchemaNoPagination"] & {
+                        member: components["schemas"]["ArticleTerm.jsonld"][];
+                    };
                 };
             };
         };
@@ -939,6 +1184,29 @@ export interface operations {
                     "application/ld+json": components["schemas"]["Error.jsonld"];
                     "application/problem+json": components["schemas"]["Error"];
                     "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    "api_page-metas_get_collection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description PageMeta collection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageMeta"][];
+                    "application/ld+json": components["schemas"]["HydraCollectionBaseSchemaNoPagination"] & {
+                        member: components["schemas"]["PageMeta.jsonld"][];
+                    };
                 };
             };
         };

@@ -8,7 +8,7 @@ import { AppShell } from '@/shared/ui/layout'
 
 import { CartLink } from '@/modules/cart'
 import { getCategoryMenu } from '@/modules/catalog'
-import { getSiteIdentity, SiteThemeStylesheet } from '@/modules/site'
+import { getSiteIdentity, siteIcons, SiteThemeStylesheet } from '@/modules/site'
 
 import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
@@ -24,13 +24,14 @@ export const revalidate = 300
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
 
 export const generateMetadata = async (): Promise<Metadata> => {
-  const { name, tagline } = await getSiteIdentity()
+  const { name, tagline, icon } = await getSiteIdentity()
   return {
     metadataBase: new URL(SITE.url),
     title: { default: name, template: `%s · ${name}` },
     description: tagline,
     applicationName: name,
     formatDetection: { telephone: false, email: false, address: false },
+    icons: siteIcons(icon),
   }
 }
 

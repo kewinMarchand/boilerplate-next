@@ -6,6 +6,15 @@
   margin-block-end: 0.35em;
 }
 
+.terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bui-space-2) var(--bui-space-4);
+  margin-block-end: var(--bui-space-2);
+  color: var(--bui-color-primary);
+  font-weight: var(--bui-font-weight-bold);
+}
+
 .date {
   margin-block-end: var(--bui-space-6);
   color: var(--bui-color-text-muted);

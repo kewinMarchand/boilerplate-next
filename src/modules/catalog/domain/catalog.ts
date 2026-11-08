@@ -52,6 +52,11 @@ export declare namespace Catalog {
     /** Paragraphes de la description, vide si l'admin n'en a pas écrit. */
     description: string[]
     attributes: ProductAttribute[]
+    /** Images supplémentaires, dans l'ordre, sans l'image principale ; vide si aucune. */
+    gallery: ResponsiveImage[]
+    /** Titre et description saisis pour les moteurs de recherche, chaînes vides sinon. */
+    metaTitle: string
+    metaDescription: string
   }
 
   /** Attribut configurable renseigné sur un produit, valeur déjà en libellé. */

@@ -104,21 +104,107 @@ const THEME = {
   },
 }
 
+const ICON = {
+  png32: `${FAKE_API_URL}/icon-32.png`,
+  png180: `${FAKE_API_URL}/icon-180.png`,
+  png192: `${FAKE_API_URL}/icon-192.png`,
+  png512: `${FAKE_API_URL}/icon-512.png`,
+}
+
+const SHARE_IMAGE_URL = `${FAKE_API_URL}/share-1200.webp`
+
 const IDENTITY = {
   name: 'Oraki',
   tagline: 'Plantes rares et tropicales, livrées chez vous, partout en France métropolitaine.',
   logo: { alt: 'Oraki', width: 1200, height: 630, sources: [], src: `${FAKE_API_URL}/logo.jpg` },
+  icon: ICON,
+  shareImage: {
+    alt: 'La serre d’Oraki',
+    width: 1200,
+    height: 630,
+    sources: [{ type: 'image/webp', srcset: `${SHARE_IMAGE_URL} 1200w` }],
+    src: SHARE_IMAGE_URL,
+  },
   defaultColorScheme: 'dark',
   theme: THEME,
 }
 
+const HOME_META = {
+  title: 'Oraki, plantes rares et tropicales livrées chez vous',
+  description:
+    'Monstera, strelitzia, nénuphars : des plantes tropicales choisies une à une, emballées avec soin et livrées partout en France.',
+}
+
+const PRIVACY_META = {
+  title: 'Vos données chez Oraki',
+  description:
+    'Ce que devient votre message de contact chez Oraki : qui le lit, combien de temps il est gardé, et comment exercer vos droits.',
+}
+
+const PAGE_METAS = [
+  'home',
+  'catalog',
+  'blog',
+  'contact',
+  'sitemap',
+  'legal-notice',
+  'privacy',
+  'accessibility',
+].map((page) => ({
+  page,
+  ...(page === 'home'
+    ? HOME_META
+    : page === 'privacy'
+      ? PRIVACY_META
+      : { title: '', description: '' }),
+}))
+
+const PRODUCT_WITH_META = 'monstera-deliciosa'
+const PRODUCT_META = {
+  metaTitle: 'Monstera deliciosa, le faux philodendron d’Oraki',
+  metaDescription:
+    'Le monstera deliciosa d’Oraki : grandes feuilles découpées, croissance rapide à la mi-ombre, livré en pot de 21 cm avec son tuteur.',
+}
+
+const ARTICLE_WITH_META = 'un-carrousel-accessible-sans-dependance'
+const ARTICLE_META_TITLE = 'Carrousel accessible : le guide sans dépendance'
+
+const ARTICLE_WITHOUT_SECTION = 'le-mode-accessibilite-renforcee'
+
+type Json = Record<string, unknown>
+
+const withoutSection = (article: Json) =>
+  article.slug === ARTICLE_WITHOUT_SECTION ? { ...article, section: null } : article
+
+/** Réponses de l'API locale retouchées : métadonnées saisies, un article sans rubrique. */
+const patch = (path: string, body: unknown): unknown => {
+  if (/^\/api\/articles(\?|$)/.test(path)) return (body as Json[]).map(withoutSection)
+  if (path.startsWith(`/api/articles/${ARTICLE_WITHOUT_SECTION}`)) {
+    return withoutSection(body as Json)
+  }
+  if (path.startsWith(`/api/articles/${ARTICLE_WITH_META}`)) {
+    return { ...(body as Json), metaTitle: ARTICLE_META_TITLE }
+  }
+  if (path.startsWith(`/api/products/${PRODUCT_WITH_META}`)) {
+    return { ...(body as Json), ...PRODUCT_META }
+  }
+  return body
+}
+
 // L'identité est lue côté serveur, au build puis à chaque régénération : une API factice la sert
-// avec logo et couleurs, et relaie le reste à l'API locale, sans toucher à sa base.
+// avec logo, couleurs, icône et image de partage, sert les métadonnées des pages fixes, et relaie
+// le reste à l'API locale (retouché par `patch`), sans toucher à sa base.
 const startFakeApi = () =>
   createServer(async (request, response) => {
     const path = request.url ?? '/'
     if (path.startsWith('/api/site-identity')) {
       response.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(IDENTITY))
+      return
+    }
+    if (path.startsWith('/api/page-metas')) {
+      response
+        .writeHead(200, { 'content-type': 'application/json' })
+        .end(JSON.stringify(PAGE_METAS))
       return
     }
     if (path === '/logo.jpg') {
@@ -132,11 +218,15 @@ const startFakeApi = () =>
       response.writeHead(502).end()
       return
     }
+    const contentType = upstream.headers.get('content-type') ?? 'application/json'
+    const body = Buffer.from(await upstream.arrayBuffer())
     response
-      .writeHead(upstream.status, {
-        'content-type': upstream.headers.get('content-type') ?? 'application/json',
-      })
-      .end(Buffer.from(await upstream.arrayBuffer()))
+      .writeHead(upstream.status, { 'content-type': contentType })
+      .end(
+        upstream.ok && contentType.includes('json')
+          ? JSON.stringify(patch(path, JSON.parse(body.toString())))
+          : body,
+      )
   }).listen(FAKE_API_PORT)
 
 const ENV = {
@@ -155,6 +245,9 @@ const run = (command: string, args: string[]) =>
 
 const chooseLight = (page: Page) =>
   page.addInitScript(() => localStorage.setItem('color-scheme', 'light'))
+
+const meta = (page: Page, selector: string) =>
+  page.locator(selector).first().getAttribute('content')
 
 test.describe('Identité saisie dans l’admin : logo, couleurs, sombre par défaut (API factice)', () => {
   test.describe.configure({ mode: 'serial' })
@@ -267,6 +360,103 @@ test.describe('Identité saisie dans l’admin : logo, couleurs, sombre par déf
 
     await page.emulateMedia({ colorScheme: 'dark' })
     await expect.poll(() => primaryToken(page)).toBe(THEME.dark.primary)
+  })
+
+  test('les favicons, le manifeste et le logo de l’Organization pointent vers l’icône saisie', async ({
+    page,
+    request,
+  }) => {
+    await page.goto(APP_URL)
+
+    const icons = page.locator('link[rel="icon"]')
+    await expect(icons).toHaveCount(1)
+    await expect(icons).toHaveAttribute('href', ICON.png32)
+    await expect(icons).toHaveAttribute('sizes', '32x32')
+    await expect(icons).toHaveAttribute('type', 'image/png')
+    await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href', ICON.png180)
+
+    const manifest = (await (await request.get(`${APP_URL}/manifest.webmanifest`)).json()) as {
+      icons: { src: string; sizes: string }[]
+    }
+    expect(manifest.icons).toEqual([
+      expect.objectContaining({ src: ICON.png192, sizes: '192x192' }),
+      expect.objectContaining({ src: ICON.png512, sizes: '512x512' }),
+    ])
+
+    const organization = (
+      await page.locator('script[type="application/ld+json"]').allTextContents()
+    )
+      .map((text) => JSON.parse(text) as { '@type': string; logo?: string })
+      .find((item) => item['@type'] === 'Organization')
+    expect(organization?.logo).toBe(ICON.png512)
+  })
+
+  test('l’image de partage saisie sert aux pages sans image propre, pas aux autres', async ({
+    page,
+  }) => {
+    await page.goto(`${APP_URL}/contact`)
+    expect(await meta(page, 'meta[property="og:image"]')).toBe(SHARE_IMAGE_URL)
+    expect(await meta(page, 'meta[property="og:image:alt"]')).toBe('La serre d’Oraki')
+    expect(await meta(page, 'meta[name="twitter:image"]')).toBe(SHARE_IMAGE_URL)
+
+    await page.goto(`${APP_URL}/produit/${PRODUCT_WITH_META}`)
+    expect(await meta(page, 'meta[property="og:image"]')).toMatch(
+      /\/media\/[0-9a-f]{32}-\d+\.webp$/,
+    )
+  })
+
+  test('les titres et descriptions saisis des pages fixes remplacent les leurs', async ({
+    page,
+  }) => {
+    for (const [path, saisie] of [
+      ['/', HOME_META],
+      ['/donnees-personnelles', PRIVACY_META],
+    ] as const) {
+      await page.goto(`${APP_URL}${path}`)
+      await expect(page).toHaveTitle(saisie.title)
+      expect(await meta(page, 'meta[name="description"]')).toBe(saisie.description)
+      expect(await meta(page, 'meta[property="og:title"]')).toBe(saisie.title)
+      expect(await meta(page, 'meta[property="og:description"]')).toBe(saisie.description)
+      expect((await page.title()).length).toBeLessThanOrEqual(60)
+      expect(saisie.description.length).toBeLessThanOrEqual(160)
+    }
+
+    await page.goto(`${APP_URL}/plan-du-site`)
+    await expect(page).toHaveTitle('Plan du site · Oraki')
+  })
+
+  test('les métadonnées saisies d’un produit et d’un article remplacent les leurs', async ({
+    page,
+    request,
+  }) => {
+    await page.goto(`${APP_URL}/produit/${PRODUCT_WITH_META}`)
+    await expect(page).toHaveTitle(PRODUCT_META.metaTitle)
+    expect(await meta(page, 'meta[name="description"]')).toBe(PRODUCT_META.metaDescription)
+    expect(await meta(page, 'meta[property="og:title"]')).toBe(PRODUCT_META.metaTitle)
+
+    const { excerpt } = (await (
+      await request.get(`${API_URL}/api/articles/${ARTICLE_WITH_META}`)
+    ).json()) as { excerpt: string }
+    await page.goto(`${APP_URL}/blog/${ARTICLE_WITH_META}`)
+    await expect(page).toHaveTitle(ARTICLE_META_TITLE)
+    expect(await meta(page, 'meta[name="description"]')).toBe(excerpt)
+  })
+
+  test('un article sans rubrique n’a pas de sur-titre, ni sur sa carte ni sur sa fiche', async ({
+    page,
+  }) => {
+    await page.goto(`${APP_URL}/blog`)
+    const cards = page.getByTestId('blog-card')
+    await expect(cards).toHaveCount(3)
+    await expect(cards.getByTestId('article-section')).toHaveCount(2)
+    await expect(
+      cards.filter({ has: page.locator(`a[href="/blog/${ARTICLE_WITHOUT_SECTION}"]`) }),
+    ).not.toContainText('Actualités')
+
+    await page.goto(`${APP_URL}/blog/${ARTICLE_WITHOUT_SECTION}`)
+    await expect(page.getByTestId('article-title')).toBeVisible()
+    await expect(page.getByTestId('article-section')).toHaveCount(0)
+    await expect(page.getByTestId('article-format')).toHaveCount(0)
   })
 
   for (const mode of MODES) {

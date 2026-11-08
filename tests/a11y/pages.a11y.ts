@@ -9,6 +9,8 @@ import type { Page } from '@playwright/test'
 const EXTRA_ROUTES = [
   '/catalogue?exposition=soleil&taille=M&tri=prix-asc&vue=liste',
   '/catalogue?attr-feuillage=persistant',
+  '/blog?rubrique=conseils',
+  '/blog/un-carrousel-accessible-sans-dependance',
   '/route-inexistante',
   '/_erreur-test',
   '/panier',

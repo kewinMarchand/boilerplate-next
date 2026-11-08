@@ -28,6 +28,7 @@ const ARTICLE = {
   excerpt: 'Illustration, titre, extrait et date lisible par les machines.',
   publishedAt: '2026-10-01',
   image: PHOTO,
+  section: { slug: 'conseils', name: 'Conseils' },
 }
 
 export const MediaSection = () => (

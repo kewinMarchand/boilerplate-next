@@ -6,7 +6,9 @@ import { productHref } from '../domain/catalog'
 import { formatPrice } from '../domain/price'
 import { EXPOSURE_LABELS } from './labels'
 
-export const buildProductMetadata = async (slug: string) => {
+import type { SeoSettings } from '@/shared/seo'
+
+export const buildProductMetadata = async (slug: string, settings: SeoSettings) => {
   // API indisponible : métadonnées génériques, la page affiche l'erreur.
   const product = await loadProduct(slug).catch(() => undefined)
   if (product === null) return { title: 'Page introuvable', robots: { index: false, follow: true } }
@@ -16,6 +18,7 @@ export const buildProductMetadata = async (slug: string) => {
     title: product.name,
     description: `${product.name} : exposition ${EXPOSURE_LABELS[product.exposure].toLowerCase()}, taille ${product.size}, ${formatPrice(product.price)}. ${product.inStock ? 'En stock' : 'En rupture de stock'}, rayon ${product.categoryPath.at(-1)?.name ?? 'catalogue'}.`,
     path: productHref(product.slug),
+    settings: { ...settings, title: product.metaTitle, description: product.metaDescription },
     ...(product.image && {
       image: {
         url: largestWebp(product.image),

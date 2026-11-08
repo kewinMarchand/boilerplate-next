@@ -58,6 +58,9 @@ export const toProductDetail = (dto: ProductDetailDto): Catalog.ProductDetail =>
     .map((paragraph) => paragraph.trim())
     .filter((paragraph) => paragraph !== ''),
   attributes: dto.attributes.map(toProductAttribute),
+  gallery: dto.gallery,
+  metaTitle: dto.metaTitle,
+  metaDescription: dto.metaDescription,
 })
 
 const toProductAttribute = (dto: AttributeValueDto): Catalog.ProductAttribute => ({

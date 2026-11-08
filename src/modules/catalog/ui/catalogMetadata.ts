@@ -6,6 +6,7 @@ import { categoryHref } from '../domain/categoryPath'
 import { parseCatalogQuery } from '../domain/parseCatalogQuery'
 
 import type { SearchParams } from '../domain/catalogQuery'
+import type { SeoSettings } from '@/shared/seo'
 import type { Metadata } from 'next'
 
 const ROOT_DESCRIPTION =
@@ -14,6 +15,7 @@ const ROOT_DESCRIPTION =
 export const buildCatalogMetadata = async (
   slugs: string[],
   searchParams: SearchParams,
+  settings: SeoSettings,
 ): Promise<Metadata> => {
   // API indisponible : métadonnées de la racine du catalogue, la page affiche l'erreur.
   const categoryPath = await findCategoryPath(slugs).catch(() => [])
@@ -31,5 +33,7 @@ export const buildCatalogMetadata = async (
       : ROOT_DESCRIPTION,
     path: canonical,
     noindex: isFiltered(query),
+    // Titre et description saisis pour la page fixe « catalogue » : sa racine seulement
+    settings: name ? { ...settings, title: '', description: '' } : settings,
   })
 }

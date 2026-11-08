@@ -5,10 +5,11 @@ import { cspReportRoute } from '@kewinmarchand/csp'
 import { siteCsp } from './csp'
 
 describe('siteCsp', () => {
-  it('autorise l’API et pointe la route de rapport', () => {
+  it('autorise l’API (appels, images, audio) et pointe la route de rapport', () => {
     const csp = siteCsp({ apiUrl: 'http://localhost:8091' })
     expect(csp).toContain("connect-src 'self' http://localhost:8091")
     expect(csp).toContain("img-src 'self' data: https: http://localhost:8091")
+    expect(csp).toContain("media-src 'self' http://localhost:8091")
     expect(csp).toContain('report-uri /api/csp-report')
     expect(csp).not.toContain('matomo')
   })

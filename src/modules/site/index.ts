@@ -1,4 +1,6 @@
 export type { SiteIdentity } from './domain/siteIdentity'
+export { getSeoSettings } from './ui/getSeoSettings'
 export { getSiteIdentity } from './ui/getSiteIdentity'
+export { manifestIcons, siteIcons } from './ui/siteIcons'
 export { siteThemeResponse } from './ui/siteTheme'
 export { SiteThemeStylesheet } from './ui/SiteThemeStylesheet'

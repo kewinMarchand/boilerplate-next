@@ -4,9 +4,13 @@ import { largestWebp } from '@/shared/ui/kit'
 import { articleHref } from '../domain/article'
 import { findArticle, findLatestArticles } from '../infrastructure/articleRepository'
 
+import type { SeoSettings } from '@/shared/seo'
 import type { Metadata } from 'next'
 
-export const buildArticleMetadata = async (slug: string): Promise<Metadata> => {
+export const buildArticleMetadata = async (
+  slug: string,
+  settings: SeoSettings,
+): Promise<Metadata> => {
   // API indisponible : métadonnées génériques, la page affiche l'erreur.
   const article = await findArticle(slug).catch(() => undefined)
   if (article === null) return { title: 'Page introuvable', robots: { index: false, follow: true } }
@@ -17,6 +21,7 @@ export const buildArticleMetadata = async (slug: string): Promise<Metadata> => {
     description: article.excerpt || article.title,
     path: articleHref(article.slug),
     publishedTime: article.publishedAt,
+    settings: { ...settings, title: article.metaTitle, description: article.metaDescription },
     ...(article.image && {
       image: {
         url: largestWebp(article.image),

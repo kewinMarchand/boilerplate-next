@@ -70,6 +70,44 @@ test.describe('Fiche article', () => {
     expect(types).toEqual(expect.arrayContaining(['BlogPosting', 'BreadcrumbList']))
   })
 
+  test('affiche sa rubrique, et le lecteur audio avec sa durée et son intervenant', async ({
+    page,
+    request,
+  }) => {
+    await page.goto(ARTICLE)
+
+    await expect(page.getByTestId('article-page').getByTestId('article-section')).toHaveText(
+      'Conseils',
+    )
+    await expect(page.getByTestId('article-format')).toHaveCount(0)
+    const audio = page.getByTestId('article-audio')
+    await expect(audio).toHaveAttribute('controls', '')
+    await expect(audio).toHaveAttribute('preload', 'none')
+    await expect(audio).not.toHaveAttribute('autoplay')
+    await expect(audio).toHaveJSProperty('paused', true)
+    await expect(page.getByTestId('article-audio-duration')).toHaveText('4 s')
+    await expect(page.getByTestId('article-audio-speaker')).toHaveText(
+      'Présenté par Hina Teriierooiterai',
+    )
+    const source = audio.locator('source')
+    await expect(source).toHaveAttribute('type', 'audio/mpeg')
+    const file = await request.get((await source.getAttribute('src')) ?? '')
+    expect(file.status()).toBe(200)
+    expect(file.headers()['content-type']).toContain('audio/')
+  })
+
+  test('affiche son format, sans lecteur audio quand l’article n’en a pas', async ({ page }) => {
+    await page.goto('/blog/pourquoi-rendre-le-contenu-cote-serveur')
+
+    await expect(page.getByTestId('article-page').getByTestId('article-section')).toHaveText(
+      'Conseils',
+    )
+    await expect(page.getByTestId('article-format')).toHaveText('Guide')
+    await expect(page.getByTestId('article-title')).toBeVisible()
+    await expect(page.getByTestId('article-audio')).toHaveCount(0)
+    await expect(page.getByTestId('article-audio-speaker')).toHaveCount(0)
+  })
+
   test('répond 404 pour un article inconnu', async ({ page }) => {
     const response = await page.goto('/blog/article-inconnu')
 

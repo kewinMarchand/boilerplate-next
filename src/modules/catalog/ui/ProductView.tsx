@@ -13,6 +13,7 @@ import { productHref } from '../domain/catalog'
 import { CATALOG_ROOT_PATH, categoryTrail } from '../domain/categoryPath'
 import { formatPrice } from '../domain/price'
 import { EXPOSURE_LABELS } from './labels'
+import { ProductGallery } from './ProductGallery'
 import styles from './ProductView.module.css'
 import { SimilarProducts } from './SimilarProducts'
 
@@ -62,13 +63,20 @@ export const ProductView = async ({ slug, purchase }: ProductViewProps) => {
       ])}
     >
       <article className={styles.product} data-testid="product-page">
-        {product.image && (
-          <Picture
-            image={product.image}
+        {product.gallery.length > 0 ? (
+          <ProductGallery
+            images={product.image ? [product.image, ...product.gallery] : product.gallery}
             sizes={IMAGE_SIZES}
-            isPriority
-            style={{ display: 'block', width: '100%', height: 'auto', borderRadius: 8 }}
           />
+        ) : (
+          product.image && (
+            <Picture
+              image={product.image}
+              sizes={IMAGE_SIZES}
+              isPriority
+              style={{ display: 'block', width: '100%', height: 'auto', borderRadius: 8 }}
+            />
+          )
         )}
         <div>
           <h1 className={`bui-text bui-text--h1 ${styles.title}`} data-testid="product-title">

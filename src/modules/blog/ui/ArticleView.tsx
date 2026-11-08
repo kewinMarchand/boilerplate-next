@@ -9,6 +9,7 @@ import { buildBreadcrumb, PageContainer } from '@/shared/ui/layout'
 import { articleHref, formatPublishedAt } from '../domain/article'
 import { ArticleLoadError } from '../infrastructure/ArticleLoadError'
 import { findArticle } from '../infrastructure/articleRepository'
+import { ArticleAudio } from './ArticleAudio'
 import styles from './ArticleView.module.css'
 
 const IMAGE_SIZES = '(min-width: 800px) 760px, calc(100vw - 32px)'
@@ -47,6 +48,12 @@ export const ArticleView = async ({ slug }: ArticleViewProps) => {
         <h1 className={`bui-text bui-text--h1 ${styles.title}`} data-testid="article-title">
           {article.title}
         </h1>
+        {(article.section || article.format) && (
+          <p className={`bui-text bui-text--body-sm ${styles.terms}`}>
+            {article.section && <span data-testid="article-section">{article.section.name}</span>}
+            {article.format && <span data-testid="article-format">{article.format.name}</span>}
+          </p>
+        )}
         <p className={`bui-text bui-text--body-sm ${styles.date}`}>
           Publié le{' '}
           <time dateTime={article.publishedAt}>{formatPublishedAt(article.publishedAt)}</time>
@@ -62,6 +69,7 @@ export const ArticleView = async ({ slug }: ArticleViewProps) => {
         {article.excerpt && (
           <p className={`bui-text bui-text--lead ${styles.excerpt}`}>{article.excerpt}</p>
         )}
+        {article.audio && <ArticleAudio audio={article.audio} speaker={article.speaker} />}
         <RichHtml html={article.html} data-testid="article-body" />
         <p className={styles.back}>
           <Link href="/blog" className="bui-link" data-testid="article-blog-link">

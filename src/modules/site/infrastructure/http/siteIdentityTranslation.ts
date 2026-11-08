@@ -21,6 +21,8 @@ export const toSiteIdentity = (dto: SiteIdentityDto): SiteIdentity.Entity => ({
   name: dto.name,
   tagline: dto.tagline,
   logo: dto.logo,
+  icon: dto.icon,
+  shareImage: dto.shareImage,
   defaultColorScheme: dto.defaultColorScheme,
   theme: toTheme(dto.theme),
 })

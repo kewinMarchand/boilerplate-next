@@ -2,18 +2,21 @@ import { buildMetadata } from '@/shared/seo'
 import { buildBreadcrumb, PageContainer } from '@/shared/ui/layout'
 
 import { CartView } from '@/modules/cart'
+import { getSeoSettings } from '@/modules/site'
 
 import type { Metadata } from 'next'
 
 const PATH = '/panier'
 
-export const metadata: Metadata = buildMetadata({
-  title: 'Panier',
-  description:
-    'Votre panier : les produits choisis, leurs quantités et le total, gardés dans ce navigateur.',
-  path: PATH,
-  noindex: true,
-})
+export const generateMetadata = async (): Promise<Metadata> =>
+  buildMetadata({
+    title: 'Panier',
+    description:
+      'Votre panier : les produits choisis, leurs quantités et le total, gardés dans ce navigateur.',
+    path: PATH,
+    noindex: true,
+    settings: await getSeoSettings(),
+  })
 
 export default function CartPage() {
   return (

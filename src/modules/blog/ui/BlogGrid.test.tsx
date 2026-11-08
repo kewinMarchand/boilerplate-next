@@ -16,6 +16,7 @@ const ARTICLES = [
       height: 540,
       alt: 'Illustration du premier article',
     }),
+    section: { slug: 'conseils', name: 'Conseils' },
   },
   {
     id: '2',
@@ -24,6 +25,7 @@ const ARTICLES = [
     excerpt: 'Extrait 2',
     publishedAt: '2026-09-15',
     image: null,
+    section: null,
   },
 ]
 
@@ -60,6 +62,7 @@ describe('BlogGrid', () => {
       excerpt: '',
       publishedAt: '2026-09-01',
       image: null,
+      section: null,
     }))
     render(<BlogGrid status="success" articles={articles} />)
 
@@ -86,5 +89,15 @@ describe('BlogGrid', () => {
       'http://api.test/media/a-480.avif 480w, http://api.test/media/a-960.avif 960w',
     )
     expect(withoutImage?.querySelector('img')).toBeNull()
+  })
+
+  it('pose la rubrique en sur-titre, et rien sans rubrique', () => {
+    render(<BlogGrid status="success" articles={ARTICLES} />)
+
+    const [withSection, withoutSection] = screen.getAllByTestId('home-blog-card')
+    expect(withSection?.querySelector('[data-testid="article-section"]')).toHaveTextContent(
+      'Conseils',
+    )
+    expect(withoutSection?.querySelector('[data-testid="article-section"]')).toBeNull()
   })
 })

@@ -1,14 +1,17 @@
 import { ApiError } from '@/shared/api/client'
 import { serverApiClient, staticApiClient } from '@/shared/api/client.server'
 
-import { toArticle, toArticleDetail } from './http/articleTranslation'
+import { toArticle, toArticleDetail, toArticleTerm } from './http/articleTranslation'
 
 import type { Article } from '../domain/article'
 
 const listArticles = async (
   client: ReturnType<typeof staticApiClient>,
+  section?: string,
 ): Promise<Article.Entity[]> => {
-  const { data, response } = await client.GET('/api/articles')
+  const { data, response } = await client.GET('/api/articles', {
+    params: { query: section ? { section } : {} },
+  })
   if (!data) throw new ApiError(response)
   return data.map(toArticle)
 }
@@ -16,11 +19,22 @@ const listArticles = async (
 export const findLatestArticles = () => listArticles(staticApiClient())
 
 /**
- * Page `/blog` : statique comme le reste. Un build de test (`ENABLE_TEST_ROUTES=1`) relaie `X-Scenario`,
- * ce qui rend la route dynamique, pour que les tests e2e provoquent les états d'erreur et de liste vide.
+ * Un build de test (`ENABLE_TEST_ROUTES=1`) relaie `X-Scenario`, pour que les tests e2e provoquent
+ * les états d'erreur et de liste vide de `/blog`.
  */
-export const findArticles = async () =>
-  listArticles(process.env.ENABLE_TEST_ROUTES === '1' ? await serverApiClient() : staticApiClient())
+const blogPageClient = async () =>
+  process.env.ENABLE_TEST_ROUTES === '1' ? serverApiClient() : staticApiClient()
+
+/** Page `/blog`, filtrée par rubrique (slug inconnu : liste vide). */
+export const findArticles = async (section?: string) =>
+  listArticles(await blogPageClient(), section)
+
+/** Rubriques par position, y compris celles qu'aucun article ne porte. */
+export const findArticleSections = async (): Promise<Article.Term[]> => {
+  const { data, response } = await (await blogPageClient()).GET('/api/article-sections')
+  if (!data) throw new ApiError(response)
+  return data.map(toArticleTerm)
+}
 
 /** `null` si l'API ne connaît pas l'article (404). */
 export const findArticle = async (slug: string): Promise<Article.Detail | null> => {

@@ -2,7 +2,23 @@ import { SITE } from '@/shared/config'
 
 import type { Metadata } from 'next'
 
-const DEFAULT_OG_IMAGE = {
+export interface OgImage {
+  url: string
+  width: number
+  height: number
+  alt: string
+}
+
+/** Référencement saisi dans l'admin, chaînes vides et `null` quand rien n'est saisi. */
+export interface SeoSettings {
+  /** Titre complet, sans le nom du site ajouté. */
+  title: string
+  description: string
+  /** Sert quand la page n'a pas d'image propre. */
+  shareImage: OgImage | null
+}
+
+const DEFAULT_OG_IMAGE: OgImage = {
   url: '/images/og-image.jpg',
   width: 1200,
   height: 630,
@@ -14,7 +30,8 @@ interface PageSeo {
   description: string
   path: string
   noindex?: boolean
-  image?: typeof DEFAULT_OG_IMAGE
+  image?: OgImage
+  settings?: SeoSettings
   isAbsoluteTitle?: boolean
   /** Page d'article : `og:type` article et date de publication (AAAA-MM-JJ). */
   publishedTime?: string
@@ -23,25 +40,31 @@ interface PageSeo {
 export const absoluteUrl = (path: string) => new URL(path, SITE.url).toString()
 
 export const buildMetadata = ({
-  title,
-  description,
+  title: pageTitle,
+  description: pageDescription,
   path,
   noindex = false,
-  image = DEFAULT_OG_IMAGE,
+  image: pageImage,
   isAbsoluteTitle = false,
   publishedTime,
-}: PageSeo): Metadata => ({
-  title: isAbsoluteTitle ? { absolute: title } : title,
-  description,
-  alternates: { canonical: path },
-  robots: noindex ? { index: false, follow: true } : { index: true, follow: true },
-  openGraph: {
-    ...(publishedTime ? { type: 'article', publishedTime } : { type: 'website' }),
-    title,
+  settings,
+}: PageSeo): Metadata => {
+  const title = settings?.title || pageTitle
+  const description = settings?.description || pageDescription
+  const image = pageImage ?? settings?.shareImage ?? DEFAULT_OG_IMAGE
+  return {
+    title: isAbsoluteTitle || settings?.title ? { absolute: title } : title,
     description,
-    url: path,
-    locale: SITE.locale,
-    images: [image],
-  },
-  twitter: { card: 'summary_large_image', title, description, images: [image.url] },
-})
+    alternates: { canonical: path },
+    robots: noindex ? { index: false, follow: true } : { index: true, follow: true },
+    openGraph: {
+      ...(publishedTime ? { type: 'article', publishedTime } : { type: 'website' }),
+      title,
+      description,
+      url: path,
+      locale: SITE.locale,
+      images: [image],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: [image.url] },
+  }
+}

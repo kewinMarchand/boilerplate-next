@@ -1,5 +1,6 @@
 import { AddToCartButton } from '@/modules/cart'
 import { buildProductMetadata, listProductPaths, ProductView } from '@/modules/catalog'
+import { getSeoSettings } from '@/modules/site'
 
 import type { Metadata } from 'next'
 
@@ -13,7 +14,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  return buildProductMetadata((await params).slug)
+  const [{ slug }, settings] = await Promise.all([params, getSeoSettings()])
+  return buildProductMetadata(slug, settings)
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {

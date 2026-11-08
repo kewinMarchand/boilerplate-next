@@ -27,10 +27,22 @@ export declare namespace SiteIdentity {
     dark: ThemeTokens
   }
 
+  /** Favicons en PNG tirés par l'API de l'icône saisie dans l'admin, adresses absolues. */
+  interface Icon {
+    png32: string
+    png180: string
+    png192: string
+    png512: string
+  }
+
   interface Entity {
     name: string
     tagline: string
     logo: ResponsiveImage | null
+    /** `null` sans icône saisie : les fichiers du site servent. */
+    icon: Icon | null
+    /** Image de partage par défaut (1200 × 630), `null` sans image saisie : `og-image.jpg` sert. */
+    shareImage: ResponsiveImage | null
     defaultColorScheme: ColorScheme
     /** `null` sans couleurs saisies : les jetons de boilerplates-ui s'appliquent tels quels. */
     theme: Theme | null
