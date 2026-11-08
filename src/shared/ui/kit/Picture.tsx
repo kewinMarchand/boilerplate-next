@@ -84,7 +84,10 @@ export const Picture = ({
 }: PictureProps) => (
   <>
     {isPriority && <PicturePreload image={image} sizes={sizes} />}
-    <picture className={hasErrorFallback ? 'bui-picture' : undefined}>
+    <picture
+      className={hasErrorFallback ? 'bui-picture' : undefined}
+      style={{ borderRadius: style?.borderRadius }}
+    >
       {image.sources.map((source) => (
         <source key={source.type} type={source.type} srcSet={source.srcset} sizes={sizes} />
       ))}
