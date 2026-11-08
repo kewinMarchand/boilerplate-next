@@ -9,6 +9,7 @@ import { totalPrice } from '../domain/cart'
 import { formatPrice } from '../domain/price'
 import styles from './CartView.module.css'
 import { useCart } from './useCart'
+import { useFocusAfterRemoval } from './useFocusAfterRemoval'
 
 const CATALOG_PATH = '/catalogue'
 const productHref = (slug: string) => `/produit/${slug}`
@@ -16,12 +17,13 @@ const productHref = (slug: string) => `/produit/${slug}`
 /** Contenu de la page panier : le panier n'existe que dans le navigateur, il est lu après l'hydratation. */
 export const CartView = () => {
   const { lines, changeQuantity, remove } = useCart()
+  const { listRef, emptyRef, markRemoved } = useFocusAfterRemoval(lines.length)
 
   if (!useHydrated()) return null
 
   if (lines.length === 0) {
     return (
-      <p data-testid="cart-empty">
+      <p ref={emptyRef} tabIndex={-1} data-testid="cart-empty">
         Votre panier est vide.{' '}
         <Link href={CATALOG_PATH} className="bui-link">
           Parcourir le catalogue
@@ -32,8 +34,8 @@ export const CartView = () => {
 
   return (
     <>
-      <ul className={styles.lines}>
-        {lines.map((line) => (
+      <ul ref={listRef} className={styles.lines}>
+        {lines.map((line, index) => (
           <li key={line.slug} className={styles.line} data-testid="cart-line">
             <Link href={productHref(line.slug)} className={`bui-link ${styles.name}`}>
               {line.name}
@@ -58,7 +60,10 @@ export const CartView = () => {
             <Button
               variant="outline"
               aria-label={`Retirer ${line.name}`}
-              onClick={() => remove(line.slug)}
+              onClick={() => {
+                markRemoved(index)
+                remove(line.slug)
+              }}
               data-testid="cart-remove"
             >
               Retirer

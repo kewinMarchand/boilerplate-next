@@ -12,6 +12,9 @@ import { useCart } from './useCart'
 
 import type { Cart } from '../domain/cart'
 
+// Vider puis remplir la région : un lecteur d'écran ne relit pas un texte identique
+const ANNOUNCE_DELAY_MS = 100
+
 interface AddToCartButtonProps {
   item: Cart.Item
   isAvailable: boolean
@@ -30,7 +33,8 @@ export const AddToCartButton = ({ item, isAvailable }: AddToCartButtonProps) => 
         disabled={!isAvailable}
         onClick={() => {
           add(item)
-          setIsAdded(true)
+          setIsAdded(false)
+          window.setTimeout(() => setIsAdded(true), ANNOUNCE_DELAY_MS)
         }}
         data-testid="add-to-cart"
       >
