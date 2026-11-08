@@ -7,11 +7,16 @@ import type { CatalogPage } from '@/modules/catalog/infrastructure/catalogReposi
 import type { components, operations } from '@/shared/api/client'
 
 type CategoryDto = components['schemas']['Category']
-type ProductDto = components['schemas']['ProductItem']
+type ProductDto = components['schemas']['Product']
 type ProductDetailDto = components['schemas']['ProductDetail']
-type ProductListDto = components['schemas']['ProductList']
+type ProductFacetsDto = components['schemas']['ProductFacets']
 type FacetDto = components['schemas']['FacetValue']
-export type ProductsQuery = NonNullable<operations['api_products_get']['parameters']['query']>
+export type ProductsQuery = NonNullable<
+  operations['api_products_get_collection']['parameters']['query']
+>
+export type ProductFacetsQuery = NonNullable<
+  operations['api_product-facets_get']['parameters']['query']
+>
 
 const SORT_PARAMS: Record<Catalog.Sort, ProductsQuery> = {
   pertinence: {},
@@ -58,8 +63,8 @@ const toFacetCounts = <T extends string>(values: readonly T[], dtos: FacetDto[])
     count: dtos.find((dto) => dto.value === value)?.count ?? 0,
   }))
 
-/** Euros de l'URL en centimes, tri du front en `order[...]`, listes en clés répétées. */
-export const toProductsQuery = (slugs: string[], query: Catalog.Query): ProductsQuery => {
+/** Filtres communs à la liste et aux facettes : euros de l'URL en centimes, listes en clés répétées. */
+export const toFacetsQuery = (slugs: string[], query: Catalog.Query): ProductFacetsQuery => {
   const category = slugs.at(-1)
   return {
     ...(category && { category }),
@@ -68,22 +73,32 @@ export const toProductsQuery = (slugs: string[], query: Catalog.Query): Products
     ...(query.priceMin !== null && { priceMin: eurosToCents(query.priceMin) }),
     ...(query.priceMax !== null && { priceMax: eurosToCents(query.priceMax) }),
     ...(query.inStock && { inStock: true }),
-    ...SORT_PARAMS[query.sort],
-    page: query.page,
-    itemsPerPage: PAGE_SIZE,
   }
 }
 
-export const toCatalogPage = (dto: ProductListDto, slugs: string[]): CatalogPage => ({
-  products: dto.items.map(toProduct),
-  total: dto.totalItems,
-  page: dto.page,
-  pageCount: Math.max(1, dto.totalPages),
+/** Filtres, tri du front en `order[...]` et page demandée. */
+export const toProductsQuery = (slugs: string[], query: Catalog.Query): ProductsQuery => ({
+  ...toFacetsQuery(slugs, query),
+  ...SORT_PARAMS[query.sort],
+  page: query.page,
+  itemsPerPage: PAGE_SIZE,
+})
+
+export const toCatalogPage = (
+  products: ProductDto[],
+  facets: ProductFacetsDto,
+  page: number,
+  slugs: string[],
+): CatalogPage => ({
+  products: products.map(toProduct),
+  total: facets.totalItems,
+  page,
+  pageCount: Math.max(1, Math.ceil(facets.totalItems / PAGE_SIZE)),
   facets: {
-    exposure: toFacetCounts(EXPOSURES, dto.facets.exposure),
-    size: toFacetCounts(SIZES, dto.facets.size),
+    exposure: toFacetCounts(EXPOSURES, facets.exposure),
+    size: toFacetCounts(SIZES, facets.size),
   },
-  subcategories: dto.facets.category.map((child) => ({
+  subcategories: facets.category.map((child) => ({
     href: categoryHref([...slugs, child.slug]),
     name: child.name,
     count: child.count,

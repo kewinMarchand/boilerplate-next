@@ -84,26 +84,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/featured-products": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Retrieves the collection of FeaturedProduct resources.
-         * @description Retrieves the collection of FeaturedProduct resources.
-         */
-        get: operations["api_featured-products_get_collection"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/legal_pages/{slug}": {
         parameters: {
             query?: never;
@@ -116,6 +96,46 @@ export interface paths {
          * @description Retrieves a LegalPage resource.
          */
         get: operations["api_legal_pages_slug_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/featured-products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves the collection of Product resources.
+         * @description Retrieves the collection of Product resources.
+         */
+        get: operations["api_featured-products_get_collection"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves the collection of Product resources.
+         * @description Retrieves the collection of Product resources.
+         */
+        get: operations["api_products_get_collection"];
         put?: never;
         post?: never;
         delete?: never;
@@ -144,7 +164,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/products": {
+    "/api/product-facets": {
         parameters: {
             query?: never;
             header?: never;
@@ -152,10 +172,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Retrieves a ProductList resource.
-         * @description Retrieves a ProductList resource.
+         * Retrieves a ProductFacets resource.
+         * @description Retrieves a ProductFacets resource.
          */
-        get: operations["api_products_get"];
+        get: operations["api_product-facets_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -383,38 +403,6 @@ export interface components {
             /** @description Nombre de produits obtenus en ajoutant cette valeur aux filtres des autres facettes. */
             count: number;
         };
-        /** @description Liste les produits à la une par ordre alphabétique, sans pagination. */
-        "FeaturedProduct.ProductItem": {
-            id: number;
-            slug: string;
-            name: string;
-            categorySlug: string;
-            /** @description Prix en centimes. */
-            price: number;
-            /** @enum {string} */
-            exposure: "soleil" | "mi-ombre" | "ombre";
-            /** @enum {string} */
-            size: "S" | "M" | "L";
-            inStock: boolean;
-            /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
-            image: components["schemas"]["ImageView"] | null;
-        };
-        /** @description Liste les produits à la une par ordre alphabétique, sans pagination. */
-        "FeaturedProduct.ProductItem.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
-            id: number;
-            slug: string;
-            name: string;
-            categorySlug: string;
-            /** @description Prix en centimes. */
-            price: number;
-            /** @enum {string} */
-            exposure: "soleil" | "mi-ombre" | "ombre";
-            /** @enum {string} */
-            size: "S" | "M" | "L";
-            inStock: boolean;
-            /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
-            image: components["schemas"]["ImageView.jsonld"] | null;
-        };
         HydraCollectionBaseSchema: components["schemas"]["HydraCollectionBaseSchemaNoPagination"] & {
             /**
              * @example {
@@ -527,6 +515,38 @@ export interface components {
             /** @description HTML de la section, sans son titre. Le HTML saisi dans l'admin est échappé. */
             html: string;
         };
+        /** @description Liste une page de produits. Les filtres se combinent en ET, les valeurs d'une même facette en OU. Une valeur invalide (inconnue, non numérique, hors bornes) est ignorée et remplacée par la valeur par défaut. Le total et les compteurs de facettes : GET /api/product-facets avec les mêmes filtres. */
+        Product: {
+            id: number;
+            slug: string;
+            name: string;
+            categorySlug: string;
+            /** @description Prix en centimes. */
+            price: number;
+            /** @enum {string} */
+            exposure: "soleil" | "mi-ombre" | "ombre";
+            /** @enum {string} */
+            size: "S" | "M" | "L";
+            inStock: boolean;
+            /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView"] | null;
+        };
+        /** @description Liste une page de produits. Les filtres se combinent en ET, les valeurs d'une même facette en OU. Une valeur invalide (inconnue, non numérique, hors bornes) est ignorée et remplacée par la valeur par défaut. Le total et les compteurs de facettes : GET /api/product-facets avec les mêmes filtres. */
+        "Product.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
+            id: number;
+            slug: string;
+            name: string;
+            categorySlug: string;
+            /** @description Prix en centimes. */
+            price: number;
+            /** @enum {string} */
+            exposure: "soleil" | "mi-ombre" | "ombre";
+            /** @enum {string} */
+            size: "S" | "M" | "L";
+            inStock: boolean;
+            /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
+            image: components["schemas"]["ImageView.jsonld"] | null;
+        };
         /** @description Lit un produit par son slug. */
         ProductDetail: {
             id: number;
@@ -567,7 +587,10 @@ export interface components {
             /** @description Texte brut, paragraphes séparés par une ligne vide ; chaîne vide si l'admin n'en a pas écrit. */
             description: string;
         };
+        /** @description Compte les produits filtrés, au total et par valeur de facette. Mêmes filtres que GET /api/products, sans tri ni pagination. */
         ProductFacets: {
+            /** @description Nombre de produits filtrés, toutes pages confondues. */
+            totalItems: number;
             /** @description Toutes les expositions, y compris à 0. */
             exposure: components["schemas"]["FacetValue"][];
             /** @description Toutes les tailles, y compris à 0. */
@@ -575,65 +598,16 @@ export interface components {
             /** @description Sous-catégories directes de la catégorie filtrée (catégories racines sans filtre). Vide sur une feuille. */
             category: components["schemas"]["CategoryFacetValue"][];
         };
-        "ProductFacets.jsonld": {
+        /** @description Compte les produits filtrés, au total et par valeur de facette. Mêmes filtres que GET /api/products, sans tri ni pagination. */
+        "ProductFacets.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
+            /** @description Nombre de produits filtrés, toutes pages confondues. */
+            totalItems: number;
             /** @description Toutes les expositions, y compris à 0. */
             exposure: components["schemas"]["FacetValue.jsonld"][];
             /** @description Toutes les tailles, y compris à 0. */
             size: components["schemas"]["FacetValue.jsonld"][];
             /** @description Sous-catégories directes de la catégorie filtrée (catégories racines sans filtre). Vide sur une feuille. */
             category: components["schemas"]["CategoryFacetValue.jsonld"][];
-        };
-        ProductItem: {
-            id: number;
-            slug: string;
-            name: string;
-            categorySlug: string;
-            /** @description Prix en centimes. */
-            price: number;
-            /** @enum {string} */
-            exposure: "soleil" | "mi-ombre" | "ombre";
-            /** @enum {string} */
-            size: "S" | "M" | "L";
-            inStock: boolean;
-            /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
-            image: components["schemas"]["ImageView"] | null;
-        };
-        "ProductItem.jsonld": {
-            id: number;
-            slug: string;
-            name: string;
-            categorySlug: string;
-            /** @description Prix en centimes. */
-            price: number;
-            /** @enum {string} */
-            exposure: "soleil" | "mi-ombre" | "ombre";
-            /** @enum {string} */
-            size: "S" | "M" | "L";
-            inStock: boolean;
-            /** @description Image du produit (carrée), null tant que l'admin n'en a pas envoyé. */
-            image: components["schemas"]["ImageView.jsonld"] | null;
-        };
-        /** @description Liste les produits du catalogue. Les filtres se combinent en ET, les valeurs d'une même facette en OU. Une valeur invalide (inconnue, non numérique, hors bornes) est ignorée et remplacée par la valeur par défaut. */
-        ProductList: {
-            items: components["schemas"]["ProductItem"][];
-            /** @description Nombre total de produits filtrés, toutes pages confondues. */
-            totalItems: number;
-            page: number;
-            itemsPerPage: number;
-            /** @description Nombre de pages, 0 si aucun résultat. */
-            totalPages: number;
-            facets: components["schemas"]["ProductFacets"];
-        };
-        /** @description Liste les produits du catalogue. Les filtres se combinent en ET, les valeurs d'une même facette en OU. Une valeur invalide (inconnue, non numérique, hors bornes) est ignorée et remplacée par la valeur par défaut. */
-        "ProductList.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
-            items: components["schemas"]["ProductItem.jsonld"][];
-            /** @description Nombre total de produits filtrés, toutes pages confondues. */
-            totalItems: number;
-            page: number;
-            itemsPerPage: number;
-            /** @description Nombre de pages, 0 si aucun résultat. */
-            totalPages: number;
-            facets: components["schemas"]["ProductFacets.jsonld"];
         };
         /** @description Liste toutes les tâches, sans pagination. */
         Task: {
@@ -786,29 +760,6 @@ export interface operations {
             };
         };
     };
-    "api_featured-products_get_collection": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description FeaturedProduct collection */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FeaturedProduct.ProductItem"][];
-                    "application/ld+json": components["schemas"]["HydraCollectionBaseSchemaNoPagination"] & {
-                        member: components["schemas"]["FeaturedProduct.ProductItem.jsonld"][];
-                    };
-                };
-            };
-        };
-    };
     api_legal_pages_slug_get: {
         parameters: {
             query?: never;
@@ -840,6 +791,73 @@ export interface operations {
                     "application/ld+json": components["schemas"]["Error.jsonld"];
                     "application/problem+json": components["schemas"]["Error"];
                     "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    "api_featured-products_get_collection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Product collection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Product"][];
+                    "application/ld+json": components["schemas"]["HydraCollectionBaseSchemaNoPagination"] & {
+                        member: components["schemas"]["Product.jsonld"][];
+                    };
+                };
+            };
+        };
+    };
+    api_products_get_collection: {
+        parameters: {
+            query?: {
+                /** @description Slug de catégorie : inclut toute la branche. Slug inconnu : 404. */
+                category?: string;
+                /** @description Expositions acceptées, clé répétée : exposure[]=soleil&exposure[]=ombre. */
+                "exposure[]"?: ("soleil" | "mi-ombre" | "ombre")[];
+                /** @description Tailles acceptées, clé répétée : size[]=S&size[]=M. */
+                "size[]"?: ("S" | "M" | "L")[];
+                /** @description Prix minimum inclus, en centimes. */
+                priceMin?: number;
+                /** @description Prix maximum inclus, en centimes. */
+                priceMax?: number;
+                /** @description true : uniquement les produits en stock. */
+                inStock?: boolean;
+                /** @description Tri par prix, asc ou desc. Prioritaire sur order[name]. Sans tri : ordre de pertinence. */
+                "order[price]"?: string;
+                /** @description Tri alphabétique (collation française), asc ou desc. */
+                "order[name]"?: string;
+                /** @description Numéro de page, à partir de 1. Au-delà de la dernière page : tableau vide. */
+                page?: number;
+                /** @description Produits par page, de 1 à 48. */
+                itemsPerPage?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Product collection */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Product"][];
+                    "application/ld+json": components["schemas"]["HydraCollectionBaseSchemaNoPagination"] & {
+                        member: components["schemas"]["Product.jsonld"][];
+                    };
                 };
             };
         };
@@ -879,7 +897,7 @@ export interface operations {
             };
         };
     };
-    api_products_get: {
+    "api_product-facets_get": {
         parameters: {
             query?: {
                 /** @description Slug de catégorie : inclut toute la branche. Slug inconnu : 404. */
@@ -894,14 +912,6 @@ export interface operations {
                 priceMax?: number;
                 /** @description true : uniquement les produits en stock. */
                 inStock?: boolean;
-                /** @description Tri par prix, asc ou desc. Prioritaire sur order[name]. Sans tri : ordre de pertinence. */
-                "order[price]"?: string;
-                /** @description Tri alphabétique (collation française), asc ou desc. */
-                "order[name]"?: string;
-                /** @description Numéro de page, à partir de 1. Au-delà de la dernière page : items vide. */
-                page?: number;
-                /** @description Produits par page, de 1 à 48. */
-                itemsPerPage?: number;
             };
             header?: never;
             path?: never;
@@ -909,14 +919,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description ProductList resource */
+            /** @description ProductFacets resource */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProductList"];
-                    "application/ld+json": components["schemas"]["ProductList.jsonld"];
+                    "application/json": components["schemas"]["ProductFacets"];
+                    "application/ld+json": components["schemas"]["ProductFacets.jsonld"];
                 };
             };
             /** @description Not found */

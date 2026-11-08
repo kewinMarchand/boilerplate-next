@@ -71,33 +71,29 @@ describe('toCategory', () => {
 describe('toCatalogPage', () => {
   it('traduit identifiants, prix, sous-catégories et facettes dans l’ordre du domaine', () => {
     const page = toCatalogPage(
-      {
-        items: [
-          {
-            id: 7,
-            slug: 'kentia',
-            name: 'Kentia',
-            categorySlug: 'palmiers',
-            price: 5990,
-            exposure: 'mi-ombre',
-            size: 'L',
-            inStock: true,
-            image: null,
-          },
-        ],
-        totalItems: 1,
-        page: 1,
-        itemsPerPage: 12,
-        totalPages: 1,
-        facets: {
-          exposure: [
-            { value: 'ombre', count: 0 },
-            { value: 'mi-ombre', count: 1 },
-          ],
-          size: [{ value: 'L', count: 1 }],
-          category: [{ slug: 'palmiers', name: 'Palmiers', count: 1 }],
+      [
+        {
+          id: 7,
+          slug: 'kentia',
+          name: 'Kentia',
+          categorySlug: 'palmiers',
+          price: 5990,
+          exposure: 'mi-ombre',
+          size: 'L',
+          inStock: true,
+          image: null,
         },
+      ],
+      {
+        totalItems: 1,
+        exposure: [
+          { value: 'ombre', count: 0 },
+          { value: 'mi-ombre', count: 1 },
+        ],
+        size: [{ value: 'L', count: 1 }],
+        category: [{ slug: 'palmiers', name: 'Palmiers', count: 1 }],
       },
+      1,
       ['plantes-exterieur'],
     )
 
@@ -113,19 +109,15 @@ describe('toCatalogPage', () => {
   })
 
   it('garde au moins une page quand il n’y a aucun résultat', () => {
-    const page = toCatalogPage(
-      {
-        items: [],
-        totalItems: 0,
-        page: 1,
-        itemsPerPage: 12,
-        totalPages: 0,
-        facets: { exposure: [], size: [], category: [] },
-      },
-      [],
-    )
+    const page = toCatalogPage([], { totalItems: 0, exposure: [], size: [], category: [] }, 1, [])
 
     expect(page.pageCount).toBe(1)
+  })
+
+  it('calcule le nombre de pages à partir du total des facettes', () => {
+    const page = toCatalogPage([], { totalItems: 25, exposure: [], size: [], category: [] }, 3, [])
+
+    expect(page).toMatchObject({ total: 25, page: 3, pageCount: 3 })
   })
 })
 
