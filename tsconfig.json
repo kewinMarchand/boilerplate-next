@@ -35,7 +35,9 @@
     ".next/dev/types/**/*.ts",
     ".next-obs/types/**/*.ts",
     ".next-obs/dev/types/**/*.ts",
+    ".next-identite/types/**/*.ts",
+    ".next-identite/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", ".next-obs"]
+  "exclude": ["node_modules", ".next-obs", ".next-identite"]
 }

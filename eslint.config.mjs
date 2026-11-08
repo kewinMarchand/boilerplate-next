@@ -126,6 +126,7 @@ const config = [
     ignores: [
       '.next/**',
       '.next-obs/**',
+      '.next-identite/**',
       'node_modules/**',
       'playwright-report/**',
       'test-results/**',

@@ -184,6 +184,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/site-identity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Retrieves a SiteIdentity resource.
+         * @description Retrieves a SiteIdentity resource.
+         */
+        get: operations["api_site-identity_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/tasks": {
         parameters: {
             query?: never;
@@ -609,6 +629,44 @@ export interface components {
             /** @description Sous-catégories directes de la catégorie filtrée (catégories racines sans filtre). Vide sur une feuille. */
             category: components["schemas"]["CategoryFacetValue.jsonld"][];
         };
+        /** @description Lit l'identité du site. */
+        SiteIdentity: {
+            /** @description Nom du site, 1 à 60 caractères. */
+            name: string;
+            /** @description Accroche, 0 à 160 caractères. */
+            tagline: string;
+            /** @description Logo, ratio du fichier gardé (largeurs 200 et 400), null sans logo : les fronts affichent alors le pictogramme et le nom. */
+            logo: components["schemas"]["ImageView"] | null;
+            /** @enum {string} */
+            defaultColorScheme: "auto" | "light" | "dark";
+            /** @description Jetons de couleur de marque calculés, null sans couleurs saisies : le front garde alors ceux de boilerplates-ui. */
+            theme: components["schemas"]["SiteTheme"] | null;
+        };
+        /** @description Lit l'identité du site. */
+        "SiteIdentity.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
+            /** @description Nom du site, 1 à 60 caractères. */
+            name: string;
+            /** @description Accroche, 0 à 160 caractères. */
+            tagline: string;
+            /** @description Logo, ratio du fichier gardé (largeurs 200 et 400), null sans logo : les fronts affichent alors le pictogramme et le nom. */
+            logo: components["schemas"]["ImageView.jsonld"] | null;
+            /** @enum {string} */
+            defaultColorScheme: "auto" | "light" | "dark";
+            /** @description Jetons de couleur de marque calculés, null sans couleurs saisies : le front garde alors ceux de boilerplates-ui. */
+            theme: components["schemas"]["SiteTheme.jsonld"] | null;
+        };
+        SiteTheme: {
+            /** @description Jetons du thème clair (fond #ffffff). */
+            light: components["schemas"]["ThemeTokens"];
+            /** @description Jetons du thème sombre (fond #0f141d), couleurs éclaircies jusqu'à 7:1 sur le fond. */
+            dark: components["schemas"]["ThemeTokens"];
+        };
+        "SiteTheme.jsonld": {
+            /** @description Jetons du thème clair (fond #ffffff). */
+            light: components["schemas"]["ThemeTokens.jsonld"];
+            /** @description Jetons du thème sombre (fond #0f141d), couleurs éclaircies jusqu'à 7:1 sur le fond. */
+            dark: components["schemas"]["ThemeTokens.jsonld"];
+        };
         /** @description Liste toutes les tâches, sans pagination. */
         Task: {
             id: number;
@@ -620,6 +678,34 @@ export interface components {
             id: number;
             title: string;
             done: boolean;
+        };
+        ThemeTokens: {
+            primary: string;
+            "primary-dark": string;
+            "on-primary": string;
+            "primary-surface-subtle": string;
+            "primary-surface": string;
+            "primary-surface-strong": string;
+            secondary: string;
+            "secondary-dark": string;
+            "on-secondary": string;
+            "secondary-surface-subtle": string;
+            "secondary-surface": string;
+            "secondary-surface-strong": string;
+        };
+        "ThemeTokens.jsonld": {
+            primary: string;
+            "primary-dark": string;
+            "on-primary": string;
+            "primary-surface-subtle": string;
+            "primary-surface": string;
+            "primary-surface-strong": string;
+            secondary: string;
+            "secondary-dark": string;
+            "on-secondary": string;
+            "secondary-surface-subtle": string;
+            "secondary-surface": string;
+            "secondary-surface-strong": string;
         };
     };
     responses: never;
@@ -927,6 +1013,38 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ProductFacets"];
                     "application/ld+json": components["schemas"]["ProductFacets.jsonld"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/ld+json": components["schemas"]["Error.jsonld"];
+                    "application/problem+json": components["schemas"]["Error"];
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    "api_site-identity_get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description SiteIdentity resource */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SiteIdentity"];
+                    "application/ld+json": components["schemas"]["SiteIdentity.jsonld"];
                 };
             };
             /** @description Not found */

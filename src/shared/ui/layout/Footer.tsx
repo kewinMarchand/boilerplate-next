@@ -1,6 +1,6 @@
 import { Container } from '@kewinmarchand/boilerplates-ui/react'
 
-import { ACCESSIBILITY_COMPLIANCE, LEGAL_NAVIGATION, SITE } from '@/shared/config'
+import { ACCESSIBILITY_COMPLIANCE, LEGAL_NAVIGATION } from '@/shared/config'
 import { Link, LogoMark } from '@/shared/ui/kit'
 
 import styles from './Footer.module.css'
@@ -8,7 +8,11 @@ import styles from './Footer.module.css'
 // Le RGAA impose l'état de conformité dans le lien du pied de page, pas ailleurs.
 const ACCESSIBILITY_PATH = '/accessibilite'
 
-export const Footer = () => (
+interface FooterProps {
+  siteName: string
+}
+
+export const Footer = ({ siteName }: FooterProps) => (
   <footer className={styles.footer}>
     <Container>
       <nav aria-label="Liens légaux" className={styles.links}>
@@ -25,7 +29,7 @@ export const Footer = () => (
       )}
       <p className={`bui-text bui-text--body-sm ${styles.brand}`}>
         <LogoMark size={20} />
-        {SITE.name}
+        {siteName}
       </p>
     </Container>
   </footer>

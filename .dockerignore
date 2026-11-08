@@ -1,6 +1,7 @@
 node_modules
 .next
 .next-obs
+.next-identite
 .git
 .env*
 !.env.example

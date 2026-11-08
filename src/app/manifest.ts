@@ -1,16 +1,19 @@
-import { SITE } from '@/shared/config'
+import { getSiteIdentity } from '@/modules/site'
 
 import type { MetadataRoute } from 'next'
 
-export default function manifest(): MetadataRoute.Manifest {
+export const revalidate = 300
+
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const { name, tagline, theme } = await getSiteIdentity()
   return {
-    name: SITE.name,
-    short_name: 'Boilerplate',
-    description: SITE.description,
+    name,
+    short_name: name,
+    description: tagline,
     lang: 'fr',
     start_url: '/',
     display: 'standalone',
-    theme_color: '#1d4ed8',
+    theme_color: theme?.light.primary ?? '#1d4ed8',
     background_color: '#ffffff',
     icons: [
       { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },

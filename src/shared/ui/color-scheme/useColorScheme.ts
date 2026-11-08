@@ -20,19 +20,18 @@ const readDocument = (): ColorScheme => {
   return isColorScheme(value) ? value : 'auto'
 }
 
-const readStored = (): ColorScheme => {
+const readStored = (): ColorScheme | null => {
   try {
     const value = localStorage.getItem(storageKey)
-    return isColorScheme(value) ? value : 'auto'
+    return isColorScheme(value) ? value : null
   } catch {
-    return 'auto'
+    return null
   }
 }
 
 const persist = (choice: ColorScheme) => {
   try {
-    if (choice === 'auto') localStorage.removeItem(storageKey)
-    else localStorage.setItem(storageKey, choice)
+    localStorage.setItem(storageKey, choice)
   } catch {
     // Stockage indisponible (navigation privée, quota) : le choix vaut pour la page en cours.
   }
@@ -42,9 +41,11 @@ export const useColorScheme = () => {
   const colorScheme = useSyncExternalStore(subscribe, readDocument, (): ColorScheme => 'auto')
 
   // Un rendu entièrement côté client (page d'erreur) recrée <html> sans l'attribut posé par le script.
+  // Sans choix mémorisé, le thème par défaut servi par le site reste.
   useEffect(() => {
     const stored = readStored()
-    if (stored !== readDocument()) document.documentElement.setAttribute(attribute, stored)
+    if (stored && stored !== readDocument())
+      document.documentElement.setAttribute(attribute, stored)
   }, [])
 
   const choose = (choice: ColorScheme) => {

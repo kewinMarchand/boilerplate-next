@@ -10,19 +10,21 @@ import { LogoLink } from './LogoLink'
 import { MobileMenu } from './MobileMenu'
 import { NavLink } from './NavLink'
 
+import type { SiteBrand } from './LogoLink'
 import type { NavigationNode } from '@/shared/config'
 import type { ReactNode } from 'react'
 
 interface HeaderProps {
+  brand: SiteBrand
   categoryMenu: NavigationNode[]
   cartLink: ReactNode
 }
 
-export const Header = ({ categoryMenu, cartLink }: HeaderProps) => (
+export const Header = ({ brand, categoryMenu, cartLink }: HeaderProps) => (
   <header className={styles.header}>
     <Container>
       <div className={styles.toolbar}>
-        <LogoLink />
+        <LogoLink brand={brand} />
         <div className={styles.mobile}>
           <MobileMenu navigation={MAIN_NAVIGATION} categoryMenu={categoryMenu} />
         </div>

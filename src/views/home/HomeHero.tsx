@@ -1,4 +1,3 @@
-import { SITE } from '@/shared/config'
 import { Link, Picture, staticImage } from '@/shared/ui/kit'
 
 import styles from './HomeHero.module.css'
@@ -9,7 +8,12 @@ const HERO = staticImage('/images/hero', [640, 960, 1280, 1920], {
   alt: '',
 })
 
-export const HomeHero = () => (
+interface HomeHeroProps {
+  name: string
+  tagline: string
+}
+
+export const HomeHero = ({ name, tagline }: HomeHeroProps) => (
   <section aria-labelledby="home-hero-title" data-testid="home-hero" className={styles.hero}>
     <Picture
       image={HERO}
@@ -24,9 +28,9 @@ export const HomeHero = () => (
           Jardinerie tropicale de démonstration
         </p>
         <h1 id="home-hero-title" className={`bui-text bui-text--h1 ${styles.title}`}>
-          {SITE.name}
+          {name}
         </h1>
-        <p className={`bui-text bui-text--lead ${styles.lead}`}>{SITE.description}</p>
+        <p className={`bui-text bui-text--lead ${styles.lead}`}>{tagline}</p>
         <div className={styles.actions}>
           <Link href="/taches" className="bui-button bui-button--lg" data-testid="home-tasks-link">
             Voir la démo TanStack Query

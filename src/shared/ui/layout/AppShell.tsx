@@ -7,17 +7,19 @@ import { Footer } from './Footer'
 import { Header } from './Header'
 import { SkipLink } from './SkipLink'
 
+import type { SiteBrand } from './LogoLink'
 import type { NavigationNode } from '@/shared/config'
 import type { ReactNode } from 'react'
 
 interface AppShellProps {
+  brand: SiteBrand
   categoryMenu: NavigationNode[]
   /** Lien du panier, fourni par la couche de routage : le socle n'importe pas de module. */
   cartLink: ReactNode
   children: ReactNode
 }
 
-export const AppShell = ({ categoryMenu, cartLink, children }: AppShellProps) => (
+export const AppShell = ({ brand, categoryMenu, cartLink, children }: AppShellProps) => (
   <div className={styles.shell}>
     {isAudienceMeasurementEnabled && (
       // Avant la page : React exécute les effets dans l'ordre du rendu, ceux du traceur (dont
@@ -28,10 +30,10 @@ export const AppShell = ({ categoryMenu, cartLink, children }: AppShellProps) =>
       </Suspense>
     )}
     <SkipLink />
-    <Header categoryMenu={categoryMenu} cartLink={cartLink} />
+    <Header brand={brand} categoryMenu={categoryMenu} cartLink={cartLink} />
     <main id="main" tabIndex={-1} className={styles.main}>
       {children}
     </main>
-    <Footer />
+    <Footer siteName={brand.name} />
   </div>
 )

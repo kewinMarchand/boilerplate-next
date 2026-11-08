@@ -18,19 +18,19 @@ export const breadcrumbJsonLd = (items: BreadcrumbItem[]) => ({
   })),
 })
 
-export const organizationJsonLd = () => ({
+export const organizationJsonLd = (name: string) => ({
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: SITE.publisher.legalName,
+  name,
   url: absoluteUrl('/'),
   logo: absoluteUrl('/icons/icon-512.png'),
   email: SITE.publisher.email,
 })
 
-export const websiteJsonLd = () => ({
+export const websiteJsonLd = (name: string) => ({
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: SITE.name,
+  name,
   url: absoluteUrl('/'),
   inLanguage: 'fr-FR',
 })

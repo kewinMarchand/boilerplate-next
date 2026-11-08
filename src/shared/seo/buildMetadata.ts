@@ -37,7 +37,6 @@ export const buildMetadata = ({
   robots: noindex ? { index: false, follow: true } : { index: true, follow: true },
   openGraph: {
     ...(publishedTime ? { type: 'article', publishedTime } : { type: 'website' }),
-    siteName: SITE.name,
     title,
     description,
     url: path,

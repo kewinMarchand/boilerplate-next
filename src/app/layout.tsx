@@ -8,6 +8,7 @@ import { AppShell } from '@/shared/ui/layout'
 
 import { CartLink } from '@/modules/cart'
 import { getCategoryMenu } from '@/modules/catalog'
+import { getSiteIdentity, SiteThemeStylesheet } from '@/modules/site'
 
 import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
@@ -16,18 +17,21 @@ import '@kewinmarchand/boilerplates-ui/tokens/tokens.css'
 import '@kewinmarchand/boilerplates-ui/css/index.css'
 import '@/shared/theme/global.css'
 
-// Le menu de catégories vient de l'API : les pages statiques se régénèrent toutes les 5 minutes,
+// Le menu de catégories et l'identité du site viennent de l'API : les pages statiques se régénèrent toutes les 5 minutes,
 // y compris celles construites sans API joignable (menu vide en repli).
 export const revalidate = 300
 
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
-  title: { default: SITE.name, template: `%s · ${SITE.name}` },
-  description: SITE.description,
-  applicationName: SITE.name,
-  formatDetection: { telephone: false, email: false, address: false },
+export const generateMetadata = async (): Promise<Metadata> => {
+  const { name, tagline } = await getSiteIdentity()
+  return {
+    metadataBase: new URL(SITE.url),
+    title: { default: name, template: `%s · ${name}` },
+    description: tagline,
+    applicationName: name,
+    formatDetection: { telephone: false, email: false, address: false },
+  }
 }
 
 export const viewport: Viewport = {
@@ -38,14 +42,27 @@ export const viewport: Viewport = {
 }
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
+  const [identity, categoryMenu] = await Promise.all([getSiteIdentity(), getCategoryMenu()])
+
   return (
-    <html lang="fr" className={inter.variable} data-color-scheme="auto" suppressHydrationWarning>
+    <html
+      lang="fr"
+      className={inter.variable}
+      data-color-scheme={identity.defaultColorScheme}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: A11Y_MODE_SCRIPT + COLOR_SCHEME_SCRIPT }} />
+        <SiteThemeStylesheet theme={identity.theme} />
+        <meta property="og:site_name" content={identity.name} />
       </head>
       <body>
         <Providers>
-          <AppShell categoryMenu={await getCategoryMenu()} cartLink={<CartLink />}>
+          <AppShell
+            brand={{ name: identity.name, logo: identity.logo }}
+            categoryMenu={categoryMenu}
+            cartLink={<CartLink />}
+          >
             {children}
           </AppShell>
         </Providers>

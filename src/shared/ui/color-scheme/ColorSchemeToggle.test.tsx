@@ -18,7 +18,15 @@ describe('ColorSchemeToggle', () => {
     expect(screen.getByTestId('color-scheme-option-dark')).toHaveAttribute('aria-checked', 'false')
   })
 
-  it('pose et mémorise le choix, puis « système » retire la clé', async () => {
+  it('garde le thème par défaut servi par le site quand rien n’est mémorisé', () => {
+    document.documentElement.setAttribute('data-color-scheme', 'dark')
+    render(<ColorSchemeToggle />)
+
+    expect(screen.getByTestId('color-scheme-toggle')).toHaveAccessibleName('Thème : sombre')
+    expect(document.documentElement).toHaveAttribute('data-color-scheme', 'dark')
+  })
+
+  it('pose et mémorise le choix, « système » compris', async () => {
     render(<ColorSchemeToggle />)
     const toggle = screen.getByTestId('color-scheme-toggle')
 
@@ -33,7 +41,7 @@ describe('ColorSchemeToggle', () => {
     await userEvent.click(screen.getByTestId('color-scheme-option-auto'))
     await waitFor(() => expect(toggle).toHaveAccessibleName('Thème : système'))
     expect(document.documentElement).toHaveAttribute('data-color-scheme', 'auto')
-    expect(localStorage.getItem('color-scheme')).toBeNull()
+    expect(localStorage.getItem('color-scheme')).toBe('auto')
   })
 
   it('annonce un choix sombre suspendu par le mode renforcé', () => {
