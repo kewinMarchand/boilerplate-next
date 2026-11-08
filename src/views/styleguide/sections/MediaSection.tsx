@@ -47,6 +47,7 @@ export const MediaSection = () => (
         image={PHOTO}
         sizes="480px"
         style={{ width: '100%', height: 'auto', aspectRatio: '16 / 9', borderRadius: 8 }}
+        hasErrorFallback={false}
       />
       <p className="bui-text bui-text--body-sm">Image au ratio 16:9, dimensions posées.</p>
     </div>

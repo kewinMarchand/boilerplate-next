@@ -20,6 +20,7 @@ export const HomeHero = ({ name, tagline }: HomeHeroProps) => (
       isPriority
       sizes="100vw"
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+      hasErrorFallback={false}
     />
     <div aria-hidden="true" className={styles.overlay} />
     <div className={`bui-container ${styles.content}`}>

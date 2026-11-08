@@ -59,6 +59,23 @@ test.describe('Image de l’API en échec', () => {
     await expectNoBrokenImageVisible(page)
   })
 
+  test('une vignette de la galerie en 404 porte la marque d’échec', async ({ page }) => {
+    await page.goto('/produit/monstera-deliciosa')
+    const thumb = page.getByTestId('product-gallery-thumb').nth(1)
+    const src = await thumb.locator('img').getAttribute('src')
+    expect(src).toMatch(/-\d+\.webp$/)
+
+    await failImage(page, src!.replace(/-\d+\.webp$/, ''))
+    await page.reload()
+    await thumb.scrollIntoViewIfNeeded()
+
+    await expect(thumb.locator('picture')).toHaveAttribute('data-image-error')
+    await expect(thumb.locator('img')).toHaveCSS('opacity', '0')
+    await expect(
+      page.getByTestId('product-gallery-thumb').first().locator('picture'),
+    ).not.toHaveAttribute('data-image-error')
+  })
+
   for (const mode of MODES) {
     test(`une image en 404 en mode ${mode} ne présente aucune violation axe`, async ({ page }) => {
       const base = await firstImageBase(page)
