@@ -503,6 +503,9 @@ test.describe('Identité saisie dans l’admin : logo, couleurs, sombre par déf
     expect(response?.status()).toBe(200)
     await expect(page.getByTestId('cart-link')).toHaveCount(0)
 
+    await page.goto(`${APP_URL}/catalogue/plantes-interieur`)
+    expect(await meta(page, 'meta[name="description"]')).not.toContain('prix')
+
     await page.goto(APP_URL)
     await expect(
       page.getByTestId('home-carousel').getByTestId('carousel-slide-link').first(),

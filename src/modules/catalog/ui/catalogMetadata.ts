@@ -9,8 +9,9 @@ import type { SearchParams } from '../domain/catalogQuery'
 import type { SeoSettings } from '@/shared/seo'
 import type { Metadata } from 'next'
 
-const ROOT_DESCRIPTION =
-  'Catalogue de démonstration d’une jardinerie tropicale : plantes d’intérieur, d’extérieur et aquatiques, filtrables par exposition, taille, prix et stock.'
+// Vente coupée (section 27) : le prix n'est ni affiché ni filtrable, la description ne le cite pas
+const rootDescription = (salesEnabled: boolean) =>
+  `Catalogue de démonstration d’une jardinerie tropicale : plantes d’intérieur, d’extérieur et aquatiques, filtrables par exposition, ${salesEnabled ? 'taille, prix et stock' : 'taille et stock'}.`
 
 export const buildCatalogMetadata = async (
   slugs: string[],
@@ -31,8 +32,8 @@ export const buildCatalogMetadata = async (
   return buildMetadata({
     title: name ? `${name} · Catalogue` : 'Catalogue de plantes tropicales',
     description: name
-      ? `${name} : sélection de plantes tropicales de démonstration, à filtrer par exposition, taille, prix et disponibilité, avec tri et pagination.`
-      : ROOT_DESCRIPTION,
+      ? `${name} : sélection de plantes tropicales de démonstration, à filtrer par exposition, ${salesEnabled ? 'taille, prix et disponibilité' : 'taille et disponibilité'}, avec tri et pagination.`
+      : rootDescription(salesEnabled),
     path: canonical,
     noindex: isFiltered(query),
     // Titre et description saisis pour la page fixe « catalogue » : sa racine seulement
