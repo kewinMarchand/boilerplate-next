@@ -6,6 +6,7 @@ import {
   serializeCatalogQuery,
   withAttribute,
   withFilter,
+  withoutPriceCriteria,
 } from './catalogQuery'
 import { parseCatalogQuery } from './parseCatalogQuery'
 
@@ -117,5 +118,17 @@ describe('withFilter et clearFilters', () => {
     const query = { ...DEFAULT_QUERY, view: 'liste' as const, sort: 'nom' as const, inStock: true }
 
     expect(clearFilters(query)).toEqual({ ...DEFAULT_QUERY, view: 'liste' })
+  })
+})
+
+describe('withoutPriceCriteria', () => {
+  it('ignore filtre et tri par prix, garde le reste', () => {
+    const query = { ...DEFAULT_QUERY, exposures: ['soleil' as const], priceMin: 10, priceMax: 50 }
+
+    expect(withoutPriceCriteria({ ...query, sort: 'prix-asc' })).toEqual({
+      ...DEFAULT_QUERY,
+      exposures: ['soleil'],
+    })
+    expect(withoutPriceCriteria({ ...query, sort: 'nom' }).sort).toBe('nom')
   })
 })

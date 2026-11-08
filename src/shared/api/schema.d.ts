@@ -546,23 +546,27 @@ export interface components {
             readonly title?: string | null;
             readonly instance?: string | null;
         };
-        /** @description Enregistre un message de contact. Répond 422 avec la liste des violations si un champ est invalide. */
+        /** @description Enregistre un message de contact, ou une demande de renseignement sur un produit, puis l'envoie par mail. Répond 422 avec la liste des violations si un champ est invalide ou si le produit n'existe pas ; un mail non envoyé ne change pas la réponse. */
         ContactMessage: {
             readonly id?: number | null;
             name: string | null;
             /** Format: email */
             email: string | null;
             message: string | null;
+            /** @description Slug du produit d'une demande de renseignement ; null ou absent pour un message de contact simple. */
+            product?: string | null;
             /** Format: date-time */
             readonly receivedAt?: string | null;
         };
-        /** @description Enregistre un message de contact. Répond 422 avec la liste des violations si un champ est invalide. */
+        /** @description Enregistre un message de contact, ou une demande de renseignement sur un produit, puis l'envoie par mail. Répond 422 avec la liste des violations si un champ est invalide ou si le produit n'existe pas ; un mail non envoyé ne change pas la réponse. */
         "ContactMessage.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
             readonly id?: number | null;
             name: string | null;
             /** Format: email */
             email: string | null;
             message: string | null;
+            /** @description Slug du produit d'une demande de renseignement ; null ou absent pour un message de contact simple. */
+            product?: string | null;
             /** Format: date-time */
             readonly receivedAt?: string | null;
         };
@@ -893,6 +897,8 @@ export interface components {
             defaultColorScheme: "auto" | "light" | "dark";
             /** @description Jetons de couleur de marque calculés, null sans couleurs saisies : le front garde alors ceux de boilerplates-ui. */
             theme: components["schemas"]["SiteTheme"] | null;
+            /** @description Vente en ligne : false, les fronts n'affichent ni prix ni panier et chaque produit propose une demande de renseignement. */
+            salesEnabled: boolean;
         };
         /** @description Lit l'identité du site. */
         "SiteIdentity.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
@@ -910,6 +916,8 @@ export interface components {
             defaultColorScheme: "auto" | "light" | "dark";
             /** @description Jetons de couleur de marque calculés, null sans couleurs saisies : le front garde alors ceux de boilerplates-ui. */
             theme: components["schemas"]["SiteTheme.jsonld"] | null;
+            /** @description Vente en ligne : false, les fronts n'affichent ni prix ni panier et chaque produit propose une demande de renseignement. */
+            salesEnabled: boolean;
         };
         SiteTheme: {
             /** @description Jetons du thème clair (fond #ffffff). */

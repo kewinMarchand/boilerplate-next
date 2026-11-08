@@ -89,8 +89,8 @@ export const productJsonLd = (product: {
   sku: string
   category: string | undefined
   image?: string | undefined
-  /** Prix en euros, deux décimales (« 34.90 »). */
-  price: string
+  /** Prix en euros, deux décimales (« 34.90 ») ; absent quand la vente est coupée : pas d'`offers`. */
+  price?: string | undefined
   inStock: boolean
 }) => ({
   '@context': 'https://schema.org',
@@ -101,11 +101,13 @@ export const productJsonLd = (product: {
   url: absoluteUrl(product.path),
   ...(product.category && { category: product.category }),
   ...(product.image && { image: product.image }),
-  offers: {
-    '@type': 'Offer',
-    url: absoluteUrl(product.path),
-    priceCurrency: 'EUR',
-    price: product.price,
-    availability: `https://schema.org/${product.inStock ? 'InStock' : 'OutOfStock'}`,
-  },
+  ...(product.price !== undefined && {
+    offers: {
+      '@type': 'Offer',
+      url: absoluteUrl(product.path),
+      priceCurrency: 'EUR',
+      price: product.price,
+      availability: `https://schema.org/${product.inStock ? 'InStock' : 'OutOfStock'}`,
+    },
+  }),
 })

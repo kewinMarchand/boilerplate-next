@@ -46,5 +46,7 @@ export declare namespace SiteIdentity {
     defaultColorScheme: ColorScheme
     /** `null` sans couleurs saisies : les jetons de boilerplates-ui s'appliquent tels quels. */
     theme: Theme | null
+    /** `false` : ni prix ni panier, chaque produit propose une demande de renseignement. */
+    salesEnabled: boolean
   }
 }

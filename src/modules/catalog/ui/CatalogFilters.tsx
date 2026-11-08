@@ -20,6 +20,7 @@ interface CatalogFiltersProps {
   facets: Catalog.Facets
   subcategories: Catalog.CategoryLink[]
   total: number
+  salesEnabled: boolean
 }
 
 export const CatalogFilters = ({
@@ -28,6 +29,7 @@ export const CatalogFilters = ({
   facets,
   subcategories,
   total,
+  salesEnabled,
 }: CatalogFiltersProps) => {
   const isHydrated = useHydrated()
   const titleId = useId()
@@ -43,6 +45,7 @@ export const CatalogFilters = ({
       facets={facets}
       subcategories={subcategories}
       isHydrated={isHydrated}
+      salesEnabled={salesEnabled}
       onApply={navigation.apply}
     />
   )

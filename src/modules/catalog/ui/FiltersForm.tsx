@@ -20,6 +20,7 @@ interface FiltersFormProps {
   facets: Catalog.Facets
   subcategories: Catalog.CategoryLink[]
   isHydrated: boolean
+  salesEnabled: boolean
   onApply: (next: Catalog.Query) => void
 }
 
@@ -79,6 +80,7 @@ export const FiltersForm = ({
   facets,
   subcategories,
   isHydrated,
+  salesEnabled,
   onApply,
 }: FiltersFormProps) => {
   const idPrefix = useId()
@@ -189,24 +191,26 @@ export const FiltersForm = ({
           )
         })}
 
-        <FacetGroup legend="Prix (en euros)">
-          <div key={`${query.priceMin}-${query.priceMax}`} className={styles.prices}>
-            <PriceField
-              label="Minimum"
-              name="prix_min"
-              defaultValue={query.priceMin}
-              onBlur={applyPrice('priceMin')}
-              testId="catalog-filter-price-min"
-            />
-            <PriceField
-              label="Maximum"
-              name="prix_max"
-              defaultValue={query.priceMax}
-              onBlur={applyPrice('priceMax')}
-              testId="catalog-filter-price-max"
-            />
-          </div>
-        </FacetGroup>
+        {salesEnabled && (
+          <FacetGroup legend="Prix (en euros)">
+            <div key={`${query.priceMin}-${query.priceMax}`} className={styles.prices}>
+              <PriceField
+                label="Minimum"
+                name="prix_min"
+                defaultValue={query.priceMin}
+                onBlur={applyPrice('priceMin')}
+                testId="catalog-filter-price-min"
+              />
+              <PriceField
+                label="Maximum"
+                name="prix_max"
+                defaultValue={query.priceMax}
+                onBlur={applyPrice('priceMax')}
+                testId="catalog-filter-price-max"
+              />
+            </div>
+          </FacetGroup>
+        )}
 
         <FacetGroup legend="Disponibilité">
           <Switch

@@ -9,7 +9,8 @@ import type { Contact } from '@/modules/contact/domain/contactSchema'
 
 const DEFAULT_VALUES: Contact.FormValues = { name: '', email: '', message: '' }
 
-export const useContactForm = () => {
+/** `productSlug` : demande de renseignement sur ce produit, envoyé avec le message. */
+export const useContactForm = (productSlug: string | null) => {
   const form = useForm<Contact.FormValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: DEFAULT_VALUES,
@@ -20,11 +21,15 @@ export const useContactForm = () => {
     mutationFn: sendContactMessage,
     onSuccess: (result) => {
       if (result.status === 'sent') return form.reset(DEFAULT_VALUES)
-      for (const { field, message } of result.fieldErrors) form.setError(field, { message })
+      for (const { field, message } of result.fieldErrors) {
+        form.setError(field === 'product' ? 'root' : field, { message })
+      }
     },
   })
 
-  const onSubmit = form.handleSubmit((values) => mutation.mutate(values))
+  const onSubmit = form.handleSubmit((values) =>
+    mutation.mutate({ ...values, product: productSlug }),
+  )
 
   return { form, mutation, onSubmit }
 }

@@ -24,12 +24,14 @@ const IMAGE_SIZES = '(min-width: 1440px) 680px, (min-width: 768px) 50vw, calc(10
 
 interface ProductViewProps {
   slug: string
-  /** Bouton d'achat, fourni par la couche de routage (module panier). */
+  /** Vente en ligne coupée : ni prix ni `offers` dans le JSON-LD. */
+  salesEnabled: boolean
+  /** Bouton d'achat (module panier) ou lien de demande de renseignement, fourni par la couche de routage. */
   purchase?: (product: Catalog.ProductDetail) => ReactNode
 }
 
 /** Fiche d'un produit, lue dans l'API : image, prix, description, caractéristiques et chemin de sa catégorie. */
-export const ProductView = async ({ slug, purchase }: ProductViewProps) => {
+export const ProductView = async ({ slug, salesEnabled, purchase }: ProductViewProps) => {
   const product = await loadProduct(slug).catch((error: unknown) => {
     console.error(error)
     return undefined
@@ -82,9 +84,11 @@ export const ProductView = async ({ slug, purchase }: ProductViewProps) => {
           <h1 className={`bui-text bui-text--h1 ${styles.title}`} data-testid="product-title">
             {product.name}
           </h1>
-          <p className={`bui-text bui-text--lead ${styles.price}`} data-testid="product-price">
-            {formatPrice(product.price)}
-          </p>
+          {salesEnabled && (
+            <p className={`bui-text bui-text--lead ${styles.price}`} data-testid="product-price">
+              {formatPrice(product.price)}
+            </p>
+          )}
           {product.description.length > 0 && (
             <div data-testid="product-description">
               {product.description.map((paragraph) => (
@@ -125,7 +129,11 @@ export const ProductView = async ({ slug, purchase }: ProductViewProps) => {
         </div>
       </article>
       <div className={styles.similar}>
-        <SimilarProducts categorySlug={product.categorySlug} productSlug={product.slug} />
+        <SimilarProducts
+          categorySlug={product.categorySlug}
+          productSlug={product.slug}
+          showPrices={salesEnabled}
+        />
       </div>
       <JsonLd
         data={productJsonLd({
@@ -135,7 +143,7 @@ export const ProductView = async ({ slug, purchase }: ProductViewProps) => {
           sku: product.slug,
           category: category?.name,
           image: product.image ? largestWebp(product.image) : undefined,
-          price: (product.price / 100).toFixed(2),
+          price: salesEnabled ? (product.price / 100).toFixed(2) : undefined,
           inStock: product.inStock,
         })}
       />

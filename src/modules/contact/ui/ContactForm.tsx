@@ -5,12 +5,20 @@ import { Alert, Button, TextArea, TextField } from '@kewinmarchand/boilerplates-
 import styles from './ContactForm.module.css'
 import { useContactForm } from './hooks/useContactForm'
 
-export const ContactForm = () => {
-  const { form, mutation, onSubmit } = useContactForm()
+import type { Contact } from '../domain/contactSchema'
+
+interface ContactFormProps {
+  /** Demande de renseignement : le produit part avec le message. */
+  product: Contact.InquiryProduct | null
+}
+
+export const ContactForm = ({ product }: ContactFormProps) => {
+  const { form, mutation, onSubmit } = useContactForm(product?.slug ?? null)
   const { errors } = form.formState
 
   return (
     <form noValidate onSubmit={onSubmit} className={`bui-stack ${styles.form}`}>
+      {product && <input type="hidden" name="product" value={product.slug} />}
       <TextField
         id="contact-nom"
         label="Nom"
@@ -44,7 +52,16 @@ export const ContactForm = () => {
       <div aria-live="polite">
         {mutation.data?.status === 'sent' && (
           <div data-testid="contact-success">
-            <Alert variant="success">Merci, votre message a bien été envoyé.</Alert>
+            <Alert variant="success">
+              {product
+                ? 'Votre demande de renseignement a bien été envoyée.'
+                : 'Merci, votre message a bien été envoyé.'}
+            </Alert>
+          </div>
+        )}
+        {errors.root && (
+          <div data-testid="contact-error">
+            <Alert variant="error">{errors.root.message}</Alert>
           </div>
         )}
         {mutation.isError && (

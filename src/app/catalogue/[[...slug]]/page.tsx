@@ -1,5 +1,5 @@
 import { buildCatalogMetadata, CatalogView } from '@/modules/catalog'
-import { getSeoSettings } from '@/modules/site'
+import { getSeoSettings, getSiteIdentity } from '@/modules/site'
 
 import type { Metadata } from 'next'
 
@@ -12,15 +12,20 @@ export async function generateMetadata({
   params,
   searchParams,
 }: CatalogPageProps): Promise<Metadata> {
-  const [{ slug = [] }, query, settings] = await Promise.all([
+  const [{ slug = [] }, query, settings, { salesEnabled }] = await Promise.all([
     params,
     searchParams,
     getSeoSettings('catalog'),
+    getSiteIdentity(),
   ])
-  return buildCatalogMetadata(slug, query, settings)
+  return buildCatalogMetadata(slug, query, settings, salesEnabled)
 }
 
 export default async function CatalogPage({ params, searchParams }: CatalogPageProps) {
-  const [{ slug = [] }, query] = await Promise.all([params, searchParams])
-  return <CatalogView slugs={slug} searchParams={query} />
+  const [{ slug = [] }, query, { salesEnabled }] = await Promise.all([
+    params,
+    searchParams,
+    getSiteIdentity(),
+  ])
+  return <CatalogView slugs={slug} searchParams={query} salesEnabled={salesEnabled} />
 }

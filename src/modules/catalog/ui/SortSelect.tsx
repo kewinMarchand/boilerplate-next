@@ -7,7 +7,7 @@ import { Button, Select } from '@kewinmarchand/boilerplates-ui/react'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 
 import { SORTS } from '../domain/catalog'
-import { withFilter } from '../domain/catalogQuery'
+import { isPriceSort, withFilter } from '../domain/catalogQuery'
 import { useCatalogNavigation } from './hooks/useCatalogNavigation'
 import { SORT_LABELS } from './labels'
 import { QueryHiddenFields } from './QueryHiddenFields'
@@ -18,13 +18,18 @@ import type { Catalog } from '../domain/catalog'
 interface SortSelectProps {
   path: string
   query: Catalog.Query
+  salesEnabled: boolean
 }
 
-const OPTIONS = SORTS.map((sort) => ({ value: sort, label: SORT_LABELS[sort] }))
+const options = (salesEnabled: boolean) =>
+  SORTS.filter((sort) => salesEnabled || !isPriceSort(sort)).map((sort) => ({
+    value: sort,
+    label: SORT_LABELS[sort],
+  }))
 
 const isSort = (value: string): value is Catalog.Sort => SORTS.some((sort) => sort === value)
 
-export const SortSelect = ({ path, query }: SortSelectProps) => {
+export const SortSelect = ({ path, query, salesEnabled }: SortSelectProps) => {
   const isHydrated = useHydrated()
   const selectId = useId()
   const navigation = useCatalogNavigation(path, query)
@@ -36,7 +41,7 @@ export const SortSelect = ({ path, query }: SortSelectProps) => {
         id={selectId}
         name="tri"
         label="Trier par"
-        options={OPTIONS}
+        options={options(salesEnabled)}
         value={navigation.query.sort}
         onChange={(event) => {
           if (isSort(event.target.value)) {

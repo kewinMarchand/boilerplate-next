@@ -70,5 +70,17 @@ export const countActiveFilters = (query: Catalog.Query) =>
   (query.priceMax !== null ? 1 : 0) +
   (query.inStock ? 1 : 0)
 
+const PRICE_SORTS: Catalog.Sort[] = ['prix-asc', 'prix-desc']
+
+export const isPriceSort = (sort: Catalog.Sort) => PRICE_SORTS.includes(sort)
+
+/** Vente en ligne coupée : filtre et tris par prix ignorés, comme une valeur invalide. */
+export const withoutPriceCriteria = (query: Catalog.Query): Catalog.Query => ({
+  ...query,
+  priceMin: null,
+  priceMax: null,
+  sort: isPriceSort(query.sort) ? DEFAULT_QUERY.sort : query.sort,
+})
+
 export const isFiltered = (query: Catalog.Query) =>
   countActiveFilters(query) > 0 || query.sort !== DEFAULT_QUERY.sort

@@ -23,6 +23,7 @@ describe('getSeoSettings', () => {
       shareImage: SHARE_IMAGE,
       defaultColorScheme: 'auto',
       theme: null,
+      salesEnabled: true,
     })
     vi.mocked(findPageMetas).mockResolvedValue({
       blog: { title: 'Le blog', description: 'Conseils et actualités.' },

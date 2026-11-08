@@ -15,7 +15,8 @@ export declare namespace Carousel {
   interface Slide {
     id: string
     title: string
-    text: string
+    /** Absent : la diapositive n'a que son titre (prix masqués quand la vente est coupée). */
+    text?: string
     image: ResponsiveImage | null
     /** Destination de la diapositive : son titre devient un lien étiré sur toute la diapositive. */
     href?: string
@@ -134,7 +135,7 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
                     slide.title
                   )}
                 </h3>
-                <p className="bui-text">{slide.text}</p>
+                {slide.text && <p className="bui-text">{slide.text}</p>}
               </div>
             )
           })}

@@ -25,12 +25,14 @@ import type { SearchParams } from '../domain/catalogQuery'
 interface CatalogViewProps {
   slugs: string[]
   searchParams: SearchParams
+  /** Vente en ligne coupée : ni prix, ni filtre ni tri par prix. */
+  salesEnabled: boolean
 }
 
 const productCount = (count: number) => `${count} produit${count > 1 ? 's' : ''}`
 
-export const CatalogView = async ({ slugs, searchParams }: CatalogViewProps) => {
-  const load = await loadCatalogPage(slugs, searchParams)
+export const CatalogView = async ({ slugs, searchParams, salesEnabled }: CatalogViewProps) => {
+  const load = await loadCatalogPage(slugs, searchParams, salesEnabled)
   if (load.status === 'not-found') notFound()
 
   const { query, categoryPath, subcategories, result } = load
@@ -68,6 +70,7 @@ export const CatalogView = async ({ slugs, searchParams }: CatalogViewProps) => 
                   facets={page.facets}
                   subcategories={page.subcategories}
                   total={page.total}
+                  salesEnabled={salesEnabled}
                 />
               )}
             </div>
@@ -82,7 +85,7 @@ export const CatalogView = async ({ slugs, searchParams }: CatalogViewProps) => 
                   {page ? productCount(page.total) : ''}
                 </p>
                 <Cluster gap="4">
-                  <SortSelect path={path} query={query} />
+                  <SortSelect path={path} query={query} salesEnabled={salesEnabled} />
                   <ViewToggle path={path} query={query} />
                 </Cluster>
               </Cluster>
@@ -94,6 +97,7 @@ export const CatalogView = async ({ slugs, searchParams }: CatalogViewProps) => 
                       products={result.page.products}
                       view={query.view}
                       clearHref={catalogHref(path, clearFilters(query))}
+                      salesEnabled={salesEnabled}
                     />
                   </PendingResults>
                   <CatalogPagination

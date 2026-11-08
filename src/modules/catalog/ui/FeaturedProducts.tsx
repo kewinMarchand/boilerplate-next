@@ -12,7 +12,7 @@ import { formatPrice } from '../domain/price'
  * Sans `Suspense` : React sort un gros bloc suspendu du HTML initial et ne le remet en place qu'avec
  * JavaScript. Le carrousel doit défiler sans JavaScript, et l'accueil est pré-rendu de toute façon.
  */
-export const FeaturedProducts = async () => {
+export const FeaturedProducts = async ({ showPrices }: { showPrices: boolean }) => {
   const products = await loadFeaturedProducts().catch((error: unknown) => {
     console.error(error)
     return null
@@ -35,7 +35,7 @@ export const FeaturedProducts = async () => {
       slides={products.map((product) => ({
         id: product.id,
         title: product.name,
-        text: formatPrice(product.price),
+        ...(showPrices && { text: formatPrice(product.price) }),
         image: product.image,
         href: productHref(product.slug),
       }))}

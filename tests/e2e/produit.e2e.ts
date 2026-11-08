@@ -55,6 +55,15 @@ test.describe('Fiche produit', () => {
     await expect(page.getByTestId('product-attributes')).toHaveCount(0)
   })
 
+  test('vente active : garde l’ajout au panier, sans lien de demande de renseignement', async ({
+    page,
+  }) => {
+    await page.goto(PRODUCT)
+
+    await expect(page.getByTestId('add-to-cart')).toBeVisible()
+    await expect(page.getByTestId('product-inquiry')).toHaveCount(0)
+  })
+
   test('expose ses données structurées de produit', async ({ page }) => {
     await page.goto(PRODUCT)
 

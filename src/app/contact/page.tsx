@@ -14,6 +14,10 @@ export const generateMetadata = async (): Promise<Metadata> =>
     settings: await getSeoSettings('contact'),
   })
 
-export default function ContactPage() {
-  return <ContactView />
+interface ContactPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+export default async function ContactPage({ searchParams }: ContactPageProps) {
+  return <ContactView searchParams={await searchParams} />
 }

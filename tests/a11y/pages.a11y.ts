@@ -14,6 +14,7 @@ const EXTRA_ROUTES = [
   '/route-inexistante',
   '/_erreur-test',
   '/panier',
+  '/contact?produit=monstera-deliciosa',
 ]
 
 const expectNoViolations = async (page: Page) => {

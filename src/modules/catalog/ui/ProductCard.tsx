@@ -13,11 +13,18 @@ interface ProductCardProps {
   product: Catalog.Product
   position: number
   isPriority: boolean
+  /** `false` quand la vente en ligne est coupée. */
+  showPrice?: boolean
 }
 
 export const PRODUCT_IMAGE_SIZES = '(min-width: 1024px) 300px, (min-width: 600px) 50vw, 100vw'
 
-export const ProductCard = ({ product, position, isPriority }: ProductCardProps) => {
+export const ProductCard = ({
+  product,
+  position,
+  isPriority,
+  showPrice = true,
+}: ProductCardProps) => {
   const placeholder = <div className={styles.placeholder} />
   const image = product.image && (
     <Picture
@@ -54,9 +61,11 @@ export const ProductCard = ({ product, position, isPriority }: ProductCardProps)
               {product.name}
             </Link>
           </h2>
-          <p className={`bui-text ${styles.price}`} data-testid="catalog-product-price">
-            {formatPrice(product.price)}
-          </p>
+          {showPrice && (
+            <p className={`bui-text ${styles.price}`} data-testid="catalog-product-price">
+              {formatPrice(product.price)}
+            </p>
+          )}
           <p className={`bui-text bui-text--body-sm ${styles.meta}`}>
             Exposition : {EXPOSURE_LABELS[product.exposure]} · Taille {product.size}
           </p>

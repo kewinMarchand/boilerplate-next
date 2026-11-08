@@ -16,6 +16,8 @@ export interface SiteConfig {
   locale: string
   publisher: PublisherConfig
   accessibility: AccessibilityAuditConfig
+  /** Repli de l'identité du site quand l'API ne répond pas. */
+  salesEnabled: boolean
 }
 
 export const SITE: SiteConfig = {
@@ -29,4 +31,5 @@ export const SITE: SiteConfig = {
     email: 'contact@example.com',
   },
   accessibility: { auditDate: null, complianceRate: null, auditor: null },
+  salesEnabled: true,
 }

@@ -7,10 +7,15 @@ import { formatPrice } from '../domain/price'
 interface SimilarProductsProps {
   categorySlug: string
   productSlug: string
+  showPrices: boolean
 }
 
 /** Carrousel des autres produits de la catégorie ; absent s'il n'y en a pas ou si l'API échoue. */
-export const SimilarProducts = async ({ categorySlug, productSlug }: SimilarProductsProps) => {
+export const SimilarProducts = async ({
+  categorySlug,
+  productSlug,
+  showPrices,
+}: SimilarProductsProps) => {
   const products = await loadSimilarProducts(categorySlug, productSlug)
   if (!products.length) return null
 
@@ -20,7 +25,7 @@ export const SimilarProducts = async ({ categorySlug, productSlug }: SimilarProd
       slides={products.map((product) => ({
         id: product.id,
         title: product.name,
-        text: formatPrice(product.price),
+        ...(showPrices && { text: formatPrice(product.price) }),
         image: product.image,
         href: productHref(product.slug),
       }))}

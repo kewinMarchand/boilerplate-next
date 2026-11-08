@@ -15,6 +15,18 @@ export const contactSchema = z.object({
     ),
 })
 
+export const CONTACT_PATH = '/contact'
+
+export const inquiryHref = (productSlug: string) =>
+  `${CONTACT_PATH}?produit=${encodeURIComponent(productSlug)}`
+
 export declare namespace Contact {
   type FormValues = z.infer<typeof contactSchema>
+
+  /** Produit d'une demande de renseignement : `slug` envoyé avec le message, `name` affiché. */
+  interface InquiryProduct {
+    slug: string
+    name: string
+    href: string
+  }
 }

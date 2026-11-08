@@ -40,7 +40,7 @@ describe('FeaturedProducts', () => {
 
   it("affiche un message d'erreur si l'API ne répond pas", async () => {
     findFeaturedProducts.mockRejectedValue(new Error('500'))
-    render(await FeaturedProducts())
+    render(await FeaturedProducts({ showPrices: true }))
 
     expect(screen.getByTestId('home-carousel-error')).toHaveTextContent(
       'Impossible de charger le carrousel pour le moment.',
@@ -49,19 +49,27 @@ describe('FeaturedProducts', () => {
 
   it("n'affiche pas le carrousel sans produit à la une", async () => {
     findFeaturedProducts.mockResolvedValue([])
-    const { container } = render(await FeaturedProducts())
+    const { container } = render(await FeaturedProducts({ showPrices: true }))
 
     expect(container).toBeEmptyDOMElement()
   })
 
   it('passe chaque produit au carrousel avec son prix et le lien de sa fiche', async () => {
     findFeaturedProducts.mockResolvedValue([product('heliconia-rostrata', 5490)])
-    render(await FeaturedProducts())
+    render(await FeaturedProducts({ showPrices: true }))
 
     expect(screen.getByRole('link', { name: 'heliconia-rostrata' })).toHaveAttribute(
       'href',
       '/produit/heliconia-rostrata',
     )
     expect(screen.getByTestId('home-carousel')).toHaveTextContent(/54,90\s€/)
+  })
+
+  it('n’affiche aucun prix quand la vente en ligne est coupée', async () => {
+    findFeaturedProducts.mockResolvedValue([product('heliconia-rostrata', 5490)])
+    render(await FeaturedProducts({ showPrices: false }))
+
+    expect(screen.getByRole('link', { name: 'heliconia-rostrata' })).toBeInTheDocument()
+    expect(screen.getByTestId('home-carousel')).not.toHaveTextContent('€')
   })
 })

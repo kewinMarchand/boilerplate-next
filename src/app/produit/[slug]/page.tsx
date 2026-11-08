@@ -1,6 +1,7 @@
 import { AddToCartButton } from '@/modules/cart'
 import { buildProductMetadata, listProductPaths, ProductView } from '@/modules/catalog'
-import { getSeoSettings } from '@/modules/site'
+import { ProductInquiryLink } from '@/modules/contact'
+import { getSeoSettings, getSiteIdentity } from '@/modules/site'
 
 import type { Metadata } from 'next'
 
@@ -14,20 +15,30 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const [{ slug }, settings] = await Promise.all([params, getSeoSettings()])
-  return buildProductMetadata(slug, settings)
+  const [{ slug }, settings, { salesEnabled }] = await Promise.all([
+    params,
+    getSeoSettings(),
+    getSiteIdentity(),
+  ])
+  return buildProductMetadata(slug, settings, salesEnabled)
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
+  const [{ slug }, { salesEnabled }] = await Promise.all([params, getSiteIdentity()])
   return (
     <ProductView
-      slug={(await params).slug}
-      purchase={(product) => (
-        <AddToCartButton
-          item={{ slug: product.slug, name: product.name, price: product.price }}
-          isAvailable={product.inStock}
-        />
-      )}
+      slug={slug}
+      salesEnabled={salesEnabled}
+      purchase={(product) =>
+        salesEnabled ? (
+          <AddToCartButton
+            item={{ slug: product.slug, name: product.name, price: product.price }}
+            isAvailable={product.inStock}
+          />
+        ) : (
+          <ProductInquiryLink slug={product.slug} name={product.name} />
+        )
+      }
     />
   )
 }

@@ -48,6 +48,7 @@ const DTO: components['schemas']['SiteIdentity'] = {
   shareImage: SHARE_IMAGE,
   defaultColorScheme: 'dark',
   theme: { light: TOKENS, dark: { ...TOKENS, primary: '#f8a77f' } },
+  salesEnabled: true,
 }
 
 describe('toSiteIdentity', () => {
@@ -60,7 +61,12 @@ describe('toSiteIdentity', () => {
       shareImage: SHARE_IMAGE,
       defaultColorScheme: 'dark',
       theme: { light: TOKENS, dark: { ...TOKENS, primary: '#f8a77f' } },
+      salesEnabled: true,
     })
+  })
+
+  it('reprend la vente en ligne coupée', () => {
+    expect(toSiteIdentity({ ...DTO, salesEnabled: false }).salesEnabled).toBe(false)
   })
 
   it('garde l’absence de logo, d’icône, d’image de partage et de couleurs', () => {

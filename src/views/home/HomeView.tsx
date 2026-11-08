@@ -9,14 +9,14 @@ import { HomeHero } from './HomeHero'
 import styles from './HomeView.module.css'
 
 export const HomeView = async () => {
-  const { name, tagline, icon } = await getSiteIdentity()
+  const { name, tagline, icon, salesEnabled } = await getSiteIdentity()
 
   return (
     <>
       <HomeHero name={name} tagline={tagline} />
       <PageContainer>
         <div className={styles.sections}>
-          <FeaturedProducts />
+          <FeaturedProducts showPrices={salesEnabled} />
           <BlogSection />
         </div>
       </PageContainer>

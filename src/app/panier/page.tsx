@@ -1,8 +1,10 @@
+import { notFound } from 'next/navigation'
+
 import { buildMetadata } from '@/shared/seo'
 import { buildBreadcrumb, PageContainer } from '@/shared/ui/layout'
 
 import { CartView } from '@/modules/cart'
-import { getSeoSettings } from '@/modules/site'
+import { getSeoSettings, getSiteIdentity } from '@/modules/site'
 
 import type { Metadata } from 'next'
 
@@ -18,7 +20,9 @@ export const generateMetadata = async (): Promise<Metadata> =>
     settings: await getSeoSettings(),
   })
 
-export default function CartPage() {
+export default async function CartPage() {
+  if (!(await getSiteIdentity()).salesEnabled) notFound()
+
   return (
     <PageContainer breadcrumb={buildBreadcrumb(PATH, [{ label: 'Panier', href: PATH }])}>
       <h1 className="bui-text bui-text--h1">Panier</h1>

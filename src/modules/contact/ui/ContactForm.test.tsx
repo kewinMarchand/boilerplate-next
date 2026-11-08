@@ -12,12 +12,24 @@ vi.mock('@/modules/contact/infrastructure/sendContactMessage', () => ({
   sendContactMessage: vi.fn(async () => ({ status: 'sent' })),
 }))
 
-const renderForm = () =>
+const PRODUCT = {
+  slug: 'monstera-deliciosa',
+  name: 'Monstera deliciosa',
+  href: '/produit/monstera-deliciosa',
+}
+
+const renderForm = (product: typeof PRODUCT | null = null) =>
   render(
     <QueryClientProvider client={makeQueryClient()}>
-      <ContactForm />
+      <ContactForm product={product} />
     </QueryClientProvider>,
   )
+
+const fillForm = async () => {
+  await userEvent.type(screen.getByTestId('contact-name'), 'Ada')
+  await userEvent.type(screen.getByTestId('contact-email'), 'ada@exemple.fr')
+  await userEvent.type(screen.getByTestId('contact-message'), 'Bonjour, ceci est un message.')
+}
 
 describe('ContactForm', () => {
   it('signale chaque champ obligatoire dans son libellé et le déclare required', () => {
@@ -46,6 +58,32 @@ describe('ContactForm', () => {
     await userEvent.click(screen.getByTestId('contact-submit'))
 
     expect(await screen.findByTestId('contact-success')).toBeInTheDocument()
+  })
+
+  it('envoie le produit d’une demande de renseignement et confirme la demande', async () => {
+    renderForm(PRODUCT)
+    await fillForm()
+    await userEvent.click(screen.getByTestId('contact-submit'))
+
+    expect(await screen.findByTestId('contact-success')).toHaveTextContent(
+      'Votre demande de renseignement a bien été envoyée.',
+    )
+    expect(vi.mocked(sendContactMessage).mock.lastCall?.[0]).toMatchObject({
+      product: 'monstera-deliciosa',
+    })
+  })
+
+  it('affiche la violation 422 du produit pour tout le formulaire', async () => {
+    vi.mocked(sendContactMessage).mockResolvedValueOnce({
+      status: 'invalid',
+      fieldErrors: [{ field: 'product', message: 'Ce produit n’existe pas.' }],
+    })
+    renderForm(PRODUCT)
+    await fillForm()
+    await userEvent.click(screen.getByTestId('contact-submit'))
+
+    expect(await screen.findByTestId('contact-error')).toHaveTextContent('Ce produit n’existe pas.')
+    expect(screen.queryByTestId('contact-success')).not.toBeInTheDocument()
   })
 
   it('relaie sous le champ la violation 422 renvoyée par l’API', async () => {

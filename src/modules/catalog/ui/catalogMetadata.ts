@@ -1,7 +1,7 @@
 import { buildMetadata } from '@/shared/seo'
 
 import { findCategoryPath } from '../application/catalogNavigation'
-import { isFiltered } from '../domain/catalogQuery'
+import { isFiltered, withoutPriceCriteria } from '../domain/catalogQuery'
 import { categoryHref } from '../domain/categoryPath'
 import { parseCatalogQuery } from '../domain/parseCatalogQuery'
 
@@ -16,12 +16,14 @@ export const buildCatalogMetadata = async (
   slugs: string[],
   searchParams: SearchParams,
   settings: SeoSettings,
+  salesEnabled = true,
 ): Promise<Metadata> => {
   // API indisponible : métadonnées de la racine du catalogue, la page affiche l'erreur.
   const categoryPath = await findCategoryPath(slugs).catch(() => [])
   if (!categoryPath) return { title: 'Page introuvable', robots: { index: false, follow: true } }
 
-  const query = parseCatalogQuery(searchParams)
+  const parsed = parseCatalogQuery(searchParams)
+  const query = salesEnabled ? parsed : withoutPriceCriteria(parsed)
   const path = categoryHref(slugs)
   const name = categoryPath.at(-1)?.name
   const canonical = query.page > 1 ? `${path}?page=${query.page}` : path

@@ -1,3 +1,4 @@
+import { withoutPriceCriteria } from '../domain/catalogQuery'
 import { resolveCategoryPath, subcategoryLinks } from '../domain/categoryPath'
 import { parseCatalogQuery } from '../domain/parseCatalogQuery'
 import { findCatalogPage, findCategoryTree } from '../infrastructure/catalogRepository'
@@ -34,8 +35,10 @@ const unavailable = (error: unknown): CatalogPageResult => {
 export const loadCatalogPage = async (
   slugs: string[],
   searchParams: SearchParams,
+  salesEnabled = true,
 ): Promise<CatalogPageLoad> => {
-  const query = parseCatalogQuery(searchParams)
+  const parsed = parseCatalogQuery(searchParams)
+  const query = salesEnabled ? parsed : withoutPriceCriteria(parsed)
 
   let tree: Catalog.Category[]
   try {

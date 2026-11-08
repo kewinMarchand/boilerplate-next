@@ -15,6 +15,7 @@ interface ProductResultsProps {
   errorMessage?: string
   retryHref?: string
   clearHref?: string
+  salesEnabled?: boolean
 }
 
 const PRIORITY_COUNT = 4
@@ -28,6 +29,7 @@ export const ProductResults = ({
   errorMessage,
   retryHref = '',
   clearHref = '',
+  salesEnabled = true,
 }: ProductResultsProps) => {
   if (status === 'pending') {
     return (
@@ -82,7 +84,12 @@ export const ProductResults = ({
     <ul className={listClass(view)}>
       {products.map((product, index) => (
         <li key={product.id}>
-          <ProductCard product={product} position={index + 1} isPriority={index < PRIORITY_COUNT} />
+          <ProductCard
+            product={product}
+            position={index + 1}
+            isPriority={index < PRIORITY_COUNT}
+            showPrice={salesEnabled}
+          />
         </li>
       ))}
     </ul>

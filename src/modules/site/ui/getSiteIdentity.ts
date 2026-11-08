@@ -14,6 +14,7 @@ const FALLBACK: SiteIdentity.Entity = {
   shareImage: null,
   defaultColorScheme: 'auto',
   theme: null,
+  salesEnabled: SITE.salesEnabled,
 }
 
 /**

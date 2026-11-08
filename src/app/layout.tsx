@@ -62,7 +62,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <AppShell
             brand={{ name: identity.name, logo: identity.logo }}
             categoryMenu={categoryMenu}
-            cartLink={<CartLink />}
+            cartLink={identity.salesEnabled && <CartLink />}
           >
             {children}
           </AppShell>

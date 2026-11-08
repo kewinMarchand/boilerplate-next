@@ -36,4 +36,34 @@ test.describe('Contact', () => {
     await expect(name).toHaveAccessibleDescription('Votre nom ne doit pas dépasser 255 caractères.')
     await expect(page.getByTestId('contact-success')).toHaveCount(0)
   })
+
+  test('une demande de renseignement nomme le produit et l’envoie avec le message', async ({
+    page,
+  }) => {
+    await page.goto('/contact?produit=monstera-deliciosa')
+    const product = page.getByTestId('contact-product')
+    await expect(product).toHaveText('Votre demande concerne : Monstera deliciosa')
+    await expect(product.getByRole('link')).toHaveAttribute('href', '/produit/monstera-deliciosa')
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/contact$/)
+
+    await page.getByTestId('contact-name').fill('Ada')
+    await page.getByTestId('contact-email').fill('ada@exemple.fr')
+    await page.getByTestId('contact-message').fill('Est-il livré avec son tuteur ?')
+    const request = page.waitForRequest(
+      (sent) => sent.method() === 'POST' && sent.url().endsWith('/api/contact_messages'),
+    )
+    await page.getByTestId('contact-submit').click()
+
+    await expect(page.getByTestId('contact-success')).toContainText(
+      'Votre demande de renseignement a bien été envoyée.',
+    )
+    expect((await request).postDataJSON()).toMatchObject({ product: 'monstera-deliciosa' })
+  })
+
+  test('un produit inconnu donne le formulaire de contact simple', async ({ page }) => {
+    await page.goto('/contact?produit=produit-inconnu')
+
+    await expect(page.getByTestId('contact-name')).toBeVisible()
+    await expect(page.getByTestId('contact-product')).toHaveCount(0)
+  })
 })

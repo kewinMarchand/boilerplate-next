@@ -18,6 +18,7 @@ describe('getSiteIdentity', () => {
       shareImage: null,
       defaultColorScheme: 'auto',
       theme: null,
+      salesEnabled: true,
     })
   })
 })

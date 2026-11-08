@@ -10,7 +10,7 @@ import { MODES } from './routes'
 import type { Mode } from './routes'
 import type { Page } from '@playwright/test'
 import type { ChildProcess } from 'node:child_process'
-import type { Server } from 'node:http'
+import type { IncomingMessage, Server } from 'node:http'
 
 const API_URL = process.env.API_URL ?? 'http://localhost:8090'
 
@@ -127,6 +127,7 @@ const IDENTITY = {
   },
   defaultColorScheme: 'dark',
   theme: THEME,
+  salesEnabled: false,
 }
 
 const HOME_META = {
@@ -191,12 +192,30 @@ const patch = (path: string, body: unknown): unknown => {
   return body
 }
 
+// Le navigateur envoie le formulaire de contact à l'API factice, d'une autre origine que le site.
+const CORS = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept',
+}
+
+const readBody = async (request: IncomingMessage) => {
+  const chunks: Buffer[] = []
+  for await (const chunk of request) chunks.push(Buffer.from(chunk))
+  return Buffer.concat(chunks)
+}
+
 // L'identité est lue côté serveur, au build puis à chaque régénération : une API factice la sert
-// avec logo, couleurs, icône et image de partage, sert les métadonnées des pages fixes, et relaie
-// le reste à l'API locale (retouché par `patch`), sans toucher à sa base.
+// avec logo, couleurs, icône, image de partage et vente en ligne coupée, sert les métadonnées des
+// pages fixes, et relaie le reste à l'API locale (retouché par `patch`), sans toucher à sa base hors
+// des messages de contact envoyés par les tests.
 const startFakeApi = () =>
   createServer(async (request, response) => {
     const path = request.url ?? '/'
+    if (request.method === 'OPTIONS') {
+      response.writeHead(204, CORS).end()
+      return
+    }
     if (path.startsWith('/api/site-identity')) {
       response.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(IDENTITY))
       return
@@ -213,7 +232,13 @@ const startFakeApi = () =>
         .end(readFileSync('public/images/og-image.jpg'))
       return
     }
-    const upstream = await fetch(`${API_URL}${path}`).catch(() => null)
+    const upstream = await fetch(`${API_URL}${path}`, {
+      method: request.method ?? 'GET',
+      ...(request.method === 'POST' && {
+        headers: { 'content-type': request.headers['content-type'] ?? 'application/json' },
+        body: await readBody(request),
+      }),
+    }).catch(() => null)
     if (!upstream) {
       response.writeHead(502).end()
       return
@@ -221,7 +246,7 @@ const startFakeApi = () =>
     const contentType = upstream.headers.get('content-type') ?? 'application/json'
     const body = Buffer.from(await upstream.arrayBuffer())
     response
-      .writeHead(upstream.status, { 'content-type': contentType })
+      .writeHead(upstream.status, { 'content-type': contentType, ...CORS })
       .end(
         upstream.ok && contentType.includes('json')
           ? JSON.stringify(patch(path, JSON.parse(body.toString())))
@@ -249,7 +274,7 @@ const chooseLight = (page: Page) =>
 const meta = (page: Page, selector: string) =>
   page.locator(selector).first().getAttribute('content')
 
-test.describe('Identité saisie dans l’admin : logo, couleurs, sombre par défaut (API factice)', () => {
+test.describe('Identité saisie dans l’admin : logo, couleurs, sombre par défaut, vente coupée (API factice)', () => {
   test.describe.configure({ mode: 'serial' })
 
   let app: ChildProcess | undefined
@@ -458,6 +483,109 @@ test.describe('Identité saisie dans l’admin : logo, couleurs, sombre par déf
     await expect(page.getByTestId('article-section')).toHaveCount(0)
     await expect(page.getByTestId('article-format')).toHaveCount(0)
   })
+
+  test('vente coupée : ni prix, ni filtre ni tri par prix, ni panier ; leurs paramètres sont ignorés', async ({
+    page,
+  }) => {
+    const response = await page.goto(`${APP_URL}/catalogue?prix_min=10&prix_max=20&tri=prix-desc`)
+    await expect(page.getByTestId('catalog-product').first()).toBeVisible()
+
+    await expect(page.getByTestId('catalog-product-price')).toHaveCount(0)
+    await expect(page.getByTestId('catalog-filter-price-min')).toHaveCount(0)
+    await expect(page.getByTestId('catalog-filter-price-max')).toHaveCount(0)
+    await expect(page.getByTestId('catalog-sort').locator('option')).toHaveText([
+      'Pertinence',
+      'Nom',
+    ])
+    await expect(page.getByTestId('catalog-sort')).toHaveValue('pertinence')
+    await expect(page.getByTestId('catalog-active-filters')).toHaveCount(0)
+    expect((await meta(page, 'meta[name="robots"]')) ?? '').not.toContain('noindex')
+    expect(response?.status()).toBe(200)
+    await expect(page.getByTestId('cart-link')).toHaveCount(0)
+
+    await page.goto(APP_URL)
+    await expect(
+      page.getByTestId('home-carousel').getByTestId('carousel-slide-link').first(),
+    ).toBeVisible()
+    await expect(page.getByTestId('home-carousel')).not.toContainText('€')
+
+    expect((await page.goto(`${APP_URL}/panier`))?.status()).toBe(404)
+  })
+
+  test('vente coupée : la fiche mène à une demande de renseignement, envoyée avec le produit', async ({
+    page,
+  }) => {
+    const cart = JSON.stringify([
+      { slug: 'monstera-deliciosa', name: 'Monstera deliciosa', price: 3490, quantity: 2 },
+    ])
+    await page.addInitScript((stored) => {
+      if (!localStorage.getItem('panier')) localStorage.setItem('panier', stored)
+    }, cart)
+
+    await page.goto(`${APP_URL}/produit/${PRODUCT_WITH_META}`)
+    await expect(page.getByTestId('product-title')).toHaveText('Monstera deliciosa')
+    await expect(page.getByTestId('product-price')).toHaveCount(0)
+    await expect(page.getByTestId('add-to-cart')).toHaveCount(0)
+    await expect(page.getByTestId('cart-link')).toHaveCount(0)
+    await expect(page.getByTestId('product-similar')).not.toContainText('€')
+    const product = (await page.locator('script[type="application/ld+json"]').allTextContents())
+      .map((text) => JSON.parse(text) as Json)
+      .find((item) => item['@type'] === 'Product')
+    expect(product).toBeDefined()
+    expect(product).not.toHaveProperty('offers')
+
+    const inquiry = page.getByTestId('product-inquiry')
+    await expect(inquiry).toHaveAccessibleName('Demande de renseignement sur Monstera deliciosa')
+    expect((await inquiry.boundingBox())?.height).toBeGreaterThanOrEqual(44)
+    await inquiry.click()
+
+    await expect(page).toHaveURL(`${APP_URL}/contact?produit=${PRODUCT_WITH_META}`)
+    await expect(page.getByTestId('contact-product')).toHaveText(
+      'Votre demande concerne : Monstera deliciosa',
+    )
+    await page.getByTestId('contact-name').fill('Ada')
+    await page.getByTestId('contact-email').fill('ada@exemple.fr')
+    await page.getByTestId('contact-message').fill('Est-il livré avec son tuteur ?')
+    const request = page.waitForRequest(
+      (sent) => sent.method() === 'POST' && sent.url().endsWith('/api/contact_messages'),
+    )
+    await page.getByTestId('contact-submit').click()
+
+    await expect(page.getByTestId('contact-success')).toContainText(
+      'Votre demande de renseignement a bien été envoyée.',
+    )
+    expect((await request).postDataJSON()).toMatchObject({ product: PRODUCT_WITH_META })
+    expect(await page.evaluate(() => localStorage.getItem('panier'))).toBe(cart)
+  })
+
+  test('vente coupée : la demande de renseignement reste proposée sans JavaScript, même en rupture', async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false })
+    const page = await context.newPage()
+    await page.goto(`${APP_URL}/produit/monstera-thai-constellation`)
+
+    await expect(page.getByTestId('product-inquiry')).toHaveAttribute(
+      'href',
+      '/contact?produit=monstera-thai-constellation',
+    )
+    await context.close()
+  })
+
+  for (const mode of MODES) {
+    for (const path of [`/produit/${PRODUCT_WITH_META}`, `/contact?produit=${PRODUCT_WITH_META}`]) {
+      test(`vente coupée : ${path} en mode ${mode} ne présente aucune violation axe`, async ({
+        page,
+      }) => {
+        if (mode === 'standard') await chooseLight(page)
+        await useMode(page, mode)
+        await page.goto(`${APP_URL}${path}`)
+        await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+
+        await expectNoViolations(page)
+      })
+    }
+  }
 
   for (const mode of MODES) {
     test(`l’accueil avec logo et couleurs en mode ${mode} ne présente aucune violation axe`, async ({
