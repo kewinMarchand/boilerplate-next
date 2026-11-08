@@ -5,6 +5,15 @@ import type { Page } from '@playwright/test'
 const waitForCarousel = (page: Page) =>
   expect(page.getByTestId('carousel-viewport')).toHaveAttribute('data-embla-ready', 'true')
 
+const blogCardBoxes = async (page: Page) => {
+  const cards = page.getByTestId('home-blog-card')
+  await expect(cards).toHaveCount(3)
+  const boxes = await Promise.all([0, 1, 2].map((index) => cards.nth(index).boundingBox()))
+  const [featured, second, third] = boxes
+  if (!featured || !second || !third) throw new Error('Cartes du blog introuvables')
+  return { featured, second, third }
+}
+
 test.describe('Accueil', () => {
   test('affiche le hero, le carrousel et la grille de blog dans cet ordre', async ({ page }) => {
     await page.goto('/')
@@ -121,6 +130,106 @@ test.describe('Accueil', () => {
     await expect
       .poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth))
       .toBeGreaterThan(0)
+  })
+
+  test('les diapositives du carrousel débordent du conteneur sans faire défiler la page', async ({
+    page,
+  }, testInfo) => {
+    await page.goto('/')
+    await waitForCarousel(page)
+
+    const section = await page.getByTestId('home-carousel').boundingBox()
+    if (!section) throw new Error('Carrousel introuvable')
+    const sectionRight = section.x + section.width
+    const slides = await page.getByTestId('carousel-slide').evaluateAll((elements) =>
+      elements.map((slide) => {
+        const { left, right } = slide.getBoundingClientRect()
+        return { left, right }
+      }),
+    )
+    expect(Math.max(...slides.map((slide) => slide.right))).toBeGreaterThan(sectionRight)
+    if (testInfo.project.name === 'mobile') {
+      const next = slides[1]
+      if (!next) throw new Error('Deuxième diapositive introuvable')
+      expect(next.left).toBeLessThan(sectionRight)
+      expect(next.right).toBeGreaterThan(sectionRight)
+    }
+
+    const { scrollWidth, innerWidth } = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      innerWidth: window.innerWidth,
+    }))
+    expect(scrollWidth).toBeLessThanOrEqual(innerWidth)
+  })
+
+  test.describe('grille de blog', () => {
+    test('l’image de l’article à la une demande une variante plus large que les autres', async ({
+      page,
+    }) => {
+      await page.goto('/')
+
+      const cards = page.getByTestId('home-blog-card')
+      const featuredSources = cards.first().locator('source')
+      await expect(featuredSources).not.toHaveCount(0)
+      for (const source of await featuredSources.all()) {
+        await expect(source).toHaveAttribute(
+          'sizes',
+          '(min-width: 1440px) 920px, (min-width: 1024px) 66vw, 100vw',
+        )
+      }
+      await expect(cards.nth(1).locator('source').first()).toHaveAttribute(
+        'sizes',
+        '(min-width: 1440px) 460px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw',
+      )
+    })
+
+    test('sur ordinateur, l’article à la une prend deux tiers et les deux autres sont empilés à droite', async ({
+      page,
+    }, testInfo) => {
+      test.skip(testInfo.project.name === 'mobile', 'Largeur ordinateur')
+      await page.setViewportSize({ width: 1280, height: 900 })
+      await page.goto('/')
+
+      const { featured, second, third } = await blogCardBoxes(page)
+      expect(featured.width / second.width).toBeGreaterThan(1.8)
+      expect(featured.width / second.width).toBeLessThan(2.3)
+      expect(second.x).toBeGreaterThan(featured.x + featured.width)
+      expect(third.x).toBeCloseTo(second.x, 0)
+      expect(third.width).toBeCloseTo(second.width, 0)
+      expect(third.y).toBeGreaterThan(second.y + second.height)
+      expect(featured.y).toBeCloseTo(second.y, 0)
+      expect(featured.y + featured.height).toBeCloseTo(third.y + third.height, 0)
+    })
+
+    test('sur tablette, l’article à la une et les deux autres ont la même largeur, côte à côte', async ({
+      page,
+    }, testInfo) => {
+      test.skip(testInfo.project.name === 'mobile', 'Largeur tablette')
+      await page.setViewportSize({ width: 768, height: 900 })
+      await page.goto('/')
+
+      const { featured, second, third } = await blogCardBoxes(page)
+      expect(featured.width).toBeCloseTo(second.width, 0)
+      expect(second.x).toBeGreaterThan(featured.x + featured.width)
+      expect(featured.y).toBeCloseTo(second.y, 0)
+      expect(third.x).toBeCloseTo(second.x, 0)
+      expect(third.y).toBeGreaterThan(second.y + second.height)
+    })
+
+    test('sur mobile, les trois articles ont la même largeur et sont empilés', async ({
+      page,
+    }, testInfo) => {
+      test.skip(testInfo.project.name === 'desktop', 'Largeur mobile')
+      await page.goto('/')
+
+      const { featured, second, third } = await blogCardBoxes(page)
+      expect(second.width).toBeCloseTo(featured.width, 0)
+      expect(third.width).toBeCloseTo(featured.width, 0)
+      expect(second.x).toBeCloseTo(featured.x, 0)
+      expect(third.x).toBeCloseTo(featured.x, 0)
+      expect(second.y).toBeGreaterThan(featured.y + featured.height)
+      expect(third.y).toBeGreaterThan(second.y + second.height)
+    })
   })
 
   test.describe('sans JavaScript', () => {

@@ -10,7 +10,7 @@
 }
 
 .viewport[data-embla-ready] {
-  overflow: hidden;
+  overflow: visible;
   scroll-snap-type: none;
 }
 
@@ -23,7 +23,7 @@
 
 .slide {
   position: relative;
-  flex: 0 0 100%;
+  flex: 0 0 85%;
   min-width: 0;
   padding-inline-start: var(--bui-space-6);
   scroll-snap-align: start;

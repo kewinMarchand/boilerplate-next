@@ -7,6 +7,10 @@ import styles from './BlogGrid.module.css'
 
 import type { Article } from '../domain/article'
 
+const FEATURED_SIZES = '(min-width: 1440px) 920px, (min-width: 1024px) 66vw, 100vw'
+const SIDE_SIZES =
+  '(min-width: 1440px) 460px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw'
+
 interface BlogGridProps {
   status: 'pending' | 'error' | 'success'
   articles: Article.Entity[] | undefined
@@ -48,18 +52,14 @@ export const BlogGrid = ({ status, articles, errorMessage }: BlogGridProps) => {
 
   return (
     <div className={styles.grid}>
-      {articles.map((article) => (
+      {articles.map((article, index) => (
         <article
           key={article.id}
           data-testid="home-blog-card"
           className={`bui-card ${styles.card}`}
         >
           {article.image && (
-            <Picture
-              image={article.image}
-              sizes="(min-width: 1440px) 460px, (min-width: 1024px) 33vw, (min-width: 600px) 50vw, 100vw"
-              style={{ display: 'block', width: '100%', height: 'auto' }}
-            />
+            <Picture image={article.image} sizes={index === 0 ? FEATURED_SIZES : SIDE_SIZES} />
           )}
           <div className={styles.body}>
             <h3 className={`bui-text bui-text--h3 ${styles.title}`}>

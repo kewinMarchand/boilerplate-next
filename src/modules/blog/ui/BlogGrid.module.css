@@ -1,24 +1,60 @@
 .grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: var(--bui-space-6);
 }
 
-@media (min-width: 640px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+.grid > * {
+  grid-column: span 12;
+}
+
+@media (min-width: 768px) {
+  .grid > * {
+    grid-column: 7 / -1;
+  }
+
+  .grid > :first-child {
+    grid-row: span 2;
+    grid-column: 1 / span 6;
+  }
+
+  .card:first-child {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Base nulle : l'image à la une prend la hauteur laissée par les deux autres cartes sans l'agrandir */
+  .card:first-child picture {
+    display: block;
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+  .card:first-child img {
+    height: 100%;
+    object-fit: cover;
   }
 }
 
 @media (min-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
+  .grid > * {
+    grid-column: 9 / -1;
+  }
+
+  .grid > :first-child {
+    grid-column: 1 / span 8;
   }
 }
 
 .card {
   position: relative;
   container-type: inline-size;
+}
+
+.card img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* Lien étiré sur toute la carte : un seul lien, nommé par le titre */

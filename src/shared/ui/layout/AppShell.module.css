@@ -6,4 +6,6 @@
 
 .main {
   flex-grow: 1;
+  /* Les carrousels débordent jusqu'aux bords de la fenêtre : coupés ici plutôt que sur body */
+  overflow-x: clip;
 }
