@@ -146,13 +146,33 @@ describe('toProductDetail', () => {
         { slug: 'feuillages', name: 'Feuillages' },
         { slug: 'monstera', name: 'Monstera' },
       ],
+      description: '',
     })
 
     expect(detail.id).toBe('1')
+    expect(detail.description).toEqual([])
     expect(detail.categoryPath.map((link) => link.href)).toEqual([
       '/catalogue/plantes-interieur',
       '/catalogue/plantes-interieur/feuillages',
       '/catalogue/plantes-interieur/feuillages/monstera',
     ])
+  })
+
+  it('découpe la description en paragraphes aux lignes vides', () => {
+    const detail = toProductDetail({
+      id: 1,
+      slug: 'palmier-nain',
+      name: 'Palmier nain',
+      categorySlug: 'palmiers',
+      price: 4490,
+      exposure: 'soleil',
+      size: 'M',
+      inStock: true,
+      image: null,
+      categoryPath: [{ slug: 'palmiers', name: 'Palmiers' }],
+      description: 'Rustique.\n\n  \nRésiste au vent,\naux embruns.',
+    })
+
+    expect(detail.description).toEqual(['Rustique.', 'Résiste au vent,\naux embruns.'])
   })
 })

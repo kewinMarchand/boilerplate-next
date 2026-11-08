@@ -33,3 +33,7 @@
 .features dd {
   margin: 0;
 }
+
+.paragraph {
+  margin-block: 0 var(--bui-space-4);
+}

@@ -43,9 +43,11 @@ export declare namespace Catalog {
     image: ResponsiveImage | null
   }
 
-  /** Fiche : le produit et le chemin de sa catégorie, de la racine à elle (fil d'Ariane). */
+  /** Fiche : le produit, sa description et le chemin de sa catégorie, de la racine à elle (fil d'Ariane). */
   interface ProductDetail extends Product {
     categoryPath: CategoryPath
+    /** Paragraphes de la description, vide si l'admin n'en a pas écrit. */
+    description: string[]
   }
 
   interface Query {

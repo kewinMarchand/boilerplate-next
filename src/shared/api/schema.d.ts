@@ -164,26 +164,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/slides": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Retrieves the collection of Slide resources.
-         * @description Retrieves the collection of Slide resources.
-         */
-        get: operations["api_slides_get_collection"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/tasks": {
         parameters: {
             query?: never;
@@ -564,6 +544,8 @@ export interface components {
             image: components["schemas"]["ImageView"] | null;
             /** @description Catégories de la racine à celle du produit, pour le fil d'Ariane. */
             categoryPath: components["schemas"]["CategoryLink"][];
+            /** @description Texte brut, paragraphes séparés par une ligne vide ; chaîne vide si l'admin n'en a pas écrit. */
+            description: string;
         };
         /** @description Lit un produit par son slug. */
         "ProductDetail.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
@@ -582,6 +564,8 @@ export interface components {
             image: components["schemas"]["ImageView.jsonld"] | null;
             /** @description Catégories de la racine à celle du produit, pour le fil d'Ariane. */
             categoryPath: components["schemas"]["CategoryLink.jsonld"][];
+            /** @description Texte brut, paragraphes séparés par une ligne vide ; chaîne vide si l'admin n'en a pas écrit. */
+            description: string;
         };
         ProductFacets: {
             /** @description Toutes les expositions, y compris à 0. */
@@ -650,24 +634,6 @@ export interface components {
             /** @description Nombre de pages, 0 si aucun résultat. */
             totalPages: number;
             facets: components["schemas"]["ProductFacets.jsonld"];
-        };
-        /** @description Liste les diapositives dans l'ordre du carrousel, sans pagination. */
-        Slide: {
-            id: number;
-            slug: string;
-            title: string;
-            text: string;
-            /** @description Image de la diapositive (16:9), null tant que l'admin n'en a pas envoyé. */
-            image: components["schemas"]["ImageView"] | null;
-        };
-        /** @description Liste les diapositives dans l'ordre du carrousel, sans pagination. */
-        "Slide.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
-            id: number;
-            slug: string;
-            title: string;
-            text: string;
-            /** @description Image de la diapositive (16:9), null tant que l'admin n'en a pas envoyé. */
-            image: components["schemas"]["ImageView.jsonld"] | null;
         };
         /** @description Liste toutes les tâches, sans pagination. */
         Task: {
@@ -962,29 +928,6 @@ export interface operations {
                     "application/ld+json": components["schemas"]["Error.jsonld"];
                     "application/problem+json": components["schemas"]["Error"];
                     "application/json": components["schemas"]["Error"];
-                };
-            };
-        };
-    };
-    api_slides_get_collection: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Slide collection */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Slide"][];
-                    "application/ld+json": components["schemas"]["HydraCollectionBaseSchemaNoPagination"] & {
-                        member: components["schemas"]["Slide.jsonld"][];
-                    };
                 };
             };
         };

@@ -45,6 +45,11 @@ export const toProductDetail = (dto: ProductDetailDto): Catalog.ProductDetail =>
     name: link.name,
     href: categoryHref(dto.categoryPath.slice(0, index + 1).map((step) => step.slug)),
   })),
+  // Le contrat sépare les paragraphes par une ligne vide
+  description: dto.description
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph !== ''),
 })
 
 const toFacetCounts = <T extends string>(values: readonly T[], dtos: FacetDto[]) =>

@@ -66,6 +66,7 @@ export const blogPostingJsonLd = (article: {
 
 export const productJsonLd = (product: {
   name: string
+  description: string
   path: string
   sku: string
   category: string | undefined
@@ -77,6 +78,7 @@ export const productJsonLd = (product: {
   '@context': 'https://schema.org',
   '@type': 'Product',
   name: product.name,
+  ...(product.description && { description: product.description }),
   sku: product.sku,
   url: absoluteUrl(product.path),
   ...(product.category && { category: product.category }),

@@ -20,7 +20,7 @@ interface ProductViewProps {
   slug: string
 }
 
-/** Fiche d'un produit, lue dans l'API : image, prix, caractéristiques et chemin de sa catégorie. */
+/** Fiche d'un produit, lue dans l'API : image, prix, description, caractéristiques et chemin de sa catégorie. */
 export const ProductView = async ({ slug }: ProductViewProps) => {
   const product = await loadProduct(slug).catch((error: unknown) => {
     console.error(error)
@@ -70,6 +70,15 @@ export const ProductView = async ({ slug }: ProductViewProps) => {
           <p className={`bui-text bui-text--lead ${styles.price}`} data-testid="product-price">
             {formatPrice(product.price)}
           </p>
+          {product.description.length > 0 && (
+            <div data-testid="product-description">
+              {product.description.map((paragraph) => (
+                <p key={paragraph} className={styles.paragraph}>
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          )}
           <dl className={styles.features}>
             <dt>Exposition</dt>
             <dd>{EXPOSURE_LABELS[product.exposure]}</dd>
@@ -90,6 +99,7 @@ export const ProductView = async ({ slug }: ProductViewProps) => {
       <JsonLd
         data={productJsonLd({
           name: product.name,
+          description: product.description.join(' '),
           path,
           sku: product.slug,
           category: category?.name,
