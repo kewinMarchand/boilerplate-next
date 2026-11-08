@@ -36,6 +36,7 @@ export const LogoLink = ({ brand: { name, logo } }: LogoLinkProps) => {
           loading="eager"
           fetchPriority="high"
           style={{ height: LOGO_HEIGHT, width: 'auto' }}
+          hasErrorFallback={false}
         />
       ) : (
         <>

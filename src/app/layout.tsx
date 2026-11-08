@@ -4,6 +4,7 @@ import { SITE } from '@/shared/config'
 import { Providers } from '@/shared/providers'
 import { A11Y_MODE_SCRIPT } from '@/shared/ui/a11y-mode/a11yMode'
 import { COLOR_SCHEME_SCRIPT } from '@/shared/ui/color-scheme/colorScheme'
+import { ImageFallback } from '@/shared/ui/kit'
 import { AppShell } from '@/shared/ui/layout'
 
 import { CartLink } from '@/modules/cart'
@@ -58,6 +59,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <meta property="og:site_name" content={identity.name} />
       </head>
       <body>
+        <ImageFallback />
         <Providers>
           <AppShell
             brand={{ name: identity.name, logo: identity.logo }}

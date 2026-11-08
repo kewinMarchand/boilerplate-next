@@ -67,6 +67,8 @@ interface PictureProps {
   fetchPriority?: 'high' | 'low' | 'auto'
   draggable?: boolean
   style?: CSSProperties
+  /** Fond neutre si l'image échoue (`bui-picture`). Coupé pour le logo, dont le texte de remplacement reste lisible. */
+  hasErrorFallback?: boolean
 }
 
 /** Variantes AVIF puis WebP générées à l'avance : aucun encodage à la volée par le serveur. */
@@ -78,10 +80,11 @@ export const Picture = ({
   fetchPriority = isPriority ? 'high' : 'auto',
   draggable,
   style,
+  hasErrorFallback = true,
 }: PictureProps) => (
   <>
     {isPriority && <PicturePreload image={image} sizes={sizes} />}
-    <picture>
+    <picture className={hasErrorFallback ? 'bui-picture' : undefined}>
       {image.sources.map((source) => (
         <source key={source.type} type={source.type} srcSet={source.srcset} sizes={sizes} />
       ))}
