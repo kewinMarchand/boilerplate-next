@@ -1,0 +1,39 @@
+.card {
+  position: relative;
+  container-type: inline-size;
+}
+
+.card img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Lien étiré sur toute la carte : un seul lien, nommé par le titre */
+.link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.body {
+  padding: var(--bui-space-4);
+}
+
+@container (min-width: 360px) {
+  .body {
+    padding: var(--bui-space-6);
+  }
+}
+
+.title {
+  margin-block-end: 0.35em;
+}
+
+.excerpt {
+  margin-block-end: var(--bui-space-4);
+}
+
+.date {
+  color: var(--bui-color-text-muted);
+}

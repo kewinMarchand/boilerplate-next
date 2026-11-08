@@ -1,12 +1,11 @@
 import { Alert, Skeleton } from '@kewinmarchand/boilerplates-ui/react'
 
-import { Link, Picture } from '@/shared/ui/kit'
-
-import { articleHref, formatPublishedAt } from '../domain/article'
+import { ArticleCard } from './ArticleCard'
 import styles from './BlogGrid.module.css'
 
 import type { Article } from '../domain/article'
 
+const LATEST_COUNT = 3
 const FEATURED_SIZES = '(min-width: 1440px) 920px, (min-width: 1024px) 66vw, 100vw'
 const SIDE_SIZES =
   '(min-width: 1440px) 460px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw'
@@ -52,27 +51,13 @@ export const BlogGrid = ({ status, articles, errorMessage }: BlogGridProps) => {
 
   return (
     <div className={styles.grid}>
-      {articles.map((article, index) => (
-        <article
+      {articles.slice(0, LATEST_COUNT).map((article, index) => (
+        <ArticleCard
           key={article.id}
+          article={article}
+          sizes={index === 0 ? FEATURED_SIZES : SIDE_SIZES}
           data-testid="home-blog-card"
-          className={`bui-card ${styles.card}`}
-        >
-          {article.image && (
-            <Picture image={article.image} sizes={index === 0 ? FEATURED_SIZES : SIDE_SIZES} />
-          )}
-          <div className={styles.body}>
-            <h3 className={`bui-text bui-text--h3 ${styles.title}`}>
-              <Link href={articleHref(article.slug)} className={`bui-link ${styles.link}`}>
-                {article.title}
-              </Link>
-            </h3>
-            <p className={`bui-text ${styles.excerpt}`}>{article.excerpt}</p>
-            <p className={`bui-text bui-text--body-sm ${styles.date}`}>
-              <time dateTime={article.publishedAt}>{formatPublishedAt(article.publishedAt)}</time>
-            </p>
-          </div>
-        </article>
+        />
       ))}
     </div>
   )

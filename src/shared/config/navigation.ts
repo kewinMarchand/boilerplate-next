@@ -16,6 +16,7 @@ export const CATALOG_NAVIGATION: NavigationItem = { href: '/catalogue', label: '
 export const MAIN_NAVIGATION: NavigationItem[] = [
   { href: '/', label: 'Accueil' },
   CATALOG_NAVIGATION,
+  { href: '/blog', label: 'Blog' },
   { href: '/taches', label: 'Tâches' },
   { href: '/contact', label: 'Contact' },
 ]

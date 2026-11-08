@@ -1,3 +1,7 @@
 .title {
   margin-block-end: var(--bui-space-4);
 }
+
+.all {
+  margin-block-start: var(--bui-space-6);
+}

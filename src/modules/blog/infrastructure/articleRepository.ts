@@ -1,15 +1,26 @@
 import { ApiError } from '@/shared/api/client'
-import { staticApiClient } from '@/shared/api/client.server'
+import { serverApiClient, staticApiClient } from '@/shared/api/client.server'
 
 import { toArticle, toArticleDetail } from './http/articleTranslation'
 
 import type { Article } from '../domain/article'
 
-export const findLatestArticles = async (): Promise<Article.Entity[]> => {
-  const { data, response } = await staticApiClient().GET('/api/articles')
+const listArticles = async (
+  client: ReturnType<typeof staticApiClient>,
+): Promise<Article.Entity[]> => {
+  const { data, response } = await client.GET('/api/articles')
   if (!data) throw new ApiError(response)
   return data.map(toArticle)
 }
+
+export const findLatestArticles = () => listArticles(staticApiClient())
+
+/**
+ * Page `/blog` : statique comme le reste. Un build de test (`ENABLE_TEST_ROUTES=1`) relaie `X-Scenario`,
+ * ce qui rend la route dynamique, pour que les tests e2e provoquent les états d'erreur et de liste vide.
+ */
+export const findArticles = async () =>
+  listArticles(process.env.ENABLE_TEST_ROUTES === '1' ? await serverApiClient() : staticApiClient())
 
 /** `null` si l'API ne connaît pas l'article (404). */
 export const findArticle = async (slug: string): Promise<Article.Detail | null> => {

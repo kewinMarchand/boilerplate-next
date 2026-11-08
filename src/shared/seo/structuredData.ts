@@ -46,6 +46,23 @@ export const itemListJsonLd = (pagePath: string, names: string[]) => ({
   })),
 })
 
+export const blogJsonLd = (
+  path: string,
+  posts: { title: string; path: string; publishedAt: string }[],
+) => ({
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: 'Blog',
+  url: absoluteUrl(path),
+  inLanguage: 'fr-FR',
+  blogPost: posts.map((post) => ({
+    '@type': 'BlogPosting',
+    headline: post.title,
+    url: absoluteUrl(post.path),
+    datePublished: post.publishedAt,
+  })),
+})
+
 export const blogPostingJsonLd = (article: {
   title: string
   description: string

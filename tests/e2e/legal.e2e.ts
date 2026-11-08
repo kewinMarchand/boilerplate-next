@@ -54,7 +54,7 @@ test.describe('Pages légales', () => {
     await page.goto('/plan-du-site')
 
     const sitemap = page.getByTestId('legal-sitemap')
-    await expect(sitemap.getByRole('link')).toHaveCount(22)
+    await expect(sitemap.getByRole('link')).toHaveCount(23)
     await expect(sitemap.getByRole('link', { name: 'Accueil' })).toHaveAttribute('href', '/')
     await expect(sitemap.getByRole('link', { name: 'Nénuphars' })).toHaveAttribute(
       'href',

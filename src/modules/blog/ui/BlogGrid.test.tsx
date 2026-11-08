@@ -52,6 +52,21 @@ describe('BlogGrid', () => {
     expect(screen.getByText('29 septembre 2026')).toHaveAttribute('datetime', '2026-09-29')
   })
 
+  it('se limite aux trois articles les plus récents', () => {
+    const articles = ['a', 'b', 'c', 'd'].map((slug, index) => ({
+      id: slug,
+      slug,
+      title: `Article ${index + 1}`,
+      excerpt: '',
+      publishedAt: '2026-09-01',
+      image: null,
+    }))
+    render(<BlogGrid status="success" articles={articles} />)
+
+    expect(screen.getAllByTestId('home-blog-card')).toHaveLength(3)
+    expect(screen.queryByRole('heading', { name: 'Article 4' })).not.toBeInTheDocument()
+  })
+
   it('relie chaque carte à sa fiche par son titre', () => {
     render(<BlogGrid status="success" articles={ARTICLES} />)
 

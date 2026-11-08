@@ -14,6 +14,7 @@
         "http://localhost:3200/donnees-personnelles",
         "http://localhost:3200/accessibilite",
         "http://localhost:3200/plan-du-site",
+        "http://localhost:3200/blog",
         "http://localhost:3200/blog/le-mode-accessibilite-renforcee",
         "http://localhost:3200/produit/monstera-deliciosa"
       ],

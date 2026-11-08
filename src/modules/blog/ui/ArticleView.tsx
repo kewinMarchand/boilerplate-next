@@ -4,14 +4,13 @@ import { Alert } from '@kewinmarchand/boilerplates-ui/react'
 
 import { blogPostingJsonLd, JsonLd } from '@/shared/seo'
 import { largestWebp, Link, Picture, RichHtml } from '@/shared/ui/kit'
-import { PageContainer } from '@/shared/ui/layout'
+import { buildBreadcrumb, PageContainer } from '@/shared/ui/layout'
 
 import { articleHref, formatPublishedAt } from '../domain/article'
 import { ArticleLoadError } from '../infrastructure/ArticleLoadError'
 import { findArticle } from '../infrastructure/articleRepository'
 import styles from './ArticleView.module.css'
 
-const HOME = { label: 'Accueil', href: '/' }
 const IMAGE_SIZES = '(min-width: 800px) 760px, calc(100vw - 32px)'
 
 interface ArticleViewProps {
@@ -29,7 +28,9 @@ export const ArticleView = async ({ slug }: ArticleViewProps) => {
 
   if (article === undefined) {
     return (
-      <PageContainer breadcrumb={[HOME, { label: 'Article', href: articleHref(slug) }]}>
+      <PageContainer
+        breadcrumb={buildBreadcrumb('/blog', [{ label: 'Article', href: articleHref(slug) }])}
+      >
         <h1 className={`bui-text bui-text--h1 ${styles.title}`}>Article</h1>
         <div data-testid="article-error">
           <Alert variant="error">{new ArticleLoadError().message}</Alert>
@@ -41,7 +42,7 @@ export const ArticleView = async ({ slug }: ArticleViewProps) => {
   const path = articleHref(article.slug)
 
   return (
-    <PageContainer breadcrumb={[HOME, { label: article.title, href: path }]}>
+    <PageContainer breadcrumb={buildBreadcrumb('/blog', [{ label: article.title, href: path }])}>
       <article className={styles.article} data-testid="article-page">
         <h1 className={`bui-text bui-text--h1 ${styles.title}`} data-testid="article-title">
           {article.title}
@@ -63,8 +64,8 @@ export const ArticleView = async ({ slug }: ArticleViewProps) => {
         )}
         <RichHtml html={article.html} data-testid="article-body" />
         <p className={styles.back}>
-          <Link href="/" className="bui-link">
-            Retour à l’accueil
+          <Link href="/blog" className="bui-link" data-testid="article-blog-link">
+            Tous les articles
           </Link>
         </p>
       </article>
