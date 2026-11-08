@@ -6,6 +6,7 @@ import { A11Y_MODE_SCRIPT } from '@/shared/ui/a11y-mode/a11yMode'
 import { COLOR_SCHEME_SCRIPT } from '@/shared/ui/color-scheme/colorScheme'
 import { AppShell } from '@/shared/ui/layout'
 
+import { CartLink } from '@/modules/cart'
 import { getCategoryMenu } from '@/modules/catalog'
 
 import type { Metadata, Viewport } from 'next'
@@ -44,7 +45,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       </head>
       <body>
         <Providers>
-          <AppShell categoryMenu={await getCategoryMenu()}>{children}</AppShell>
+          <AppShell categoryMenu={await getCategoryMenu()} cartLink={<CartLink />}>
+            {children}
+          </AppShell>
         </Providers>
       </body>
     </html>

@@ -12,10 +12,12 @@ import type { ReactNode } from 'react'
 
 interface AppShellProps {
   categoryMenu: NavigationNode[]
+  /** Lien du panier, fourni par la couche de routage : le socle n'importe pas de module. */
+  cartLink: ReactNode
   children: ReactNode
 }
 
-export const AppShell = ({ categoryMenu, children }: AppShellProps) => (
+export const AppShell = ({ categoryMenu, cartLink, children }: AppShellProps) => (
   <div className={styles.shell}>
     {isAudienceMeasurementEnabled && (
       // Avant la page : React exécute les effets dans l'ordre du rendu, ceux du traceur (dont
@@ -26,7 +28,7 @@ export const AppShell = ({ categoryMenu, children }: AppShellProps) => (
       </Suspense>
     )}
     <SkipLink />
-    <Header categoryMenu={categoryMenu} />
+    <Header categoryMenu={categoryMenu} cartLink={cartLink} />
     <main id="main" tabIndex={-1} className={styles.main}>
       {children}
     </main>

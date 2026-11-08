@@ -10,6 +10,7 @@ const EXTRA_ROUTES = [
   '/catalogue?exposition=soleil&taille=M&tri=prix-asc&vue=liste',
   '/route-inexistante',
   '/_erreur-test',
+  '/panier',
 ]
 
 const expectNoViolations = async (page: Page) => {
@@ -37,6 +38,17 @@ for (const mode of MODES) {
       await expectNoViolations(page)
     })
   }
+
+  test(`le panier rempli en mode ${mode} ne présente aucune violation axe`, async ({ page }) => {
+    await useMode(page, mode)
+    await page.goto('/produit/monstera-deliciosa')
+    await page.getByTestId('add-to-cart').click()
+    await expect(page.getByTestId('cart-count')).toHaveText('1')
+    await page.goto('/panier')
+    await expect(page.getByTestId('cart-line')).toHaveCount(1)
+
+    await expectNoViolations(page)
+  })
 
   test(`le menu de navigation ouvert en mode ${mode} ne présente aucune violation axe`, async ({
     page,

@@ -37,3 +37,7 @@
 .paragraph {
   margin-block: 0 var(--bui-space-4);
 }
+
+.similar {
+  margin-block-start: var(--bui-space-12);
+}

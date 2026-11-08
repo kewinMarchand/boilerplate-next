@@ -11,12 +11,14 @@ import { MobileMenu } from './MobileMenu'
 import { NavLink } from './NavLink'
 
 import type { NavigationNode } from '@/shared/config'
+import type { ReactNode } from 'react'
 
 interface HeaderProps {
   categoryMenu: NavigationNode[]
+  cartLink: ReactNode
 }
 
-export const Header = ({ categoryMenu }: HeaderProps) => (
+export const Header = ({ categoryMenu, cartLink }: HeaderProps) => (
   <header className={styles.header}>
     <Container>
       <div className={styles.toolbar}>
@@ -37,6 +39,7 @@ export const Header = ({ categoryMenu }: HeaderProps) => (
             ))}
           </Cluster>
         </nav>
+        {cartLink}
         <ColorSchemeToggle />
         <A11yModeToggle />
       </div>

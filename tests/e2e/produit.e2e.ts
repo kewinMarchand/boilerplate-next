@@ -53,6 +53,21 @@ test.describe('Fiche produit', () => {
     expect(product?.description).toMatch(/^Grandes feuilles vert profond.+aide à grimper\.$/)
   })
 
+  test('propose les autres produits de sa catégorie, sans lui-même', async ({ page }) => {
+    await page.goto(PRODUCT)
+
+    const similar = page.getByTestId('product-similar')
+    await expect(similar.getByRole('heading', { level: 2 })).toHaveText('Produits similaires')
+    const links = similar.getByTestId('carousel-slide-link')
+    await expect(links).toHaveCount(2)
+    await expect(similar).not.toContainText('Monstera deliciosa')
+    const name = ((await links.first().textContent()) ?? '').trim()
+    await links.first().click()
+
+    await expect(page).toHaveURL(/\/produit\/monstera-/)
+    await expect(page.getByTestId('product-title')).toHaveText(name)
+  })
+
   test('répond 404 pour un produit inconnu', async ({ page }) => {
     const response = await page.goto('/produit/produit-inconnu')
 

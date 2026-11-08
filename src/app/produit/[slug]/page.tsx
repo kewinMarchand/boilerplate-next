@@ -1,3 +1,4 @@
+import { AddToCartButton } from '@/modules/cart'
 import { buildProductMetadata, listProductPaths, ProductView } from '@/modules/catalog'
 
 import type { Metadata } from 'next'
@@ -16,5 +17,15 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  return <ProductView slug={(await params).slug} />
+  return (
+    <ProductView
+      slug={(await params).slug}
+      purchase={(product) => (
+        <AddToCartButton
+          item={{ slug: product.slug, name: product.name, price: product.price }}
+          isAvailable={product.inStock}
+        />
+      )}
+    />
+  )
 }

@@ -13,15 +13,21 @@ import { CATALOG_ROOT_PATH, categoryTrail } from '../domain/categoryPath'
 import { formatPrice } from '../domain/price'
 import { EXPOSURE_LABELS } from './labels'
 import styles from './ProductView.module.css'
+import { SimilarProducts } from './SimilarProducts'
+
+import type { Catalog } from '../domain/catalog'
+import type { ReactNode } from 'react'
 
 const IMAGE_SIZES = '(min-width: 1440px) 680px, (min-width: 768px) 50vw, calc(100vw - 32px)'
 
 interface ProductViewProps {
   slug: string
+  /** Bouton d'achat, fourni par la couche de routage (module panier). */
+  purchase?: (product: Catalog.ProductDetail) => ReactNode
 }
 
 /** Fiche d'un produit, lue dans l'API : image, prix, description, caractéristiques et chemin de sa catégorie. */
-export const ProductView = async ({ slug }: ProductViewProps) => {
+export const ProductView = async ({ slug, purchase }: ProductViewProps) => {
   const product = await loadProduct(slug).catch((error: unknown) => {
     console.error(error)
     return undefined
@@ -87,6 +93,7 @@ export const ProductView = async ({ slug }: ProductViewProps) => {
             <dt>Disponibilité</dt>
             <dd>{product.inStock ? 'En stock' : <Badge>Rupture de stock</Badge>}</dd>
           </dl>
+          {purchase?.(product)}
           {category && (
             <p>
               <Link href={category.href} className="bui-link">
@@ -96,6 +103,9 @@ export const ProductView = async ({ slug }: ProductViewProps) => {
           )}
         </div>
       </article>
+      <div className={styles.similar}>
+        <SimilarProducts categorySlug={product.categorySlug} productSlug={product.slug} />
+      </div>
       <JsonLd
         data={productJsonLd({
           name: product.name,

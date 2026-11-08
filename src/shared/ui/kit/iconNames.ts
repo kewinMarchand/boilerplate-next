@@ -18,6 +18,7 @@ export const ICON_NAMES = [
   'moon',
   'person-standing',
   'rotate-cw',
+  'shopping-cart',
   'sliders-horizontal',
   'sun',
   'triangle-alert',
