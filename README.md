@@ -80,7 +80,8 @@ Variables d'environnement :
 | `make qa`                              | QA rapide : lint (dont architecture), auto-test des règles, format, types, tests unitaires                   |
 | `make arch-selftest`                   | Écrit une violation de chaque règle d'architecture, exige l'échec d'ESLint, puis la retire                   |
 | `make qa-full`                         | QA complète : QA rapide, e2e, accessibilité, pages de dev, Lighthouse                                        |
-| `make test-unit`                       | Vitest                                                                                                       |
+| `make test-unit`                       | Vitest ; `VITEST_CHANGED=1` : seulement les tests touchés par les modifications non commitées (`--changed`)  |
+| `make e2e-vite`                        | Playwright desktop sur les e2e modifiés depuis `origin/main`, `FICHIERS="…"` ou `GREP="…"` ; build réutilisé |
 | `make test-e2e`                        | Playwright, desktop et mobile, sur le build de production (port 3150)                                        |
 | `make test-a11y`                       | axe-core, WCAG 2.1 AA, sur chaque page, dans les deux modes d'affichage                                      |
 | `make test-dev`                        | Charte graphique, servie par `next dev` (port 3151)                                                          |
@@ -204,6 +205,10 @@ Renseigner `accessibility` dans `src/shared/config/site.ts` (date, taux de confo
 Démarrer le serveur avec `MAINTENANCE=1`. Toutes les routes répondent 503 avec `Retry-After: 3600` et une page HTML autonome, dans la langue de l'adresse (préfixe, sinon langue par défaut du site).
 
 ## Tests
+
+En développement, on ne lance que ce que le changement touche : `make qa` (porte de chaque commit), puis `make e2e-vite`. La suite complète (e2e desktop et mobile, accessibilité, pages de développement, Lighthouse) tourne en CI à chaque push ; `make test-e2e`, `make test-a11y`, `make test-dev`, `make metrics` et `make qa-full` restent disponibles à la main.
+
+`make e2e-vite` (`tools/e2e-vite.sh`) lance Playwright sur le seul projet desktop : par défaut les fichiers e2e modifiés par rapport à `origin/main` (`--only-changed`, qui suit aussi les fichiers importés par les tests), sinon `FICHIERS="tests/e2e/panier.e2e.ts …"` ou `GREP="motif"` (titre des tests, sur toute la suite e2e). Il ne reconstruit `.next` que si les sources ont changé depuis son dernier build : il calcule une empreinte (SHA-256 des fichiers suivis ou non ignorés par git, hors `tests/`, `*.md`, `*.test.ts(x)`, configurations Playwright et `.github/` ; fichiers `.env*` ; `API_URL` et variables `NEXT_PUBLIC_*`) et la compare à `.next/empreinte-e2e`, écrit après son build avec le `BUILD_ID` de ce build. Identiques, le build est servi tel quel (`E2E_SANS_BUILD=1` retire `yarn build` de la commande du serveur de Playwright) ; sinon il lance `ENABLE_TEST_ROUTES=1 yarn build` une fois. Un `make build` lancé entre deux (sans les routes de test) change le `BUILD_ID` et force donc la reconstruction. Comme pour `make test-e2e`, un serveur déjà ouvert sur le port 3150 est réutilisé.
 
 - **Unitaires et fonctionnels** : fichiers `*.test.ts(x)` à côté du code testé.
 - **End-to-end** : Playwright sert le build de production sur le port 3150, avec `ENABLE_TEST_ROUTES=1` pour la route de test de la 500. Les éléments sont ciblés par `data-testid`, préfixé par le module ou la zone (`tasks-list`, `catalog-product`, `layout-breadcrumb`). Chaque rendu conditionnel est testé présent et absent. Un test vérifie qu'aucune page ne déborde horizontalement à 375, 768 et 1280 px dans les deux modes et enregistre des captures de l'accueil et du catalogue dans `test-results/`.
