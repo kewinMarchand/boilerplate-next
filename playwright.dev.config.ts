@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test'
 
 import base from './playwright.config'
 
-const PORT = 3151
+const PORT = 4016
 const BASE_URL = `http://localhost:${PORT}`
 
 // Pages réservées au développement (charte graphique) : servies par `next dev`, pas par le build.

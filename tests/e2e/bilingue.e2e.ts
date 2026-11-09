@@ -12,8 +12,8 @@ import type { Page } from '@playwright/test'
 import type { ChildProcess } from 'node:child_process'
 
 const API_URL = process.env.API_URL ?? 'http://localhost:8090'
-const APP_PORT = 3106
-const MAINTENANCE_PORT = 3107
+const APP_PORT = 4002
+const MAINTENANCE_PORT = 4004
 const APP_URL = `http://localhost:${APP_PORT}`
 
 /**
@@ -61,7 +61,7 @@ const run = (command: string, args: string[]) =>
     )
   })
 
-// Les deux API autorisent l'origine du build bilingue (port 3106) : le navigateur les appelle directement.
+// Les deux API autorisent l'origine du build bilingue (port 4002) : le navigateur les appelle directement.
 const goto = (page: Page, path: string) => page.goto(`${APP_URL}${path}`)
 
 /** Chaînes d'un dictionnaire, coupées aux variables `{nom}`. */

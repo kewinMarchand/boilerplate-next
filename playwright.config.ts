@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const PORT = 3150
+const PORT = 4000
 const BASE_URL = `http://localhost:${PORT}`
 // `make e2e-vite` construit lui-même `.next`, seulement si les sources ont changé (tools/e2e-vite.sh)
 const BUILD = process.env.E2E_SANS_BUILD === '1' ? '' : 'yarn build && '

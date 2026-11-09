@@ -67,8 +67,8 @@ test.describe('Identité lue dans l’API (fixtures : sans logo ni couleurs)', (
   }
 })
 
-const APP_PORT = 3104
-const FAKE_API_PORT = 3105
+const APP_PORT = 4008
+const FAKE_API_PORT = 4009
 const APP_URL = `http://localhost:${APP_PORT}`
 const FAKE_API_URL = `http://localhost:${FAKE_API_PORT}`
 

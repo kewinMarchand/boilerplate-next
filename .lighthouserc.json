@@ -1,22 +1,22 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "yarn start --port 3200",
+      "startServerCommand": "yarn start --port 4019",
       "startServerReadyPattern": "Ready",
       "url": [
-        "http://localhost:3200/",
-        "http://localhost:3200/taches",
-        "http://localhost:3200/contact",
-        "http://localhost:3200/catalogue",
-        "http://localhost:3200/catalogue/plantes-interieur",
-        "http://localhost:3200/catalogue/plantes-interieur/feuillages",
-        "http://localhost:3200/mentions-legales",
-        "http://localhost:3200/donnees-personnelles",
-        "http://localhost:3200/accessibilite",
-        "http://localhost:3200/plan-du-site",
-        "http://localhost:3200/blog",
-        "http://localhost:3200/blog/le-mode-accessibilite-renforcee",
-        "http://localhost:3200/produit/monstera-deliciosa"
+        "http://localhost:4019/",
+        "http://localhost:4019/taches",
+        "http://localhost:4019/contact",
+        "http://localhost:4019/catalogue",
+        "http://localhost:4019/catalogue/plantes-interieur",
+        "http://localhost:4019/catalogue/plantes-interieur/feuillages",
+        "http://localhost:4019/mentions-legales",
+        "http://localhost:4019/donnees-personnelles",
+        "http://localhost:4019/accessibilite",
+        "http://localhost:4019/plan-du-site",
+        "http://localhost:4019/blog",
+        "http://localhost:4019/blog/le-mode-accessibilite-renforcee",
+        "http://localhost:4019/produit/monstera-deliciosa"
       ],
       "numberOfRuns": 3,
       "settings": {
@@ -26,7 +26,7 @@
     "assert": {
       "assertMatrix": [
         {
-          "matchingUrlPattern": "^http://localhost:3200/$",
+          "matchingUrlPattern": "^http://localhost:4019/$",
           "assertions": {
             "categories:performance": [
               "error",
@@ -59,7 +59,7 @@
           }
         },
         {
-          "matchingUrlPattern": "^http://localhost:3200/.+",
+          "matchingUrlPattern": "^http://localhost:4019/.+",
           "assertions": {
             "categories:performance": [
               "error",

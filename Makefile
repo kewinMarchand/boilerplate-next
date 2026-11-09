@@ -40,7 +40,7 @@ lint-staged: ## Vérifie les fichiers indexés (appelé par le hook pre-commit)
 docker-build: ## Construit l'image Docker de production
 	docker compose build
 
-docker-up: ## Lance l'image de production (port PORT, 3000 par défaut)
+docker-up: ## Lance l'image de production (port PORT, 4018 par défaut)
 	docker compose up
 
 docker-down: ## Arrête les conteneurs
