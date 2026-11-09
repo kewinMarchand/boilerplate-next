@@ -1,24 +1,43 @@
 import { productHref } from '../domain/catalog'
 import {
+  findAllProductEntries,
   findAllProductSlugs,
   findFeaturedProducts,
   findProduct,
   findSimilarProducts,
 } from '../infrastructure/catalogRepository'
 
+import type { LanguageAlternate } from '@/shared/i18n'
+
 /** Fiche d'un produit ; `null` si l'API ne le connaît pas, rejet si elle ne répond pas. */
-export const loadProduct = (slug: string) => findProduct(slug)
+export const loadProduct = (slug: string, locale: string) => findProduct(slug, locale)
+
+/** La fiche dans chaque langue (sélecteur de langue) ; aucune si l'API ne la connaît pas ou ne répond pas. */
+export const loadProductAlternates = async (
+  slug: string,
+  locale: string,
+): Promise<LanguageAlternate[]> =>
+  (await findProduct(slug, locale).catch(() => null))?.alternates ?? []
 
 /** Produits similaires de la fiche (même catégorie) ; aucun si l'API ne répond pas : la fiche reste l'essentiel. */
-export const loadSimilarProducts = (categorySlug: string, excludedSlug: string) =>
-  findSimilarProducts(categorySlug, excludedSlug).catch((error: unknown) => {
+export const loadSimilarProducts = (categorySlug: string, excludedSlug: string, locale: string) =>
+  findSimilarProducts(categorySlug, excludedSlug, locale).catch((error: unknown) => {
     console.error(error)
     return []
   })
 
 /** Produits « À la une » du carrousel de l'accueil ; rejet si l'API ne répond pas. */
-export const loadFeaturedProducts = () => findFeaturedProducts()
+export const loadFeaturedProducts = (locale: string) => findFeaturedProducts(locale)
 
-/** Chemins des fiches pour le sitemap et le pré-rendu ; aucun si l'API ne répond pas. */
-export const listProductPaths = async (): Promise<string[]> =>
-  (await findAllProductSlugs().catch(() => [])).map(productHref)
+/** Chemins des fiches d'une langue pour le pré-rendu ; aucun si l'API ne répond pas. */
+export const listProductPaths = async (locale: string): Promise<string[]> =>
+  (await findAllProductSlugs(locale).catch(() => [])).map(productHref)
+
+/** Chemins des fiches d'une langue, par identifiant, pour le sitemap ; aucun si l'API ne répond pas. */
+export const listProductEntries = async (locale: string) => ({
+  locale,
+  entries: (await findAllProductEntries(locale).catch(() => [])).map(({ id, slug }) => ({
+    key: id,
+    path: productHref(slug),
+  })),
+})

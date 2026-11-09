@@ -1,3 +1,4 @@
+import { getDictionary } from '@/shared/i18n/server'
 import { Link } from '@/shared/ui/kit'
 
 import { inquiryHref } from '../domain/contactSchema'
@@ -8,11 +9,14 @@ interface ProductInquiryLinkProps {
 }
 
 /** Remplace l'ajout au panier quand la vente en ligne est coupée ; un lien, il marche sans JavaScript. */
-export const ProductInquiryLink = ({ slug, name }: ProductInquiryLinkProps) => (
-  <p>
-    <Link href={inquiryHref(slug)} className="bui-button" data-testid="product-inquiry">
-      Demande de renseignement
-      <span className="bui-visually-hidden"> sur {name}</span>
-    </Link>
-  </p>
-)
+export const ProductInquiryLink = async ({ slug, name }: ProductInquiryLinkProps) => {
+  const t = (await getDictionary()).contact
+  return (
+    <p>
+      <Link href={inquiryHref(slug)} className="bui-button" data-testid="product-inquiry">
+        {t.inquiry}
+        <span className="bui-visually-hidden">{t.inquiryAbout(name)}</span>
+      </Link>
+    </p>
+  )
+}

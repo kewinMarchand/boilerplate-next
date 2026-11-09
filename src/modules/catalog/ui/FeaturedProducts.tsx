@@ -1,8 +1,8 @@
 import { Alert } from '@kewinmarchand/boilerplates-ui/react'
 
+import { getDictionary, getLocale } from '@/shared/i18n/server'
 import { Carousel } from '@/shared/ui/carousel'
 
-import { FeaturedProductsLoadError } from '../application/FeaturedProductsLoadError'
 import { loadFeaturedProducts } from '../application/products'
 import { productHref } from '../domain/catalog'
 import { formatPrice } from '../domain/price'
@@ -13,7 +13,8 @@ import { formatPrice } from '../domain/price'
  * JavaScript. Le carrousel doit défiler sans JavaScript, et l'accueil est pré-rendu de toute façon.
  */
 export const FeaturedProducts = async ({ showPrices }: { showPrices: boolean }) => {
-  const products = await loadFeaturedProducts().catch((error: unknown) => {
+  const [locale, t] = await Promise.all([getLocale(), getDictionary()])
+  const products = await loadFeaturedProducts(locale).catch((error: unknown) => {
     console.error(error)
     return null
   })
@@ -21,7 +22,7 @@ export const FeaturedProducts = async ({ showPrices }: { showPrices: boolean }) 
   if (!products) {
     return (
       <div data-testid="home-carousel-error">
-        <Alert variant="error">{new FeaturedProductsLoadError().message}</Alert>
+        <Alert variant="error">{t.catalog.featuredError}</Alert>
       </div>
     )
   }
@@ -31,11 +32,11 @@ export const FeaturedProducts = async ({ showPrices }: { showPrices: boolean }) 
 
   return (
     <Carousel
-      title="À la une"
+      title={t.catalog.featured}
       slides={products.map((product) => ({
         id: product.id,
         title: product.name,
-        ...(showPrices && { text: formatPrice(product.price) }),
+        ...(showPrices && { text: formatPrice(product.price, t.language.tag) }),
         image: product.image,
         href: productHref(product.slug),
       }))}

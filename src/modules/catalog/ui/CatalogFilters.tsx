@@ -4,6 +4,7 @@ import { useId, useState } from 'react'
 
 import { Button, Drawer } from '@kewinmarchand/boilerplates-ui/react'
 
+import { useDictionary } from '@/shared/i18n'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 import { Icon } from '@/shared/ui/kit'
 
@@ -31,6 +32,7 @@ export const CatalogFilters = ({
   total,
   salesEnabled,
 }: CatalogFiltersProps) => {
+  const t = useDictionary().catalog
   const isHydrated = useHydrated()
   const titleId = useId()
   const drawerId = useId()
@@ -50,7 +52,7 @@ export const CatalogFilters = ({
     />
   )
 
-  const filterLabel = `Filtrer${activeCount > 0 ? ` (${activeCount} actif${activeCount > 1 ? 's' : ''})` : ''}`
+  const filterLabel = t.filterButton(activeCount)
 
   return (
     <>
@@ -82,7 +84,7 @@ export const CatalogFilters = ({
       {!isOpen && (
         <aside aria-labelledby={titleId} className={styles.desktopOnly}>
           <h2 id={titleId} className={`bui-text bui-text--title ${styles.title}`}>
-            Filtres
+            {t.filters}
           </h2>
           {form}
         </aside>
@@ -90,14 +92,14 @@ export const CatalogFilters = ({
 
       <Drawer
         id={drawerId}
-        title="Filtres"
+        title={t.filters}
         open={isOpen}
         onClose={() => setIsOpen(false)}
         side="start"
-        closeLabel="Fermer les filtres"
+        closeLabel={t.closeFilters}
         footer={
           <Button fullWidth onClick={() => setIsOpen(false)}>
-            Voir les {total} produits
+            {t.showProducts(total)}
           </Button>
         }
       >

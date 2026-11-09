@@ -23,7 +23,13 @@ describe('toArticle', () => {
 })
 
 describe('toArticleDetail', () => {
-  const DETAIL = { ...ARTICLE, html: '<p>Texte</p>', metaTitle: '', metaDescription: '' }
+  const DETAIL = {
+    ...ARTICLE,
+    html: '<p>Texte</p>',
+    metaTitle: '',
+    metaDescription: '',
+    alternates: [{ locale: 'en', slug: 'an-accessible-carousel' }],
+  }
 
   it('reprend format, audio, intervenant et métadonnées', () => {
     expect(toArticleDetail({ ...DETAIL, metaTitle: 'Titre saisi' })).toMatchObject({
@@ -32,6 +38,7 @@ describe('toArticleDetail', () => {
       speaker: 'Présenté par Hina Teriierooiterai',
       metaTitle: 'Titre saisi',
       metaDescription: '',
+      alternates: [{ locale: 'en', path: '/blog/an-accessible-carousel' }],
     })
   })
 

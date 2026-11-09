@@ -1,4 +1,4 @@
-import { EXPOSURES, PAGE_SIZE, SIZES } from '@/modules/catalog/domain/catalog'
+import { EXPOSURES, PAGE_SIZE, productHref, SIZES } from '@/modules/catalog/domain/catalog'
 import { categoryHref } from '@/modules/catalog/domain/categoryPath'
 import { eurosToCents, Price } from '@/modules/catalog/domain/price'
 
@@ -31,6 +31,7 @@ export const toCategory = (dto: CategoryDto): Catalog.Category => ({
   slug: dto.slug,
   name: dto.name,
   children: dto.children.map(toCategory),
+  alternates: dto.alternates,
 })
 
 export const toProduct = (dto: ProductDto): Catalog.Product => ({
@@ -61,6 +62,7 @@ export const toProductDetail = (dto: ProductDetailDto): Catalog.ProductDetail =>
   gallery: dto.gallery,
   metaTitle: dto.metaTitle,
   metaDescription: dto.metaDescription,
+  alternates: dto.alternates.map(({ locale, slug }) => ({ locale, path: productHref(slug) })),
 })
 
 const toProductAttribute = (dto: AttributeValueDto): Catalog.ProductAttribute => ({

@@ -1,10 +1,12 @@
+'use client'
+
 import { Badge } from '@kewinmarchand/boilerplates-ui/react'
 
+import { useDictionary } from '@/shared/i18n'
 import { AfterHydration, Link, Picture } from '@/shared/ui/kit'
 
 import { productHref } from '../domain/catalog'
 import { formatPrice } from '../domain/price'
-import { EXPOSURE_LABELS } from './labels'
 import styles from './ProductCard.module.css'
 
 import type { Catalog } from '../domain/catalog'
@@ -25,6 +27,7 @@ export const ProductCard = ({
   isPriority,
   showPrice = true,
 }: ProductCardProps) => {
+  const t = useDictionary()
   const placeholder = <div className={styles.placeholder} />
   const image = product.image && (
     <Picture
@@ -63,15 +66,15 @@ export const ProductCard = ({
           </h2>
           {showPrice && (
             <p className={`bui-text ${styles.price}`} data-testid="catalog-product-price">
-              {formatPrice(product.price)}
+              {formatPrice(product.price, t.language.tag)}
             </p>
           )}
           <p className={`bui-text bui-text--body-sm ${styles.meta}`}>
-            Exposition : {EXPOSURE_LABELS[product.exposure]} · Taille {product.size}
+            {t.catalog.cardMeta(t.catalog.exposures[product.exposure], product.size)}
           </p>
           {!product.inStock && (
             <p className={styles.stock}>
-              <Badge>Rupture de stock</Badge>
+              <Badge>{t.catalog.outOfStock}</Badge>
             </p>
           )}
         </div>

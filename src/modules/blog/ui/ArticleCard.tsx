@@ -1,3 +1,6 @@
+'use client'
+
+import { useDictionary } from '@/shared/i18n'
 import { Link, Picture } from '@/shared/ui/kit'
 
 import { articleHref, formatPublishedAt } from '../domain/article'
@@ -18,24 +21,30 @@ export const ArticleCard = ({
   sizes,
   heading: Heading = 'h3',
   'data-testid': testId,
-}: ArticleCardProps) => (
-  <article data-testid={testId} className={`bui-card ${styles.card}`}>
-    {article.image && <Picture image={article.image} sizes={sizes} />}
-    <div className={styles.body}>
-      {article.section && (
-        <p className={`bui-text bui-text--body-sm ${styles.section}`} data-testid="article-section">
-          {article.section.name}
+}: ArticleCardProps) => {
+  const { tag } = useDictionary().language
+  return (
+    <article data-testid={testId} className={`bui-card ${styles.card}`}>
+      {article.image && <Picture image={article.image} sizes={sizes} />}
+      <div className={styles.body}>
+        {article.section && (
+          <p
+            className={`bui-text bui-text--body-sm ${styles.section}`}
+            data-testid="article-section"
+          >
+            {article.section.name}
+          </p>
+        )}
+        <Heading className={`bui-text bui-text--h3 ${styles.title}`}>
+          <Link href={articleHref(article.slug)} className={`bui-link ${styles.link}`}>
+            {article.title}
+          </Link>
+        </Heading>
+        <p className={`bui-text ${styles.excerpt}`}>{article.excerpt}</p>
+        <p className={`bui-text bui-text--body-sm ${styles.date}`}>
+          <time dateTime={article.publishedAt}>{formatPublishedAt(article.publishedAt, tag)}</time>
         </p>
-      )}
-      <Heading className={`bui-text bui-text--h3 ${styles.title}`}>
-        <Link href={articleHref(article.slug)} className={`bui-link ${styles.link}`}>
-          {article.title}
-        </Link>
-      </Heading>
-      <p className={`bui-text ${styles.excerpt}`}>{article.excerpt}</p>
-      <p className={`bui-text bui-text--body-sm ${styles.date}`}>
-        <time dateTime={article.publishedAt}>{formatPublishedAt(article.publishedAt)}</time>
-      </p>
-    </div>
-  </article>
-)
+      </div>
+    </article>
+  )
+}

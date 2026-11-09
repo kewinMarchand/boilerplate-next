@@ -48,5 +48,7 @@ export declare namespace SiteIdentity {
     theme: Theme | null
     /** `false` : ni prix ni panier, chaque produit propose une demande de renseignement. */
     salesEnabled: boolean
+    /** Langues du site, la première est la langue par défaut (`["fr"]` pour un site monolingue). */
+    locales: string[]
   }
 }

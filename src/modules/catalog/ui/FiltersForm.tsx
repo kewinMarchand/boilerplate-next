@@ -4,11 +4,11 @@ import { useId } from 'react'
 
 import { Button, Checkbox, Switch } from '@kewinmarchand/boilerplates-ui/react'
 
+import { useDictionary, useLocalizePath } from '@/shared/i18n'
 import { Link } from '@/shared/ui/kit'
 
 import { attributeParam, withAttribute, withFilter } from '../domain/catalogQuery'
 import styles from './FiltersForm.module.css'
-import { EXPOSURE_LABELS, sizeLabel } from './labels'
 import { QueryHiddenFields } from './QueryHiddenFields'
 
 import type { Catalog } from '../domain/catalog'
@@ -83,6 +83,8 @@ export const FiltersForm = ({
   salesEnabled,
   onApply,
 }: FiltersFormProps) => {
+  const t = useDictionary().catalog
+  const localizePath = useLocalizePath()
   const idPrefix = useId()
   const applyPrice = (key: 'priceMin' | 'priceMax') => (event: FocusEvent<HTMLInputElement>) => {
     const value = parsePrice(event.target.value)
@@ -102,7 +104,12 @@ export const FiltersForm = ({
   }
 
   return (
-    <form method="get" action={path} onSubmit={onSubmit} data-testid="catalog-filters">
+    <form
+      method="get"
+      action={localizePath(path)}
+      onSubmit={onSubmit}
+      data-testid="catalog-filters"
+    >
       <QueryHiddenFields
         query={query}
         omit={[...FILTER_KEYS, ...facets.attributes.map((facet) => attributeParam(facet.code))]}
@@ -110,7 +117,7 @@ export const FiltersForm = ({
 
       <div className="bui-accordion">
         {subcategories.length > 0 && (
-          <FacetGroup legend="Catégorie">
+          <FacetGroup legend={t.category}>
             <ul className={styles.categories}>
               {subcategories.map((category) => (
                 <li key={category.href}>
@@ -123,14 +130,14 @@ export const FiltersForm = ({
           </FacetGroup>
         )}
 
-        <FacetGroup legend="Exposition">
+        <FacetGroup legend={t.exposure}>
           {facets.exposure.map((facet) => {
             const checked = query.exposures.includes(facet.value)
             return (
               <Checkbox
                 key={facet.value}
                 id={`${idPrefix}-exposition-${facet.value}`}
-                label={`${EXPOSURE_LABELS[facet.value]} (${facet.count})`}
+                label={`${t.exposures[facet.value]} (${facet.count})`}
                 name="exposition"
                 value={facet.value}
                 checked={checked}
@@ -144,14 +151,14 @@ export const FiltersForm = ({
           })}
         </FacetGroup>
 
-        <FacetGroup legend="Taille">
+        <FacetGroup legend={t.size}>
           {facets.size.map((facet) => {
             const checked = query.sizes.includes(facet.value)
             return (
               <Checkbox
                 key={facet.value}
                 id={`${idPrefix}-taille-${facet.value}`}
-                label={`${sizeLabel(facet.value)} (${facet.count})`}
+                label={`${t.sizeLabel(facet.value)} (${facet.count})`}
                 name="taille"
                 value={facet.value}
                 checked={checked}
@@ -192,17 +199,17 @@ export const FiltersForm = ({
         })}
 
         {salesEnabled && (
-          <FacetGroup legend="Prix (en euros)">
+          <FacetGroup legend={t.price}>
             <div key={`${query.priceMin}-${query.priceMax}`} className={styles.prices}>
               <PriceField
-                label="Minimum"
+                label={t.priceMin}
                 name="prix_min"
                 defaultValue={query.priceMin}
                 onBlur={applyPrice('priceMin')}
                 testId="catalog-filter-price-min"
               />
               <PriceField
-                label="Maximum"
+                label={t.priceMax}
                 name="prix_max"
                 defaultValue={query.priceMax}
                 onBlur={applyPrice('priceMax')}
@@ -212,10 +219,10 @@ export const FiltersForm = ({
           </FacetGroup>
         )}
 
-        <FacetGroup legend="Disponibilité">
+        <FacetGroup legend={t.availability}>
           <Switch
             id={`${idPrefix}-en-stock`}
-            label="En stock uniquement"
+            label={t.inStockOnly}
             name="en_stock"
             value="1"
             checked={query.inStock}
@@ -228,14 +235,10 @@ export const FiltersForm = ({
       {/* Gardé caché une fois hydraté : il reste le bouton par défaut de la touche Entrée dans les champs de prix. */}
       <div className={isHydrated ? styles.hidden : styles.submit}>
         <Button type="submit" fullWidth data-testid="catalog-filters-submit">
-          Appliquer les filtres
+          {t.applyFilters}
         </Button>
       </div>
-      {isHydrated && (
-        <p className={`bui-text bui-text--body-sm ${styles.hint}`}>
-          Les filtres s'appliquent dès qu'ils changent.
-        </p>
-      )}
+      {isHydrated && <p className={`bui-text bui-text--body-sm ${styles.hint}`}>{t.filtersHint}</p>}
     </form>
   )
 }

@@ -1,17 +1,35 @@
 import { NextResponse } from 'next/server'
 
-import { MAINTENANCE_RETRY_AFTER_SECONDS, maintenancePage } from '@/views/errors'
+import { internalPath } from '@/shared/i18n/locale'
 
-export function proxy() {
-  if (process.env.MAINTENANCE !== '1') return NextResponse.next()
+import { getRoutingLocales } from '@/modules/site'
 
-  return new NextResponse(maintenancePage(), {
-    status: 503,
-    headers: {
-      'Content-Type': 'text/html; charset=utf-8',
-      'Retry-After': String(MAINTENANCE_RETRY_AFTER_SECONDS),
-    },
-  })
+import { MAINTENANCE_RETRY_AFTER_SECONDS, maintenancePage } from '@/views/errors/maintenancePage'
+
+import type { NextRequest } from 'next/server'
+
+// Fichiers (`/robots.txt`, `/icons.svg`, `/theme.css`) et routes d'API : servis tels quels, hors langue.
+const isPagePath = (pathname: string) =>
+  !pathname.startsWith('/api/') && !pathname.split('/').at(-1)?.includes('.')
+
+export async function proxy(request: NextRequest) {
+  if (process.env.MAINTENANCE === '1') {
+    return new NextResponse(maintenancePage(), {
+      status: 503,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Retry-After': String(MAINTENANCE_RETRY_AFTER_SECONDS),
+      },
+    })
+  }
+
+  const { pathname } = request.nextUrl
+  if (!isPagePath(pathname)) return NextResponse.next()
+
+  // Les pages vivent sous src/app/[lang]/ : la langue par défaut, sans préfixe, y est réécrite.
+  const url = request.nextUrl.clone()
+  url.pathname = internalPath(pathname, await getRoutingLocales())
+  return NextResponse.rewrite(url)
 }
 
 export const config = {

@@ -4,6 +4,7 @@ import { useId } from 'react'
 
 import { Cluster } from '@kewinmarchand/boilerplates-ui/react'
 
+import { useDictionary } from '@/shared/i18n'
 import { AfterHydration, Icon, Link, Picture } from '@/shared/ui/kit'
 
 import styles from './Carousel.module.css'
@@ -45,9 +46,14 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
     goNext,
     goTo,
   } = useCarousel()
+  const t = useDictionary().carousel
 
   return (
-    <section aria-labelledby={titleId} aria-roledescription="carrousel" data-testid={testId}>
+    <section
+      aria-labelledby={titleId}
+      aria-roledescription={t.roleDescription}
+      data-testid={testId}
+    >
       <Cluster justify="between" gap="4">
         <h2 id={titleId} className="bui-text bui-text--h2">
           {title}
@@ -63,7 +69,7 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
             data-testid="carousel-prev"
           >
             <Icon name="chevron-left" />
-            Précédent
+            {t.previous}
           </button>
           <button
             ref={nextRef}
@@ -74,7 +80,7 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
             onClick={goNext}
             data-testid="carousel-next"
           >
-            Suivant
+            {t.next}
             <Icon name="chevron-right" />
           </button>
         </Cluster>
@@ -83,7 +89,7 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
       <div
         ref={viewportRef}
         role="group"
-        aria-label="Diapositives"
+        aria-label={t.slides}
         tabIndex={0}
         data-embla-ready={isReady || undefined}
         data-testid="carousel-viewport"
@@ -103,8 +109,8 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
               <div
                 key={slide.id}
                 role="group"
-                aria-roledescription="diapositive"
-                aria-label={`${position + 1} sur ${slides.length}`}
+                aria-roledescription={t.slideRoleDescription}
+                aria-label={t.position(position + 1, slides.length)}
                 data-testid="carousel-slide"
                 className={styles.slide}
               >
@@ -148,7 +154,7 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
             <button
               key={index}
               type="button"
-              aria-label={`Aller à la diapositive ${index + 1}`}
+              aria-label={t.goTo(index + 1)}
               aria-current={index === selected ? 'true' : undefined}
               onClick={() => goTo(index)}
               data-testid="carousel-dot"

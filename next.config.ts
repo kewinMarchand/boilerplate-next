@@ -12,6 +12,8 @@ const csp = siteCsp({
 const nextConfig: NextConfig = {
   ...(process.env.NEXT_OUTPUT === 'standalone' && { output: 'standalone' }),
   poweredByHeader: false,
+  // Le layout racine est sous [lang] : une adresse sans route sert src/app/global-not-found.tsx (page complète, pré-rendue).
+  experimental: { globalNotFound: true },
   transpilePackages: ['@kewinmarchand/boilerplates-ui'],
   // Origine de l'API pour le navigateur, figée au build. Le serveur relit API_URL à l'exécution.
   // Scénario de l'API fixé pour tout le build (tests e2e bilingues), vide sinon.

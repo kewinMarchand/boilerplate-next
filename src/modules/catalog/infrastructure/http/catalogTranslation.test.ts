@@ -70,13 +70,21 @@ describe('toCategory', () => {
         name: 'Plantes aquatiques',
         parent: null,
         children: [
-          { slug: 'nenuphars', name: 'Nénuphars', parent: 'plantes-aquatiques', children: [] },
+          {
+            slug: 'nenuphars',
+            name: 'Nénuphars',
+            parent: 'plantes-aquatiques',
+            children: [],
+            alternates: [],
+          },
         ],
+        alternates: [],
       }),
     ).toEqual({
       slug: 'plantes-aquatiques',
       name: 'Plantes aquatiques',
-      children: [{ slug: 'nenuphars', name: 'Nénuphars', children: [] }],
+      children: [{ slug: 'nenuphars', name: 'Nénuphars', children: [], alternates: [] }],
+      alternates: [],
     })
   })
 })
@@ -196,6 +204,7 @@ describe('toProductDetail', () => {
       gallery: [],
       metaTitle: '',
       metaDescription: '',
+      alternates: [],
       categoryPath: [
         { slug: 'plantes-interieur', name: 'Plantes d’intérieur' },
         { slug: 'feuillages', name: 'Feuillages' },
@@ -228,6 +237,7 @@ describe('toProductDetail', () => {
       gallery: [],
       metaTitle: '',
       metaDescription: '',
+      alternates: [],
       categoryPath: [{ slug: 'palmiers', name: 'Palmiers' }],
       description: 'Rustique.\n\n  \nRésiste au vent,\naux embruns.',
       attributes: [],
@@ -250,6 +260,7 @@ describe('toProductDetail', () => {
       gallery: [],
       metaTitle: '',
       metaDescription: '',
+      alternates: [],
       categoryPath: [{ slug: 'strelitzia', name: 'Strelitzia' }],
       description: '',
       attributes: [
@@ -299,6 +310,7 @@ describe('toProductDetail', () => {
       gallery: [image('fleur'), image('feuille')],
       metaTitle: 'Strelitzia reginae, l’oiseau de paradis',
       metaDescription: 'Fleurs orange et bleu.',
+      alternates: [],
       categoryPath: [{ slug: 'strelitzia', name: 'Strelitzia' }],
       description: '',
       attributes: [],
@@ -309,5 +321,34 @@ describe('toProductDetail', () => {
       metaTitle: 'Strelitzia reginae, l’oiseau de paradis',
       metaDescription: 'Fleurs orange et bleu.',
     })
+  })
+
+  it('traduit chaque langue de la fiche en chemin de fiche', () => {
+    const detail = toProductDetail({
+      id: 1,
+      slug: 'swiss-cheese-plant',
+      name: 'Swiss cheese plant',
+      categorySlug: 'monstera',
+      price: 3490,
+      exposure: 'mi-ombre',
+      size: 'M',
+      inStock: true,
+      image: null,
+      gallery: [],
+      metaTitle: '',
+      metaDescription: '',
+      alternates: [
+        { locale: 'fr', slug: 'monstera-deliciosa' },
+        { locale: 'en', slug: 'swiss-cheese-plant' },
+      ],
+      categoryPath: [],
+      description: '',
+      attributes: [],
+    })
+
+    expect(detail.alternates).toEqual([
+      { locale: 'fr', path: '/produit/monstera-deliciosa' },
+      { locale: 'en', path: '/produit/swiss-cheese-plant' },
+    ])
   })
 })

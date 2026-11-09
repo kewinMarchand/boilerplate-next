@@ -42,11 +42,17 @@ describe('loadCatalogPage', () => {
   })
 
   it('renvoie la page d’une catégorie connue, avec l’état de recherche lu dans l’URL', async () => {
-    const load = await loadCatalogPage(['plantes-interieur', 'feuillages'], { tri: 'nom' })
+    const load = await loadCatalogPage(
+      ['plantes-interieur', 'feuillages'],
+      { tri: 'nom' },
+      true,
+      'fr',
+    )
 
     expect(findCatalogPage).toHaveBeenCalledWith(
       ['plantes-interieur', 'feuillages'],
       expect.objectContaining({ sort: 'nom' }),
+      'fr',
     )
     expect(load).toMatchObject({ status: 'ok', result: { status: 'success', page: PAGE } })
     if (load.status !== 'ok') throw new Error('page attendue')
@@ -55,14 +61,16 @@ describe('loadCatalogPage', () => {
   })
 
   it('déclare introuvables une catégorie inconnue et un chemin trop profond', async () => {
-    expect(await loadCatalogPage(['inconnue'], {})).toEqual({ status: 'not-found' })
-    expect(await loadCatalogPage(['a', 'b', 'c', 'd'], {})).toEqual({ status: 'not-found' })
+    expect(await loadCatalogPage(['inconnue'], {}, true, 'fr')).toEqual({ status: 'not-found' })
+    expect(await loadCatalogPage(['a', 'b', 'c', 'd'], {}, true, 'fr')).toEqual({
+      status: 'not-found',
+    })
   })
 
   it('déclare introuvable une page au-delà de la dernière', async () => {
     vi.mocked(findCatalogPage).mockResolvedValueOnce({ ...PAGE, page: 9, pageCount: 2 })
 
-    expect(await loadCatalogPage(['plantes-interieur'], { page: '9' })).toEqual({
+    expect(await loadCatalogPage(['plantes-interieur'], { page: '9' }, true, 'fr')).toEqual({
       status: 'not-found',
     })
   })
@@ -71,10 +79,10 @@ describe('loadCatalogPage', () => {
     vi.mocked(findCatalogPage).mockRejectedValueOnce(new Error('panne'))
     vi.spyOn(console, 'error').mockImplementationOnce(() => {})
 
-    expect(await loadCatalogPage(['plantes-interieur'], {})).toMatchObject({
+    expect(await loadCatalogPage(['plantes-interieur'], {}, true, 'fr')).toMatchObject({
       status: 'ok',
       categoryPath: [{ slug: 'plantes-interieur' }],
-      result: { status: 'error', message: 'Impossible de charger le catalogue pour le moment.' },
+      result: { status: 'error' },
     })
   })
 
@@ -82,7 +90,7 @@ describe('loadCatalogPage', () => {
     vi.mocked(findCategoryTree).mockRejectedValueOnce(new Error('panne'))
     vi.spyOn(console, 'error').mockImplementationOnce(() => {})
 
-    expect(await loadCatalogPage(['plantes-interieur'], {})).toMatchObject({
+    expect(await loadCatalogPage(['plantes-interieur'], {}, true, 'fr')).toMatchObject({
       status: 'ok',
       query: expect.objectContaining({ page: 1 }),
       categoryPath: [],

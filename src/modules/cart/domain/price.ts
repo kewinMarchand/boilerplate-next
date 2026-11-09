@@ -1,4 +1,3 @@
-const PRICE_FORMAT = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' })
-
-/** Centimes affichés en euros (« 34,90 € »). */
-export const formatPrice = (cents: number) => PRICE_FORMAT.format(cents / 100)
+/** Centimes affichés en euros selon la langue de la page (`tag` BCP 47 : « 34,90 € » en `fr-FR`). */
+export const formatPrice = (cents: number, tag: string) =>
+  new Intl.NumberFormat(tag, { style: 'currency', currency: 'EUR' }).format(cents / 100)

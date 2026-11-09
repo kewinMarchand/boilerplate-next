@@ -17,6 +17,9 @@ const toTheme = (theme: SiteIdentityDto['theme']): SiteIdentity.Theme | null =>
     ? { light: theme.light, dark: theme.dark }
     : null
 
+// Une API d'avant les langues (section 29) n'envoie pas `locales` : le site reste monolingue.
+const MONOLINGUAL = ['fr']
+
 export const toSiteIdentity = (dto: SiteIdentityDto): SiteIdentity.Entity => ({
   name: dto.name,
   tagline: dto.tagline,
@@ -26,4 +29,5 @@ export const toSiteIdentity = (dto: SiteIdentityDto): SiteIdentity.Entity => ({
   defaultColorScheme: dto.defaultColorScheme,
   theme: toTheme(dto.theme),
   salesEnabled: dto.salesEnabled,
+  locales: dto.locales?.length ? dto.locales : MONOLINGUAL,
 })

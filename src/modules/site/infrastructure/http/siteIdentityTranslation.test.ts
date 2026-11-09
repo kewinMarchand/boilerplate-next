@@ -49,6 +49,7 @@ const DTO: components['schemas']['SiteIdentity'] = {
   defaultColorScheme: 'dark',
   theme: { light: TOKENS, dark: { ...TOKENS, primary: '#f8a77f' } },
   salesEnabled: true,
+  locales: ['fr', 'en'],
 }
 
 describe('toSiteIdentity', () => {
@@ -62,7 +63,15 @@ describe('toSiteIdentity', () => {
       defaultColorScheme: 'dark',
       theme: { light: TOKENS, dark: { ...TOKENS, primary: '#f8a77f' } },
       salesEnabled: true,
+      locales: ['fr', 'en'],
     })
+  })
+
+  it('reste monolingue quand une API d’avant les langues n’envoie pas `locales`', () => {
+    const legacy: Partial<typeof DTO> = { ...DTO }
+    delete legacy.locales
+    // Réponse hors contrat simulée : le type généré exige `locales`.
+    expect(toSiteIdentity(legacy as typeof DTO).locales).toEqual(['fr'])
   })
 
   it('reprend la vente en ligne coupée', () => {

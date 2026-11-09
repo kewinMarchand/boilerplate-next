@@ -16,10 +16,12 @@ interface AppShellProps {
   categoryMenu: NavigationNode[]
   /** Lien du panier, fourni par la couche de routage : le socle n'importe pas de module. */
   cartLink: ReactNode
+  /** Sélecteur de langue de la page, vide sur un site monolingue. */
+  languages: ReactNode
   children: ReactNode
 }
 
-export const AppShell = ({ brand, categoryMenu, cartLink, children }: AppShellProps) => (
+export const AppShell = ({ brand, categoryMenu, cartLink, languages, children }: AppShellProps) => (
   <div className={styles.shell}>
     {isAudienceMeasurementEnabled && (
       // Avant la page : React exécute les effets dans l'ordre du rendu, ceux du traceur (dont
@@ -30,7 +32,7 @@ export const AppShell = ({ brand, categoryMenu, cartLink, children }: AppShellPr
       </Suspense>
     )}
     <SkipLink />
-    <Header brand={brand} categoryMenu={categoryMenu} cartLink={cartLink} />
+    <Header brand={brand} categoryMenu={categoryMenu} cartLink={cartLink} languages={languages} />
     <main id="main" tabIndex={-1} className={styles.main}>
       {children}
     </main>

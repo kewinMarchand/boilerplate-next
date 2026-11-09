@@ -1,4 +1,5 @@
 import type { Price } from './price'
+import type { LanguageAlternate } from '@/shared/i18n'
 import type { ResponsiveImage } from '@/shared/ui/kit'
 
 export const EXPOSURES = ['soleil', 'mi-ombre', 'ombre'] as const
@@ -23,6 +24,13 @@ export declare namespace Catalog {
     slug: string
     name: string
     children?: Category[]
+    /** Slug de la catégorie dans chaque langue activée, vide sur un site monolingue. */
+    alternates?: CategoryAlternate[]
+  }
+
+  interface CategoryAlternate {
+    locale: string
+    slug: string
   }
 
   interface CategoryPathLink {
@@ -57,6 +65,8 @@ export declare namespace Catalog {
     /** Titre et description saisis pour les moteurs de recherche, chaînes vides sinon. */
     metaTitle: string
     metaDescription: string
+    /** La fiche dans chaque langue activée, vide sur un site monolingue. */
+    alternates: LanguageAlternate[]
   }
 
   /** Attribut configurable renseigné sur un produit, valeur déjà en libellé. */

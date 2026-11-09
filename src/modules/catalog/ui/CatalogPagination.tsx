@@ -1,3 +1,7 @@
+'use client'
+
+import { useDictionary, useLocalizePath } from '@/shared/i18n'
+
 import { catalogHref } from '../domain/catalogQuery'
 import styles from './CatalogPagination.module.css'
 import { paginationWindow } from './pagination'
@@ -15,6 +19,8 @@ interface CatalogPaginationProps {
 const LINK = 'bui-pagination__link'
 
 export const CatalogPagination = ({ path, query, page, pageCount }: CatalogPaginationProps) => {
+  const t = useDictionary().catalog
+  const localizePath = useLocalizePath()
   if (pageCount <= 1) return null
 
   const hrefOf = (target: number) => catalogHref(path, { ...query, page: target })
@@ -22,17 +28,17 @@ export const CatalogPagination = ({ path, query, page, pageCount }: CatalogPagin
   const next = page < pageCount ? hrefOf(page + 1) : null
 
   return (
-    <nav aria-label="Pagination" data-testid="catalog-pagination" className={styles.pagination}>
-      {previous && <link rel="prev" href={previous} />}
-      {next && <link rel="next" href={next} />}
+    <nav aria-label={t.pagination} data-testid="catalog-pagination" className={styles.pagination}>
+      {previous && <link rel="prev" href={localizePath(previous)} />}
+      {next && <link rel="next" href={localizePath(next)} />}
       <ul className={`bui-pagination__list ${styles.list}`}>
         <li>
           {previous ? (
             <TitleFocusLink href={previous} rel="prev" className={LINK}>
-              Précédent
+              {t.previous}
             </TitleFocusLink>
           ) : (
-            <span className={`${LINK} ${styles.disabled}`}>Précédent</span>
+            <span className={`${LINK} ${styles.disabled}`}>{t.previous}</span>
           )}
         </li>
         {paginationWindow(page, pageCount).map((entry, index) => (
@@ -43,11 +49,11 @@ export const CatalogPagination = ({ path, query, page, pageCount }: CatalogPagin
               </span>
             ) : entry === page ? (
               <span aria-current="page" className={LINK}>
-                <span className="bui-visually-hidden">Page </span>
+                <span className="bui-visually-hidden">{t.page}</span>
                 {entry}
               </span>
             ) : (
-              <TitleFocusLink href={hrefOf(entry)} aria-label={`Page ${entry}`} className={LINK}>
+              <TitleFocusLink href={hrefOf(entry)} aria-label={t.pageLink(entry)} className={LINK}>
                 {entry}
               </TitleFocusLink>
             )}
@@ -56,10 +62,10 @@ export const CatalogPagination = ({ path, query, page, pageCount }: CatalogPagin
         <li>
           {next ? (
             <TitleFocusLink href={next} rel="next" className={LINK}>
-              Suivant
+              {t.next}
             </TitleFocusLink>
           ) : (
-            <span className={`${LINK} ${styles.disabled}`}>Suivant</span>
+            <span className={`${LINK} ${styles.disabled}`}>{t.next}</span>
           )}
         </li>
       </ul>

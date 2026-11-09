@@ -1,5 +1,6 @@
 'use client'
 
+import { useDictionary } from '@/shared/i18n'
 import { Icon, Link } from '@/shared/ui/kit'
 
 import { countItems } from '../domain/cart'
@@ -12,19 +13,20 @@ import { useCart } from './useCart'
  * Nom accessible « Panier, 3 articles » composé du texte visible et de compléments masqués : il contient le texte affiché.
  */
 export const CartLink = () => {
+  const t = useDictionary().cart
   const count = countItems(useCart().lines)
 
   return (
     <Link href={CART_PATH} className={styles.link} data-testid="cart-link">
       <Icon name="shopping-cart" />
-      <span className={styles.label}>Panier</span>
+      <span className={styles.label}>{t.link}</span>
       {count > 0 && (
         <>
           <span className="bui-visually-hidden">, </span>
           <span className={styles.count} data-testid="cart-count">
             {count}
           </span>
-          <span className="bui-visually-hidden"> article{count > 1 ? 's' : ''}</span>
+          <span className="bui-visually-hidden">{t.itemCount(count)}</span>
         </>
       )}
     </Link>

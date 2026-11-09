@@ -1,7 +1,6 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
-
+import { useLocalizePath, usePagePathname } from '@/shared/i18n'
 import { Link, LogoMark, Picture } from '@/shared/ui/kit'
 
 import styles from './LogoLink.module.css'
@@ -20,12 +19,13 @@ interface LogoLinkProps {
 }
 
 export const LogoLink = ({ brand: { name, logo } }: LogoLinkProps) => {
-  const pathname = usePathname()
+  const pathname = usePagePathname()
+  const home = useLocalizePath()('/')
 
   return (
     <Link
       href="/"
-      aria-current={pathname === '/' ? 'page' : undefined}
+      aria-current={pathname === home ? 'page' : undefined}
       data-testid="layout-logo"
       className={styles.logo}
     >

@@ -12,6 +12,6 @@ describe('Price', () => {
   })
 
   it('formate un prix en euros, à la française', () => {
-    expect(formatPrice(Price.fromCents(3490))).toBe('34,90 €')
+    expect(formatPrice(Price.fromCents(3490), 'fr-FR')).toBe('34,90 €')
   })
 })

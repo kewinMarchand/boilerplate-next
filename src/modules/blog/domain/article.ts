@@ -1,3 +1,4 @@
+import type { LanguageAlternate } from '@/shared/i18n'
 import type { ResponsiveImage } from '@/shared/ui/kit'
 
 export declare namespace Article {
@@ -35,14 +36,16 @@ export declare namespace Article {
     /** Titre et description saisis pour les moteurs de recherche, chaînes vides sinon. */
     metaTitle: string
     metaDescription: string
+    /** La fiche dans chaque langue activée, vide sur un site monolingue. */
+    alternates: LanguageAlternate[]
   }
 }
 
 export const articleHref = (slug: string) => `/blog/${slug}`
 
-const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeZone: 'UTC' })
-
-export const formatPublishedAt = (isoDate: string) => DATE_FORMAT.format(new Date(isoDate))
+/** Date lisible selon la langue de la page (`tag` BCP 47 : « 29 septembre 2026 » en `fr-FR`). */
+export const formatPublishedAt = (isoDate: string, tag: string) =>
+  new Intl.DateTimeFormat(tag, { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(isoDate))
 
 const SECONDS_PER_MINUTE = 60
 const MINUTES_PER_HOUR = 60

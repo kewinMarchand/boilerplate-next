@@ -1,0 +1,38 @@
+/* Bande au-dessus de la barre d'en-tête, alignée à droite, sur le fond primaire. */
+.languages {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.list {
+  display: flex;
+  gap: var(--bui-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--bui-size-touch);
+  padding-inline: var(--bui-space-2);
+  border-radius: var(--bui-radius-md);
+  color: inherit;
+  font-size: var(--bui-font-size-body-sm);
+  text-decoration: none;
+}
+
+.link:hover {
+  background: var(--bui-color-on-primary-overlay);
+}
+
+.link:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
+}
+
+.link[aria-current='true'] {
+  font-weight: var(--bui-font-weight-bold);
+  text-decoration: underline;
+}

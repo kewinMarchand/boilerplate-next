@@ -1,6 +1,7 @@
 import { Container } from '@kewinmarchand/boilerplates-ui/react'
 
-import { ACCESSIBILITY_COMPLIANCE, LEGAL_NAVIGATION } from '@/shared/config'
+import { ACCESSIBILITY_COMPLIANCE, labelNavigation, LEGAL_NAVIGATION } from '@/shared/config'
+import { getDictionary } from '@/shared/i18n/server'
 import { Link, LogoMark } from '@/shared/ui/kit'
 
 import styles from './Footer.module.css'
@@ -12,25 +13,31 @@ interface FooterProps {
   siteName: string
 }
 
-export const Footer = ({ siteName }: FooterProps) => (
-  <footer className={styles.footer}>
-    <Container>
-      <nav aria-label="Liens légaux" className={styles.links}>
-        {LEGAL_NAVIGATION.map(({ href, label }) => (
-          <Link key={href} href={href} className={`bui-link ${styles.link}`}>
-            {href === ACCESSIBILITY_PATH ? `Accessibilité : ${ACCESSIBILITY_COMPLIANCE}` : label}
+export const Footer = async ({ siteName }: FooterProps) => {
+  const t = await getDictionary()
+
+  return (
+    <footer className={styles.footer}>
+      <Container>
+        <nav aria-label={t.layout.legalLinks} className={styles.links}>
+          {labelNavigation(LEGAL_NAVIGATION, t.nav).map(({ href, label }) => (
+            <Link key={href} href={href} className={`bui-link ${styles.link}`}>
+              {href === ACCESSIBILITY_PATH
+                ? t.layout.accessibilityStatus(t.compliance[ACCESSIBILITY_COMPLIANCE])
+                : label}
+            </Link>
+          ))}
+        </nav>
+        {process.env.NODE_ENV !== 'production' && (
+          <Link href="/charte-graphique" className={`bui-link ${styles.link}`}>
+            {t.layout.styleguide}
           </Link>
-        ))}
-      </nav>
-      {process.env.NODE_ENV !== 'production' && (
-        <Link href="/charte-graphique" className={`bui-link ${styles.link}`}>
-          Charte graphique (développement)
-        </Link>
-      )}
-      <p className={`bui-text bui-text--body-sm ${styles.brand}`}>
-        <LogoMark size={20} />
-        {siteName}
-      </p>
-    </Container>
-  </footer>
-)
+        )}
+        <p className={`bui-text bui-text--body-sm ${styles.brand}`}>
+          <LogoMark size={20} />
+          {siteName}
+        </p>
+      </Container>
+    </footer>
+  )
+}

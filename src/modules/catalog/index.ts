@@ -1,5 +1,9 @@
-export { getCategoryMenu, listCatalogPaths } from './application/catalogNavigation'
-export { listProductPaths } from './application/products'
+export {
+  findCategoryAlternates,
+  getCategoryMenu,
+  listCatalogPaths,
+} from './application/catalogNavigation'
+export { listProductPaths, loadProductAlternates } from './application/products'
 export type { Catalog } from './domain/catalog'
 export { Price } from './domain/price'
 export { buildCatalogMetadata } from './ui/catalogMetadata'
@@ -9,3 +13,4 @@ export { FeaturedProducts } from './ui/FeaturedProducts'
 export { ProductCard } from './ui/ProductCard'
 export { buildProductMetadata } from './ui/productMetadata'
 export { ProductView } from './ui/ProductView'
+export { listProductPathAlternates } from './ui/sitemapPaths'

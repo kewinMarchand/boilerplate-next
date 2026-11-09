@@ -5,8 +5,15 @@ import { toSiteIdentity } from './http/siteIdentityTranslation'
 
 import type { SiteIdentity } from '../domain/siteIdentity'
 
-export const findSiteIdentity = async (): Promise<SiteIdentity.Entity> => {
-  const { data, response } = await staticApiClient().GET('/api/site-identity')
+/** `locale` absent : langue par défaut du site (manifeste, feuille de couleurs, routage). */
+export const findSiteIdentity = async (
+  locale?: string,
+  signal?: AbortSignal,
+): Promise<SiteIdentity.Entity> => {
+  const { data, response } = await staticApiClient().GET('/api/site-identity', {
+    params: { query: locale ? { locale } : {} },
+    ...(signal && { signal }),
+  })
   if (!data) throw new ApiError(response)
   return toSiteIdentity(data)
 }

@@ -1,9 +1,9 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
 import { useId } from 'react'
 
 import { CATALOG_NAVIGATION } from '@/shared/config'
+import { useDictionary, useLocalizePath, usePagePathname } from '@/shared/i18n'
 import { useCategoryMenu } from '@/shared/ui/hooks/useCategoryMenu'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 import { Icon, Link } from '@/shared/ui/kit'
@@ -30,7 +30,8 @@ const buildColumns = (nodes: NavigationNode[], openPath: string[]) => {
 
 export const CategoryMenu = ({ label, nodes }: CategoryMenuProps) => {
   const isHydrated = useHydrated()
-  const isActive = usePathname().startsWith(CATALOG_NAVIGATION.href)
+  const t = useDictionary()
+  const isActive = usePagePathname().startsWith(useLocalizePath()(CATALOG_NAVIGATION.href))
   const panelId = useId()
   const { isOpen, openPath, rootRef, buttonRef, panelRef, close, toggle, openBranch, onKeyDown } =
     useCategoryMenu()
@@ -65,7 +66,7 @@ export const CategoryMenu = ({ label, nodes }: CategoryMenuProps) => {
           data-testid="layout-category-link"
           className={`bui-link ${styles.all}`}
         >
-          Tout le catalogue
+          {t.layout.wholeCatalog}
         </Link>
         <div className={styles.columns}>
           {buildColumns(nodes, openPath).map((column, level) => (

@@ -1,5 +1,6 @@
 'use client'
 
+import { useDictionary } from '@/shared/i18n'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 import { largestWebp, Picture } from '@/shared/ui/kit'
 
@@ -21,6 +22,7 @@ interface ProductGalleryProps {
  * vignettes sont des liens vers l'image en grand.
  */
 export const ProductGallery = ({ images, sizes }: ProductGalleryProps) => {
+  const t = useDictionary().product
   const isHydrated = useHydrated()
   const { selected, select, thumbsRef, onThumbKeyDown } = useProductGallery(images.length)
   const image = images[selected] ?? images[0]
@@ -39,7 +41,7 @@ export const ProductGallery = ({ images, sizes }: ProductGalleryProps) => {
       )}
       <ul className={styles.thumbs} ref={thumbsRef}>
         {images.map((thumb, index) => {
-          const label = `Voir l’image ${index + 1} sur ${images.length}`
+          const label = t.galleryImage(index + 1, images.length)
           const isCurrent = index === selected ? 'true' : undefined
           const picture = (
             <Picture image={{ ...thumb, alt: '' }} sizes={THUMB_SIZES} style={IMAGE_STYLE} />

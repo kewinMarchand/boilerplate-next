@@ -1,3 +1,4 @@
+import { alternatesByKey, dictionaryFor, MONOLINGUAL } from '@/shared/i18n'
 import { buildMetadata } from '@/shared/seo'
 import { largestWebp } from '@/shared/ui/kit'
 
@@ -11,10 +12,15 @@ export const buildArticleMetadata = async (
   slug: string,
   settings: SeoSettings,
 ): Promise<Metadata> => {
+  const { locale } = settings.locale ?? MONOLINGUAL
+  const t = dictionaryFor(locale)
   // API indisponible : métadonnées génériques, la page affiche l'erreur.
-  const article = await findArticle(slug).catch(() => undefined)
-  if (article === null) return { title: 'Page introuvable', robots: { index: false, follow: true } }
-  if (article === undefined) return { title: 'Article', robots: { index: false, follow: true } }
+  const article = await findArticle(slug, locale).catch(() => undefined)
+  if (article === null)
+    return { title: t.errors.notFoundTitle, robots: { index: false, follow: true } }
+  if (article === undefined) {
+    return { title: t.blog.articleFallbackTitle, robots: { index: false, follow: true } }
+  }
 
   return buildMetadata({
     title: article.title,
@@ -22,6 +28,7 @@ export const buildArticleMetadata = async (
     path: articleHref(article.slug),
     publishedTime: article.publishedAt,
     settings: { ...settings, title: article.metaTitle, description: article.metaDescription },
+    alternates: article.alternates,
     ...(article.image && {
       image: {
         url: largestWebp(article.image),
@@ -33,6 +40,24 @@ export const buildArticleMetadata = async (
   })
 }
 
-/** Chemins des fiches pour le sitemap et le pré-rendu ; aucun si l'API ne répond pas. */
-export const listArticlePaths = async (): Promise<string[]> =>
-  (await findLatestArticles().catch(() => [])).map((article) => articleHref(article.slug))
+/** Chemins des fiches d'une langue pour le pré-rendu ; aucun si l'API ne répond pas. */
+export const listArticlePaths = async (locale: string): Promise<string[]> =>
+  (await findLatestArticles(locale).catch(() => [])).map((article) => articleHref(article.slug))
+
+/** La fiche dans chaque langue (sélecteur de langue) ; aucune si l'API ne la connaît pas ou ne répond pas. */
+export const loadArticleAlternates = async (slug: string, locale: string) =>
+  (await findArticle(slug, locale).catch(() => null))?.alternates ?? []
+
+/** Chemins des fiches pour le sitemap, chacune dans chaque langue du site ; aucun si l'API ne répond pas. */
+export const listArticlePathAlternates = async (locales: string[]) =>
+  alternatesByKey(
+    await Promise.all(
+      locales.map(async (locale) => ({
+        locale,
+        entries: (await findLatestArticles(locale).catch(() => [])).map((article) => ({
+          key: article.id,
+          path: articleHref(article.slug),
+        })),
+      })),
+    ),
+  )

@@ -1,5 +1,6 @@
 import { Cluster } from '@kewinmarchand/boilerplates-ui/react'
 
+import { getDictionary } from '@/shared/i18n/server'
 import { Icon, Link } from '@/shared/ui/kit'
 
 import {
@@ -10,10 +11,10 @@ import {
   withFilter,
 } from '../domain/catalogQuery'
 import styles from './ActiveFilters.module.css'
-import { EXPOSURE_LABELS, sizeLabel } from './labels'
 import { TitleFocusLink } from './TitleFocusLink'
 
 import type { Catalog } from '../domain/catalog'
+import type { Dictionary } from '@/shared/i18n'
 
 interface ActiveFiltersProps {
   path: string
@@ -25,13 +26,17 @@ const attributeValueLabel = (facets: Catalog.AttributeFacet[], code: string, val
   facets.find((facet) => facet.code === code)?.values.find((item) => item.value === value)?.label ??
   value
 
-const activeFilters = (query: Catalog.Query, attributeFacets: Catalog.AttributeFacet[]) => [
+const activeFilters = (
+  query: Catalog.Query,
+  attributeFacets: Catalog.AttributeFacet[],
+  t: Dictionary['catalog'],
+) => [
   ...query.exposures.map((value) => ({
-    label: EXPOSURE_LABELS[value],
+    label: t.exposures[value],
     next: withFilter(query, { exposures: query.exposures.filter((item) => item !== value) }),
   })),
   ...query.sizes.map((value) => ({
-    label: sizeLabel(value),
+    label: t.sizeLabel(value),
     next: withFilter(query, { sizes: query.sizes.filter((item) => item !== value) }),
   })),
   ...Object.entries(query.attributes).flatMap(([code, values]) =>
@@ -45,21 +50,22 @@ const activeFilters = (query: Catalog.Query, attributeFacets: Catalog.AttributeF
     })),
   ),
   ...(query.priceMin !== null
-    ? [{ label: `Dès ${query.priceMin} €`, next: withFilter(query, { priceMin: null }) }]
+    ? [{ label: t.fromPrice(query.priceMin), next: withFilter(query, { priceMin: null }) }]
     : []),
   ...(query.priceMax !== null
-    ? [{ label: `Jusqu'à ${query.priceMax} €`, next: withFilter(query, { priceMax: null }) }]
+    ? [{ label: t.upToPrice(query.priceMax), next: withFilter(query, { priceMax: null }) }]
     : []),
-  ...(query.inStock ? [{ label: 'En stock', next: withFilter(query, { inStock: false }) }] : []),
+  ...(query.inStock ? [{ label: t.inStock, next: withFilter(query, { inStock: false }) }] : []),
 ]
 
-export const ActiveFilters = ({ path, query, attributeFacets }: ActiveFiltersProps) => {
+export const ActiveFilters = async ({ path, query, attributeFacets }: ActiveFiltersProps) => {
   if (!isFiltered(query)) return null
+  const t = (await getDictionary()).catalog
 
   return (
     <Cluster gap="2" data-testid="catalog-active-filters" className={styles.filters}>
       <ul className="bui-chip-list" role="list">
-        {activeFilters(query, attributeFacets).map((filter) => (
+        {activeFilters(query, attributeFacets, t).map((filter) => (
           <li key={filter.label}>
             <Link
               href={catalogHref(path, filter.next)}
@@ -67,7 +73,7 @@ export const ActiveFilters = ({ path, query, attributeFacets }: ActiveFiltersPro
               data-testid="catalog-active-filter"
               className="bui-chip"
             >
-              <span className="bui-visually-hidden">Retirer le filtre : </span>
+              <span className="bui-visually-hidden">{t.removeFilter}</span>
               {filter.label}
               <Icon name="x" size={16} />
             </Link>
@@ -79,7 +85,7 @@ export const ActiveFilters = ({ path, query, attributeFacets }: ActiveFiltersPro
         data-testid="catalog-clear-filters"
         className={`bui-link ${styles.clear}`}
       >
-        Tout effacer
+        {t.clearFilters}
       </TitleFocusLink>
     </Cluster>
   )

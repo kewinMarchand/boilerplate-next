@@ -28,12 +28,13 @@ export const organizationJsonLd = (name: string, logo?: string) => ({
   email: SITE.publisher.email,
 })
 
-export const websiteJsonLd = (name: string) => ({
+/** `path` : accueil dans la langue de la page ; `inLanguage` : étiquette BCP 47 (`fr-FR`). */
+export const websiteJsonLd = (name: string, path: string, inLanguage: string) => ({
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name,
-  url: absoluteUrl('/'),
-  inLanguage: 'fr-FR',
+  url: absoluteUrl(path),
+  inLanguage,
 })
 
 export const itemListJsonLd = (pagePath: string, names: string[]) => ({
@@ -48,14 +49,14 @@ export const itemListJsonLd = (pagePath: string, names: string[]) => ({
 })
 
 export const blogJsonLd = (
-  path: string,
+  blog: { name: string; path: string; inLanguage: string },
   posts: { title: string; path: string; publishedAt: string }[],
 ) => ({
   '@context': 'https://schema.org',
   '@type': 'Blog',
-  name: 'Blog',
-  url: absoluteUrl(path),
-  inLanguage: 'fr-FR',
+  name: blog.name,
+  url: absoluteUrl(blog.path),
+  inLanguage: blog.inLanguage,
   blogPost: posts.map((post) => ({
     '@type': 'BlogPosting',
     headline: post.title,
@@ -70,6 +71,7 @@ export const blogPostingJsonLd = (article: {
   path: string
   publishedAt: string
   image?: string | undefined
+  inLanguage: string
 }) => ({
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
@@ -78,7 +80,7 @@ export const blogPostingJsonLd = (article: {
   datePublished: article.publishedAt,
   url: absoluteUrl(article.path),
   ...(article.image && { image: article.image }),
-  inLanguage: 'fr-FR',
+  inLanguage: article.inLanguage,
   publisher: { '@type': 'Organization', name: SITE.publisher.legalName },
 })
 

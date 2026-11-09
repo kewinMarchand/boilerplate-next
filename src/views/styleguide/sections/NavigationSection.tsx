@@ -1,5 +1,6 @@
 import { Chip, Cluster } from '@kewinmarchand/boilerplates-ui/react'
 
+import { dictionaryFor, FALLBACK_LOCALE } from '@/shared/i18n'
 import { Link } from '@/shared/ui/kit'
 import { Breadcrumb, buildBreadcrumb } from '@/shared/ui/layout'
 
@@ -22,7 +23,7 @@ const QUERY = {
 export const NavigationSection = () => (
   <StyleguideSection title="Navigation">
     <Breadcrumb
-      items={buildBreadcrumb('/catalogue', [
+      items={buildBreadcrumb(dictionaryFor(FALLBACK_LOCALE).nav, '/catalogue', [
         { label: 'Plantes aquatiques', href: '/catalogue/plantes-aquatiques' },
       ])}
       withJsonLd={false}

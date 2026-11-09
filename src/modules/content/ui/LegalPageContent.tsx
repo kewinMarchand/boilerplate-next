@@ -2,9 +2,9 @@ import { notFound } from 'next/navigation'
 
 import { Alert, Stack, Text } from '@kewinmarchand/boilerplates-ui/react'
 
+import { getDictionary, getLocale } from '@/shared/i18n/server'
 import { RichHtml } from '@/shared/ui/kit'
 
-import { LegalPageLoadError } from '../infrastructure/LegalPageLoadError'
 import { findLegalPage } from '../infrastructure/legalPageRepository'
 import styles from './LegalPageContent.module.css'
 
@@ -21,7 +21,8 @@ interface LegalPageContentProps {
  * dans l'admin et retire les liens dangereux : il est injecté tel quel.
  */
 export const LegalPageContent = async ({ slug, fallbackTitle }: LegalPageContentProps) => {
-  const page = await findLegalPage(slug).catch((error: unknown) => {
+  const [locale, t] = await Promise.all([getLocale(), getDictionary()])
+  const page = await findLegalPage(slug, locale).catch((error: unknown) => {
     console.error(error)
     return undefined
   })
@@ -33,7 +34,7 @@ export const LegalPageContent = async ({ slug, fallbackTitle }: LegalPageContent
       <>
         <h1 className={`bui-text bui-text--h1 ${styles.title}`}>{fallbackTitle}</h1>
         <div data-testid="legal-error">
-          <Alert variant="error">{new LegalPageLoadError().message}</Alert>
+          <Alert variant="error">{t.legal.loadError}</Alert>
         </div>
       </>
     )

@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation'
 
 import { Cluster } from '@kewinmarchand/boilerplates-ui/react'
 
+import { localizePath } from '@/shared/i18n'
+import { getDictionary } from '@/shared/i18n/server'
 import { itemListJsonLd, JsonLd } from '@/shared/seo'
 import { Link, PicturePreload } from '@/shared/ui/kit'
 import { buildBreadcrumb, PageContainer } from '@/shared/ui/layout'
@@ -21,24 +23,32 @@ import { SortSelect } from './SortSelect'
 import { ViewToggle } from './ViewToggle'
 
 import type { SearchParams } from '../domain/catalogQuery'
+import type { LocaleContext } from '@/shared/i18n'
 
 interface CatalogViewProps {
   slugs: string[]
   searchParams: SearchParams
   /** Vente en ligne coupée : ni prix, ni filtre ni tri par prix. */
   salesEnabled: boolean
+  locale: LocaleContext
 }
 
-const productCount = (count: number) => `${count} produit${count > 1 ? 's' : ''}`
-
-export const CatalogView = async ({ slugs, searchParams, salesEnabled }: CatalogViewProps) => {
-  const load = await loadCatalogPage(slugs, searchParams, salesEnabled)
+export const CatalogView = async ({
+  slugs,
+  searchParams,
+  salesEnabled,
+  locale,
+}: CatalogViewProps) => {
+  const [load, t] = await Promise.all([
+    loadCatalogPage(slugs, searchParams, salesEnabled, locale.locale),
+    getDictionary(),
+  ])
   if (load.status === 'not-found') notFound()
 
   const { query, categoryPath, subcategories, result } = load
   const page = result.status === 'success' ? result.page : null
   const path = categoryHref(slugs)
-  const title = categoryPath.at(-1)?.name ?? 'Catalogue'
+  const title = categoryPath.at(-1)?.name ?? t.catalog.title
   const href = catalogHref(path, query)
 
   const firstImage = page?.products[0]?.image
@@ -46,10 +56,15 @@ export const CatalogView = async ({ slugs, searchParams, salesEnabled }: Catalog
   return (
     <>
       {firstImage && <PicturePreload image={firstImage} sizes={PRODUCT_IMAGE_SIZES} />}
-      <PageContainer breadcrumb={buildBreadcrumb(CATALOG_ROOT_PATH, categoryTrail(categoryPath))}>
+      <PageContainer
+        breadcrumb={buildBreadcrumb(t.nav, CATALOG_ROOT_PATH, categoryTrail(categoryPath))}
+      >
         <CatalogTitle title={title} focusKey={href} />
         {subcategories.length > 0 && (
-          <ul aria-label="Sous-catégories" className={`bui-chip-list ${styles.subcategories}`}>
+          <ul
+            aria-label={t.catalog.subcategories}
+            className={`bui-chip-list ${styles.subcategories}`}
+          >
             {subcategories.map((child) => (
               <li key={child.slug}>
                 <Link href={child.href} className="bui-chip">
@@ -82,7 +97,7 @@ export const CatalogView = async ({ slugs, searchParams, salesEnabled }: Catalog
               />
               <Cluster justify="between" gap="4" className={styles.toolbar}>
                 <p role="status" className={styles.count} data-testid="catalog-results-count">
-                  {page ? productCount(page.total) : ''}
+                  {page ? t.catalog.productCount(page.total) : ''}
                 </p>
                 <Cluster gap="4">
                   <SortSelect path={path} query={query} salesEnabled={salesEnabled} />
@@ -108,7 +123,7 @@ export const CatalogView = async ({ slugs, searchParams, salesEnabled }: Catalog
                   />
                   <JsonLd
                     data={itemListJsonLd(
-                      path,
+                      localizePath(path, locale.locale, locale.defaultLocale),
                       result.page.products.map((product) => product.name),
                     )}
                   />
@@ -118,7 +133,7 @@ export const CatalogView = async ({ slugs, searchParams, salesEnabled }: Catalog
                   status="error"
                   products={undefined}
                   view={query.view}
-                  errorMessage={result.message}
+                  errorMessage={t.catalog.loadError}
                   retryHref={href}
                 />
               )}

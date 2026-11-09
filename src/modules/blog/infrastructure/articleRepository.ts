@@ -7,16 +7,17 @@ import type { Article } from '../domain/article'
 
 const listArticles = async (
   client: ReturnType<typeof staticApiClient>,
+  locale: string,
   section?: string,
 ): Promise<Article.Entity[]> => {
   const { data, response } = await client.GET('/api/articles', {
-    params: { query: section ? { section } : {} },
+    params: { query: section ? { section, locale } : { locale } },
   })
   if (!data) throw new ApiError(response)
   return data.map(toArticle)
 }
 
-export const findLatestArticles = () => listArticles(staticApiClient())
+export const findLatestArticles = (locale: string) => listArticles(staticApiClient(), locale)
 
 /**
  * Un build de test (`ENABLE_TEST_ROUTES=1`) relaie `X-Scenario`, pour que les tests e2e provoquent
@@ -26,20 +27,24 @@ const blogPageClient = async () =>
   process.env.ENABLE_TEST_ROUTES === '1' ? serverApiClient() : staticApiClient()
 
 /** Page `/blog`, filtrée par rubrique (slug inconnu : liste vide). */
-export const findArticles = async (section?: string) =>
-  listArticles(await blogPageClient(), section)
+export const findArticles = async (locale: string, section?: string) =>
+  listArticles(await blogPageClient(), locale, section)
 
 /** Rubriques par position, y compris celles qu'aucun article ne porte. */
-export const findArticleSections = async (): Promise<Article.Term[]> => {
-  const { data, response } = await (await blogPageClient()).GET('/api/article-sections')
+export const findArticleSections = async (locale: string): Promise<Article.Term[]> => {
+  const { data, response } = await (
+    await blogPageClient()
+  ).GET('/api/article-sections', {
+    params: { query: { locale } },
+  })
   if (!data) throw new ApiError(response)
   return data.map(toArticleTerm)
 }
 
 /** `null` si l'API ne connaît pas l'article (404). */
-export const findArticle = async (slug: string): Promise<Article.Detail | null> => {
+export const findArticle = async (slug: string, locale: string): Promise<Article.Detail | null> => {
   const { data, response } = await staticApiClient().GET('/api/articles/{slug}', {
-    params: { path: { slug } },
+    params: { path: { slug }, query: { locale } },
   })
   if (response.status === 404) return null
   if (!data) throw new ApiError(response)

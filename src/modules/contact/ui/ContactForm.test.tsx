@@ -69,7 +69,8 @@ describe('ContactForm', () => {
       'Votre demande de renseignement a bien été envoyée.',
     )
     expect(vi.mocked(sendContactMessage).mock.lastCall?.[0]).toMatchObject({
-      product: 'monstera-deliciosa',
+      message: { product: 'monstera-deliciosa' },
+      locale: 'fr',
     })
   })
 

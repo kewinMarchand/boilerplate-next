@@ -1,5 +1,6 @@
 import { Alert, Button, Skeleton, Stack } from '@kewinmarchand/boilerplates-ui/react'
 
+import { useDictionary } from '@/shared/i18n'
 import { Icon } from '@/shared/ui/kit'
 
 import styles from './TaskList.module.css'
@@ -9,11 +10,11 @@ import type { Task } from '../domain/task'
 interface TaskListProps {
   status: 'pending' | 'error' | 'success'
   tasks: Task.Entity[] | undefined
-  errorMessage?: string
   onRetry: () => void
 }
 
-export const TaskList = ({ status, tasks, errorMessage, onRetry }: TaskListProps) => {
+export const TaskList = ({ status, tasks, onRetry }: TaskListProps) => {
+  const t = useDictionary().tasks
   if (status === 'pending') {
     return (
       <Stack
@@ -21,7 +22,7 @@ export const TaskList = ({ status, tasks, errorMessage, onRetry }: TaskListProps
         role="status"
         data-testid="tasks-loading"
         aria-busy="true"
-        aria-label="Chargement des tâches"
+        aria-label={t.loading}
       >
         {[1, 2, 3].map((key) => (
           <Skeleton key={key} height="48px" />
@@ -38,11 +39,11 @@ export const TaskList = ({ status, tasks, errorMessage, onRetry }: TaskListProps
           action={
             <Button variant="ghost" onClick={onRetry} data-testid="tasks-retry">
               <Icon name="rotate-cw" />
-              Réessayer
+              {t.retry}
             </Button>
           }
         >
-          {errorMessage}
+          {t.loadError}
         </Alert>
       </div>
     )
@@ -51,7 +52,7 @@ export const TaskList = ({ status, tasks, errorMessage, onRetry }: TaskListProps
   if (!tasks?.length) {
     return (
       <div data-testid="tasks-empty">
-        <Alert>Aucune tâche pour l'instant. Tout est à jour.</Alert>
+        <Alert>{t.empty}</Alert>
       </div>
     )
   }
@@ -64,7 +65,7 @@ export const TaskList = ({ status, tasks, errorMessage, onRetry }: TaskListProps
           <div>
             <p className="bui-text">{task.title}</p>
             <p className={`bui-text bui-text--body-sm ${styles.status}`}>
-              {task.done ? 'Terminée' : 'À faire'}
+              {task.done ? t.done : t.todo}
             </p>
           </div>
         </li>

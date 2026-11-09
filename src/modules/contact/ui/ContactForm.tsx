@@ -2,6 +2,8 @@
 
 import { Alert, Button, TextArea, TextField } from '@kewinmarchand/boilerplates-ui/react'
 
+import { useDictionary } from '@/shared/i18n'
+
 import styles from './ContactForm.module.css'
 import { useContactForm } from './hooks/useContactForm'
 
@@ -13,6 +15,7 @@ interface ContactFormProps {
 }
 
 export const ContactForm = ({ product }: ContactFormProps) => {
+  const t = useDictionary().contact
   const { form, mutation, onSubmit } = useContactForm(product?.slug ?? null)
   const { errors } = form.formState
 
@@ -21,7 +24,7 @@ export const ContactForm = ({ product }: ContactFormProps) => {
       {product && <input type="hidden" name="product" value={product.slug} />}
       <TextField
         id="contact-nom"
-        label="Nom"
+        label={t.name}
         autoComplete="name"
         required
         error={errors.name?.message ?? ''}
@@ -30,7 +33,7 @@ export const ContactForm = ({ product }: ContactFormProps) => {
       />
       <TextField
         id="contact-email"
-        label="E-mail"
+        label={t.email}
         type="email"
         autoComplete="email"
         required
@@ -40,23 +43,19 @@ export const ContactForm = ({ product }: ContactFormProps) => {
       />
       <TextArea
         id="contact-message"
-        label="Message"
+        label={t.message}
         required
         error={errors.message?.message ?? ''}
         data-testid="contact-message"
         {...form.register('message')}
       />
       <Button type="submit" icon="mail" loading={mutation.isPending} data-testid="contact-submit">
-        Envoyer
+        {t.send}
       </Button>
       <div aria-live="polite">
         {mutation.data?.status === 'sent' && (
           <div data-testid="contact-success">
-            <Alert variant="success">
-              {product
-                ? 'Votre demande de renseignement a bien été envoyée.'
-                : 'Merci, votre message a bien été envoyé.'}
-            </Alert>
+            <Alert variant="success">{product ? t.inquirySent : t.sent}</Alert>
           </div>
         )}
         {errors.root && (
@@ -66,7 +65,7 @@ export const ContactForm = ({ product }: ContactFormProps) => {
         )}
         {mutation.isError && (
           <div data-testid="contact-error">
-            <Alert variant="error">L'envoi a échoué. Réessayez dans quelques instants.</Alert>
+            <Alert variant="error">{t.sendError}</Alert>
           </div>
         )}
       </div>

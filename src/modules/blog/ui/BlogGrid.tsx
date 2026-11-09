@@ -1,4 +1,8 @@
+'use client'
+
 import { Alert, Skeleton } from '@kewinmarchand/boilerplates-ui/react'
+
+import { useDictionary } from '@/shared/i18n'
 
 import { ArticleCard } from './ArticleCard'
 import styles from './BlogGrid.module.css'
@@ -17,12 +21,13 @@ interface BlogGridProps {
 }
 
 export const BlogGrid = ({ status, articles, errorMessage }: BlogGridProps) => {
+  const t = useDictionary().blog
   if (status === 'pending') {
     return (
       <div
         role="status"
         aria-busy="true"
-        aria-label="Chargement des articles"
+        aria-label={t.loading}
         data-testid="home-blog-loading"
         className={styles.grid}
       >
@@ -44,7 +49,7 @@ export const BlogGrid = ({ status, articles, errorMessage }: BlogGridProps) => {
   if (!articles?.length) {
     return (
       <div data-testid="home-blog-empty">
-        <Alert>Aucun article publié pour l'instant. Revenez bientôt !</Alert>
+        <Alert>{t.empty}</Alert>
       </div>
     )
   }

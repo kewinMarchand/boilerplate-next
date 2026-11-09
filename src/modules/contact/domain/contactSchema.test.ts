@@ -1,4 +1,10 @@
-import { contactSchema } from './contactSchema'
+import { createContactSchema } from './contactSchema'
+
+const contactSchema = createContactSchema({
+  name: 'Indiquez votre nom.',
+  email: 'Indiquez une adresse e-mail valide.',
+  message: 'Votre message est trop court.',
+})
 
 describe('contactSchema', () => {
   it('accepte un message complet', () => {

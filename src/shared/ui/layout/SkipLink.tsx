@@ -1,7 +1,9 @@
+import { getDictionary } from '@/shared/i18n/server'
+
 import styles from './SkipLink.module.css'
 
-export const SkipLink = () => (
+export const SkipLink = async () => (
   <a href="#main" className={styles.skip}>
-    Aller au contenu principal
+    {(await getDictionary()).layout.skipLink}
   </a>
 )

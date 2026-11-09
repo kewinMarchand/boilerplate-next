@@ -16,9 +16,11 @@ describe('TaskList', () => {
 
   it("affiche le message d'erreur et relance au clic", async () => {
     const onRetry = vi.fn()
-    render(<TaskList status="error" tasks={undefined} errorMessage="Oups" onRetry={onRetry} />)
+    render(<TaskList status="error" tasks={undefined} onRetry={onRetry} />)
 
-    expect(screen.getByTestId('tasks-error')).toHaveTextContent('Oups')
+    expect(screen.getByTestId('tasks-error')).toHaveTextContent(
+      'Impossible de charger les tâches pour le moment.',
+    )
     await userEvent.click(screen.getByTestId('tasks-retry'))
     expect(onRetry).toHaveBeenCalledOnce()
   })

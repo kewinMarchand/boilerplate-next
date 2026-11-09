@@ -1,5 +1,10 @@
 export type { Article } from './domain/article'
-export { buildArticleMetadata, listArticlePaths } from './ui/articleMetadata'
+export {
+  buildArticleMetadata,
+  listArticlePathAlternates,
+  listArticlePaths,
+  loadArticleAlternates,
+} from './ui/articleMetadata'
 export { ArticleView } from './ui/ArticleView'
 export { BlogGrid } from './ui/BlogGrid'
 export { BlogSection } from './ui/BlogSection'

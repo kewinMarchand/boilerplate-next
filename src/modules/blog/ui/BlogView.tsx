@@ -1,15 +1,18 @@
 import { Alert } from '@kewinmarchand/boilerplates-ui/react'
 
+import { localizePath } from '@/shared/i18n'
+import { getDictionary } from '@/shared/i18n/server'
 import { blogJsonLd, JsonLd } from '@/shared/seo'
 import { Link } from '@/shared/ui/kit'
 import { buildBreadcrumb, PageContainer } from '@/shared/ui/layout'
 
 import { articleHref, sectionParam } from '../domain/article'
 import { findArticles, findArticleSections } from '../infrastructure/articleRepository'
-import { ArticlesLoadError } from '../infrastructure/ArticlesLoadError'
 import { ArticleCard } from './ArticleCard'
 import styles from './BlogView.module.css'
 import { SectionFilter } from './SectionFilter'
+
+import type { LocaleContext } from '@/shared/i18n'
 
 const BLOG_PATH = '/blog'
 const CARD_SIZES =
@@ -17,25 +20,28 @@ const CARD_SIZES =
 
 interface BlogViewProps {
   searchParams: Record<string, string | string[] | undefined>
+  locale: LocaleContext
 }
 
-export const BlogView = async ({ searchParams }: BlogViewProps) => {
+export const BlogView = async ({ searchParams, locale }: BlogViewProps) => {
   const section = sectionParam(searchParams.rubrique)
-  const [articles, sections] = await Promise.all([
-    findArticles(section).catch((error: unknown) => {
+  const localize = (path: string) => localizePath(path, locale.locale, locale.defaultLocale)
+  const [articles, sections, t] = await Promise.all([
+    findArticles(locale.locale, section).catch((error: unknown) => {
       console.error(error)
       return null
     }),
     // Sans rubriques lisibles, le filtre disparaît : la liste reste l'essentiel.
-    findArticleSections().catch((error: unknown) => {
+    findArticleSections(locale.locale).catch((error: unknown) => {
       console.error(error)
       return []
     }),
+    getDictionary(),
   ])
 
   return (
-    <PageContainer breadcrumb={buildBreadcrumb(BLOG_PATH)}>
-      <h1 className={`bui-text bui-text--h1 ${styles.title}`}>Blog</h1>
+    <PageContainer breadcrumb={buildBreadcrumb(t.nav, BLOG_PATH)}>
+      <h1 className={`bui-text bui-text--h1 ${styles.title}`}>{t.blog.title}</h1>
       {sections.length > 0 && <SectionFilter sections={sections} active={section} />}
       {!articles ? (
         <div data-testid="blog-error">
@@ -47,16 +53,16 @@ export const BlogView = async ({ searchParams }: BlogViewProps) => {
                 className="bui-button bui-button--ghost"
                 data-testid="blog-retry"
               >
-                Réessayer
+                {t.blog.retry}
               </Link>
             }
           >
-            {new ArticlesLoadError().message}
+            {t.blog.latestError}
           </Alert>
         </div>
       ) : articles.length === 0 ? (
         <div data-testid="blog-empty">
-          <Alert>Aucun article publié pour l'instant. Revenez bientôt !</Alert>
+          <Alert>{t.blog.empty}</Alert>
         </div>
       ) : (
         <div className={styles.list} data-testid="blog-list">
@@ -73,10 +79,10 @@ export const BlogView = async ({ searchParams }: BlogViewProps) => {
       )}
       <JsonLd
         data={blogJsonLd(
-          BLOG_PATH,
+          { name: t.blog.title, path: localize(BLOG_PATH), inLanguage: t.language.tag },
           (articles ?? []).map((article) => ({
             title: article.title,
-            path: articleHref(article.slug),
+            path: localize(articleHref(article.slug)),
             publishedAt: article.publishedAt,
           })),
         )}

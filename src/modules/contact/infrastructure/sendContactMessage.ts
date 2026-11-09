@@ -13,10 +13,20 @@ export interface ContactMessage extends Contact.FormValues {
   product: string | null
 }
 
-/** Appelée dans le navigateur, par la mutation du formulaire. */
-export const sendContactMessage = async (message: ContactMessage): Promise<ContactSendResult> => {
+/**
+ * Appelée dans le navigateur, par la mutation du formulaire. `Accept-Language` donne la langue du
+ * slug du produit (l'opération n'a pas de paramètre `locale`).
+ */
+export const sendContactMessage = async ({
+  message,
+  locale,
+}: {
+  message: ContactMessage
+  locale: string
+}): Promise<ContactSendResult> => {
   const { error, response } = await browserApiClient().POST('/api/contact_messages', {
     body: message,
+    headers: { 'Accept-Language': locale },
   })
   if (response.status === 422) return { status: 'invalid', fieldErrors: toFieldErrors(error) }
   if (!response.ok) throw new ApiError(response)

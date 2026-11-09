@@ -288,6 +288,18 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Alternate: {
+            /** @description Code de langue BCP 47 court (fr, en). */
+            locale: string;
+            /** @description Slug de l'élément dans cette langue : le sien, ou celui de la langue par défaut s'il n'est pas traduit. */
+            slug: string;
+        };
+        "Alternate.jsonld": {
+            /** @description Code de langue BCP 47 court (fr, en). */
+            locale: string;
+            /** @description Slug de l'élément dans cette langue : le sien, ou celui de la langue par défaut s'il n'est pas traduit. */
+            slug: string;
+        };
         /** @description Liste les articles, du plus récent au plus ancien, sans pagination. */
         Article: {
             id: number;
@@ -326,7 +338,7 @@ export interface components {
             /** @description Intervenant (« Présenté par … »), 80 caractères au plus ; chaîne vide s'il n'y en a pas. */
             speaker: string;
         };
-        /** @description Lit un article par son slug. */
+        /** @description Lit un article par son slug dans la langue demandée (le sien, ou celui de la langue par défaut s'il n'est pas traduit). Slug d'une autre langue : 404. */
         ArticleDetail: {
             id: number;
             slug: string;
@@ -350,8 +362,10 @@ export interface components {
             metaTitle: string;
             /** @description Description pour les moteurs de recherche, 160 caractères au plus ; chaîne vide si l'admin n'en a pas saisi. */
             metaDescription: string;
+            /** @description L'article dans chaque langue activée, langue demandée comprise, pour les hreflang et le sélecteur de langue ; tableau vide sur un site monolingue. */
+            alternates: components["schemas"]["Alternate"][];
         };
-        /** @description Lit un article par son slug. */
+        /** @description Lit un article par son slug dans la langue demandée (le sien, ou celui de la langue par défaut s'il n'est pas traduit). Slug d'une autre langue : 404. */
         "ArticleDetail.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
             id: number;
             slug: string;
@@ -375,6 +389,8 @@ export interface components {
             metaTitle: string;
             /** @description Description pour les moteurs de recherche, 160 caractères au plus ; chaîne vide si l'admin n'en a pas saisi. */
             metaDescription: string;
+            /** @description L'article dans chaque langue activée, langue demandée comprise, pour les hreflang et le sélecteur de langue ; tableau vide sur un site monolingue. */
+            alternates: components["schemas"]["Alternate.jsonld"][];
         };
         /** @description Liste les rubriques par position, y compris celles qu'aucun article ne porte. */
         ArticleTerm: {
@@ -469,10 +485,14 @@ export interface components {
             /** @description Slug de la catégorie parente, null à la racine. */
             parent: string | null;
             children: components["schemas"]["Category"][];
+            /** @description La catégorie dans chaque langue activée, langue demandée comprise ; tableau vide sur un site monolingue. */
+            alternates: components["schemas"]["Alternate"][];
         };
         /** @description Renvoie l'arbre des catégories : les catégories racines, chacune avec ses enfants, triées par position. */
         "Category.jsonld": {
             children?: components["schemas"]["Category.jsonld"][];
+            /** @description La catégorie dans chaque langue activée, langue demandée comprise ; tableau vide sur un site monolingue. */
+            alternates?: components["schemas"]["Alternate.jsonld"][];
         } & (components["schemas"]["HydraItemBaseSchema"] & {
             slug: string;
             name: string;
@@ -699,21 +719,25 @@ export interface components {
             /** @description Adresse absolue de la plus petite variante WebP (attribut src de l'<img>). */
             src: string;
         };
-        /** @description Lit une page légale par son slug (mentions-legales, donnees-personnelles, accessibilite). */
+        /** @description Lit une page légale par son slug (mentions-legales, donnees-personnelles, accessibilite), commun à toutes les langues. */
         LegalPage: {
             slug: string;
             title: string;
             /** @description HTML placé avant la première section, vide s'il n'y en a pas. */
             introduction: string;
             sections: components["schemas"]["LegalSection"][];
+            /** @description La page dans chaque langue activée, langue demandée comprise (même slug : il est fixé par les routes des fronts) ; tableau vide sur un site monolingue. */
+            alternates: components["schemas"]["Alternate"][];
         };
-        /** @description Lit une page légale par son slug (mentions-legales, donnees-personnelles, accessibilite). */
+        /** @description Lit une page légale par son slug (mentions-legales, donnees-personnelles, accessibilite), commun à toutes les langues. */
         "LegalPage.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
             slug: string;
             title: string;
             /** @description HTML placé avant la première section, vide s'il n'y en a pas. */
             introduction: string;
             sections: components["schemas"]["LegalSection.jsonld"][];
+            /** @description La page dans chaque langue activée, langue demandée comprise (même slug : il est fixé par les routes des fronts) ; tableau vide sur un site monolingue. */
+            alternates: components["schemas"]["Alternate.jsonld"][];
         };
         LegalSection: {
             title: string;
@@ -779,7 +803,7 @@ export interface components {
             /** @description Attributs configurables renseignés sur le produit, par position ; tableau vide si aucun. */
             attributes: components["schemas"]["AttributeValue.jsonld"][];
         };
-        /** @description Lit un produit par son slug. */
+        /** @description Lit un produit par son slug dans la langue demandée (le sien, ou celui de la langue par défaut s'il n'est pas traduit). Slug d'une autre langue : 404. */
         ProductDetail: {
             id: number;
             slug: string;
@@ -806,8 +830,10 @@ export interface components {
             metaTitle: string;
             /** @description Description pour les moteurs de recherche, 160 caractères au plus ; chaîne vide si l'admin n'en a pas saisi. */
             metaDescription: string;
+            /** @description Le produit dans chaque langue activée, langue demandée comprise, pour les hreflang et le sélecteur de langue ; tableau vide sur un site monolingue. */
+            alternates: components["schemas"]["Alternate"][];
         };
-        /** @description Lit un produit par son slug. */
+        /** @description Lit un produit par son slug dans la langue demandée (le sien, ou celui de la langue par défaut s'il n'est pas traduit). Slug d'une autre langue : 404. */
         "ProductDetail.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
             id: number;
             slug: string;
@@ -834,6 +860,8 @@ export interface components {
             metaTitle: string;
             /** @description Description pour les moteurs de recherche, 160 caractères au plus ; chaîne vide si l'admin n'en a pas saisi. */
             metaDescription: string;
+            /** @description Le produit dans chaque langue activée, langue demandée comprise, pour les hreflang et le sélecteur de langue ; tableau vide sur un site monolingue. */
+            alternates: components["schemas"]["Alternate.jsonld"][];
         };
         /** @description Compte les produits filtrés, au total et par valeur de facette. Mêmes filtres que GET /api/products, sans tri ni pagination. */
         ProductFacets: {
@@ -899,6 +927,8 @@ export interface components {
             theme: components["schemas"]["SiteTheme"] | null;
             /** @description Vente en ligne : false, les fronts n'affichent ni prix ni panier et chaque produit propose une demande de renseignement. */
             salesEnabled: boolean;
+            /** @description Langues du site, codes BCP 47 courts, la langue par défaut en premier ; ["fr"] tant qu'aucune autre n'est activée. */
+            locales: string[];
         };
         /** @description Lit l'identité du site. */
         "SiteIdentity.jsonld": components["schemas"]["HydraItemBaseSchema"] & {
@@ -918,6 +948,8 @@ export interface components {
             theme: components["schemas"]["SiteTheme.jsonld"] | null;
             /** @description Vente en ligne : false, les fronts n'affichent ni prix ni panier et chaque produit propose une demande de renseignement. */
             salesEnabled: boolean;
+            /** @description Langues du site, codes BCP 47 courts, la langue par défaut en premier ; ["fr"] tant qu'aucune autre n'est activée. */
+            locales: string[];
         };
         SiteTheme: {
             /** @description Jetons du thème clair (fond #ffffff). */
@@ -987,8 +1019,13 @@ export interface operations {
                 section?: string;
                 /** @description Slug de format (GET /api/article-formats). Slug inconnu : liste vide. */
                 format?: string;
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
             };
-            header?: never;
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -997,6 +1034,8 @@ export interface operations {
             /** @description Article collection */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1010,8 +1049,14 @@ export interface operations {
     };
     api_articles_slug_get: {
         parameters: {
-            query?: never;
-            header?: never;
+            query?: {
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
+            };
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path: {
                 /** @description ArticleDetail identifier */
                 slug: string;
@@ -1023,6 +1068,8 @@ export interface operations {
             /** @description ArticleDetail resource */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1045,8 +1092,14 @@ export interface operations {
     };
     "api_article-formats_get_collection": {
         parameters: {
-            query?: never;
-            header?: never;
+            query?: {
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
+            };
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1055,6 +1108,8 @@ export interface operations {
             /** @description ArticleTerm collection */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1068,8 +1123,14 @@ export interface operations {
     };
     "api_article-sections_get_collection": {
         parameters: {
-            query?: never;
-            header?: never;
+            query?: {
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
+            };
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1078,6 +1139,8 @@ export interface operations {
             /** @description ArticleTerm collection */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1091,8 +1154,14 @@ export interface operations {
     };
     api_categories_get_collection: {
         parameters: {
-            query?: never;
-            header?: never;
+            query?: {
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
+            };
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1101,6 +1170,8 @@ export interface operations {
             /** @description Category collection */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1163,8 +1234,14 @@ export interface operations {
     };
     api_legal_pages_slug_get: {
         parameters: {
-            query?: never;
-            header?: never;
+            query?: {
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
+            };
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path: {
                 /** @description LegalPage identifier */
                 slug: string;
@@ -1176,6 +1253,8 @@ export interface operations {
             /** @description LegalPage resource */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1198,8 +1277,14 @@ export interface operations {
     };
     "api_page-metas_get_collection": {
         parameters: {
-            query?: never;
-            header?: never;
+            query?: {
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
+            };
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1208,6 +1293,8 @@ export interface operations {
             /** @description PageMeta collection */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1221,8 +1308,14 @@ export interface operations {
     };
     "api_featured-products_get_collection": {
         parameters: {
-            query?: never;
-            header?: never;
+            query?: {
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
+            };
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1231,6 +1324,8 @@ export interface operations {
             /** @description Product collection */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1269,8 +1364,13 @@ export interface operations {
                 page?: number;
                 /** @description Produits par page, de 1 à 48. */
                 itemsPerPage?: number;
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
             };
-            header?: never;
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1279,6 +1379,8 @@ export interface operations {
             /** @description Product collection */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1292,8 +1394,14 @@ export interface operations {
     };
     api_products_slug_get: {
         parameters: {
-            query?: never;
-            header?: never;
+            query?: {
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
+            };
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path: {
                 /** @description ProductDetail identifier */
                 slug: string;
@@ -1305,6 +1413,8 @@ export interface operations {
             /** @description ProductDetail resource */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1344,8 +1454,13 @@ export interface operations {
                 priceMax?: number;
                 /** @description true : uniquement les produits en stock. */
                 inStock?: boolean;
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
             };
-            header?: never;
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1354,6 +1469,8 @@ export interface operations {
             /** @description ProductFacets resource */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1376,8 +1493,14 @@ export interface operations {
     };
     "api_site-identity_get": {
         parameters: {
-            query?: never;
-            header?: never;
+            query?: {
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
+            };
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1386,6 +1509,8 @@ export interface operations {
             /** @description SiteIdentity resource */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -1408,8 +1533,14 @@ export interface operations {
     };
     api_tasks_get_collection: {
         parameters: {
-            query?: never;
-            header?: never;
+            query?: {
+                /** @description Langue du contenu, code BCP 47 court (fr, en). L'emporte sur Accept-Language. Langue non activée : ignoré. */
+                locale?: string;
+            };
+            header?: {
+                /** @description Langues acceptées : la première langue activée du site qui y figure est servie, sinon la langue par défaut. Champ non traduit : valeur de la langue par défaut. */
+                "Accept-Language"?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1418,6 +1549,8 @@ export interface operations {
             /** @description Task collection */
             200: {
                 headers: {
+                    /** @description Langue du contenu servi. */
+                    "Content-Language"?: string;
                     [name: string]: unknown;
                 };
                 content: {

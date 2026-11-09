@@ -24,12 +24,13 @@ describe('getSeoSettings', () => {
       defaultColorScheme: 'auto',
       theme: null,
       salesEnabled: true,
+      locales: ['fr'],
     })
     vi.mocked(findPageMetas).mockResolvedValue({
       blog: { title: 'Le blog', description: 'Conseils et actualités.' },
     })
 
-    expect(await getSeoSettings('blog')).toEqual({
+    expect(await getSeoSettings('fr', 'blog')).toEqual({
       title: 'Le blog',
       description: 'Conseils et actualités.',
       shareImage: {
@@ -38,6 +39,7 @@ describe('getSeoSettings', () => {
         height: 630,
         alt: 'Oraki',
       },
+      locale: { locale: 'fr', defaultLocale: 'fr', locales: ['fr'] },
     })
   })
 
@@ -46,6 +48,11 @@ describe('getSeoSettings', () => {
     vi.mocked(findPageMetas).mockRejectedValue(new Error('API injoignable'))
     vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    expect(await getSeoSettings('home')).toEqual({ title: '', description: '', shareImage: null })
+    expect(await getSeoSettings('fr', 'home')).toEqual({
+      title: '',
+      description: '',
+      shareImage: null,
+      locale: { locale: 'fr', defaultLocale: 'fr', locales: ['fr'] },
+    })
   })
 })

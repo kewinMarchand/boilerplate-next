@@ -1,5 +1,6 @@
 import { Text } from '@kewinmarchand/boilerplates-ui/react'
 
+import { dictionaryFor, FALLBACK_LOCALE } from '@/shared/i18n'
 import { buildBreadcrumb, PageContainer } from '@/shared/ui/layout'
 
 import { ButtonsSection } from './sections/ButtonsSection'
@@ -15,7 +16,9 @@ import styles from './styleguide.module.css'
 
 export const StyleguideView = () => (
   <PageContainer
-    breadcrumb={buildBreadcrumb('/', [{ label: 'Charte graphique', href: '/charte-graphique' }])}
+    breadcrumb={buildBreadcrumb(dictionaryFor(FALLBACK_LOCALE).nav, '/', [
+      { label: 'Charte graphique', href: '/charte-graphique' },
+    ])}
   >
     <h1 className={`bui-text bui-text--h1 ${styles.title}`}>Charte graphique</h1>
     <Text>

@@ -5,6 +5,7 @@ import { useId } from 'react'
 import { Button, Drawer, IconButton } from '@kewinmarchand/boilerplates-ui/react'
 
 import { CATALOG_NAVIGATION } from '@/shared/config'
+import { useDictionary } from '@/shared/i18n'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 import { useMobileMenu } from '@/shared/ui/hooks/useMobileMenu'
 import { Icon, Link } from '@/shared/ui/kit'
@@ -31,6 +32,7 @@ const findLevel = (tree: NavigationNode[], levels: string[]) => {
 }
 
 export const MobileMenu = ({ navigation, categoryMenu }: MobileMenuProps) => {
+  const t = useDictionary()
   const isHydrated = useHydrated()
   const drawerId = useId()
   const { isOpen, levels, open, close, descend, back } = useMobileMenu()
@@ -39,7 +41,7 @@ export const MobileMenu = ({ navigation, categoryMenu }: MobileMenuProps) => {
     return (
       <Link
         href="/plan-du-site"
-        aria-label="Menu"
+        aria-label={t.layout.menu}
         className="bui-button bui-button--nav bui-button--icon"
       >
         <Icon name="menu" />
@@ -49,14 +51,15 @@ export const MobileMenu = ({ navigation, categoryMenu }: MobileMenuProps) => {
 
   const { nodes, trail } = findLevel(categoryMenu, levels ?? [])
   const current = trail.at(-1)
-  const title = levels === null ? 'Menu' : (current?.label ?? CATALOG_NAVIGATION.label)
-  const parentName = levels?.length ? (trail.at(-2)?.label ?? CATALOG_NAVIGATION.label) : 'Menu'
+  const catalogLabel = t.nav[CATALOG_NAVIGATION.key]
+  const title = levels === null ? t.layout.menu : (current?.label ?? catalogLabel)
+  const parentName = levels?.length ? (trail.at(-2)?.label ?? catalogLabel) : t.layout.menu
 
   return (
     <>
       <IconButton
         variant="nav"
-        label="Menu"
+        label={t.layout.menu}
         icon="menu"
         aria-expanded={isOpen}
         aria-controls={drawerId}
@@ -69,7 +72,7 @@ export const MobileMenu = ({ navigation, categoryMenu }: MobileMenuProps) => {
         open={isOpen}
         onClose={close}
         side="start"
-        closeLabel="Fermer le menu"
+        closeLabel={t.layout.closeMenu}
         focusTitle
         data-testid="layout-mobile-menu"
       >
@@ -80,7 +83,7 @@ export const MobileMenu = ({ navigation, categoryMenu }: MobileMenuProps) => {
             onClick={back}
             data-testid="layout-mobile-menu-back"
           >
-            Retour : {parentName}
+            {t.layout.back(parentName)}
           </Button>
         )}
 
@@ -113,7 +116,7 @@ export const MobileMenu = ({ navigation, categoryMenu }: MobileMenuProps) => {
                   onClick={close}
                   className={`${styles.row} ${styles.all}`}
                 >
-                  Voir toute la catégorie
+                  {t.layout.wholeCategory}
                 </Link>
               </li>
               {nodes.map((node) => (

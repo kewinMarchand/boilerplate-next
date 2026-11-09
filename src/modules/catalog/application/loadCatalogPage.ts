@@ -2,14 +2,12 @@ import { withoutPriceCriteria } from '../domain/catalogQuery'
 import { resolveCategoryPath, subcategoryLinks } from '../domain/categoryPath'
 import { parseCatalogQuery } from '../domain/parseCatalogQuery'
 import { findCatalogPage, findCategoryTree } from '../infrastructure/catalogRepository'
-import { CatalogLoadError } from './CatalogLoadError'
 
 import type { Catalog } from '../domain/catalog'
 import type { SearchParams } from '../domain/catalogQuery'
 import type { CatalogPage } from '../infrastructure/catalogRepository'
 
-export type CatalogPageResult =
-  { status: 'success'; page: CatalogPage } | { status: 'error'; message: string }
+export type CatalogPageResult = { status: 'success'; page: CatalogPage } | { status: 'error' }
 
 export type CatalogPageLoad =
   | { status: 'not-found' }
@@ -23,7 +21,7 @@ export type CatalogPageLoad =
 
 const unavailable = (error: unknown): CatalogPageResult => {
   console.error(error)
-  return { status: 'error', message: new CatalogLoadError().message }
+  return { status: 'error' }
 }
 
 /**
@@ -35,14 +33,15 @@ const unavailable = (error: unknown): CatalogPageResult => {
 export const loadCatalogPage = async (
   slugs: string[],
   searchParams: SearchParams,
-  salesEnabled = true,
+  salesEnabled: boolean,
+  locale: string,
 ): Promise<CatalogPageLoad> => {
   const parsed = parseCatalogQuery(searchParams)
   const query = salesEnabled ? parsed : withoutPriceCriteria(parsed)
 
   let tree: Catalog.Category[]
   try {
-    tree = await findCategoryTree()
+    tree = await findCategoryTree(locale)
   } catch (error) {
     return { status: 'ok', query, categoryPath: [], subcategories: [], result: unavailable(error) }
   }
@@ -59,7 +58,7 @@ export const loadCatalogPage = async (
 
   let page: CatalogPage
   try {
-    page = await findCatalogPage(slugs, query)
+    page = await findCatalogPage(slugs, query, locale)
   } catch (error) {
     return { ...base, result: unavailable(error) }
   }

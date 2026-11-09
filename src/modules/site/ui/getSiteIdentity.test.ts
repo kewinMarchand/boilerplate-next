@@ -19,6 +19,7 @@ describe('getSiteIdentity', () => {
       defaultColorScheme: 'auto',
       theme: null,
       salesEnabled: true,
+      locales: ['fr'],
     })
   })
 })

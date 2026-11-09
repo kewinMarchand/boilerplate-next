@@ -2,6 +2,7 @@
 
 import { Button } from '@kewinmarchand/boilerplates-ui/react'
 
+import { useDictionary } from '@/shared/i18n'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 import { Link } from '@/shared/ui/kit'
 
@@ -16,6 +17,7 @@ const productHref = (slug: string) => `/produit/${slug}`
 
 /** Contenu de la page panier : le panier n'existe que dans le navigateur, il est lu après l'hydratation. */
 export const CartView = () => {
+  const t = useDictionary()
   const { lines, changeQuantity, remove } = useCart()
   const { listRef, emptyRef, markRemoved } = useFocusAfterRemoval(lines.length)
 
@@ -24,9 +26,9 @@ export const CartView = () => {
   if (lines.length === 0) {
     return (
       <p ref={emptyRef} tabIndex={-1} data-testid="cart-empty">
-        Votre panier est vide.{' '}
+        {t.cart.empty}{' '}
         <Link href={CATALOG_PATH} className="bui-link">
-          Parcourir le catalogue
+          {t.cart.browseCatalog}
         </Link>
       </p>
     )
@@ -40,9 +42,9 @@ export const CartView = () => {
             <Link href={productHref(line.slug)} className={`bui-link ${styles.name}`}>
               {line.name}
             </Link>
-            <span>{formatPrice(line.price)} l’unité</span>
+            <span>{t.cart.unitPrice(formatPrice(line.price, t.language.tag))}</span>
             <label className={styles.quantity}>
-              <span>Quantité de {line.name}</span>
+              <span>{t.cart.quantityOf(line.name)}</span>
               <input
                 type="number"
                 min={1}
@@ -56,25 +58,28 @@ export const CartView = () => {
                 data-testid="cart-quantity"
               />
             </label>
-            <span className={styles.subtotal}>{formatPrice(line.price * line.quantity)}</span>
+            <span className={styles.subtotal}>
+              {formatPrice(line.price * line.quantity, t.language.tag)}
+            </span>
             <Button
               variant="outline"
-              aria-label={`Retirer ${line.name}`}
+              aria-label={t.cart.removeItem(line.name)}
               onClick={() => {
                 markRemoved(index)
                 remove(line.slug)
               }}
               data-testid="cart-remove"
             >
-              Retirer
+              {t.cart.remove}
             </Button>
           </li>
         ))}
       </ul>
       <p className={styles.total}>
-        Total : <span data-testid="cart-total">{formatPrice(totalPrice(lines))}</span>
+        {t.cart.total}
+        <span data-testid="cart-total">{formatPrice(totalPrice(lines), t.language.tag)}</span>
       </p>
-      <p>La commande en ligne arrive bientôt.</p>
+      <p>{t.cart.soon}</p>
     </>
   )
 }

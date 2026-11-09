@@ -1,5 +1,8 @@
+'use client'
+
 import { Alert, Skeleton } from '@kewinmarchand/boilerplates-ui/react'
 
+import { useDictionary } from '@/shared/i18n'
 import { Link } from '@/shared/ui/kit'
 
 import { ProductCard } from './ProductCard'
@@ -31,11 +34,12 @@ export const ProductResults = ({
   clearHref = '',
   salesEnabled = true,
 }: ProductResultsProps) => {
+  const t = useDictionary().catalog
   if (status === 'pending') {
     return (
       <div
         role="status"
-        aria-label="Chargement des produits"
+        aria-label={t.loadingProducts}
         aria-busy="true"
         className={listClass(view)}
       >
@@ -57,7 +61,7 @@ export const ProductResults = ({
               className="bui-button bui-button--ghost"
               data-testid="catalog-retry"
             >
-              Réessayer
+              {t.retry}
             </Link>
           }
         >
@@ -71,9 +75,9 @@ export const ProductResults = ({
     return (
       <div data-testid="catalog-empty">
         <Alert>
-          Aucun produit ne correspond à ces filtres.{' '}
+          {t.empty}{' '}
           <TitleFocusLink href={clearHref} data-testid="catalog-clear-filters" className="bui-link">
-            Tout effacer
+            {t.clearFilters}
           </TitleFocusLink>
         </Alert>
       </div>

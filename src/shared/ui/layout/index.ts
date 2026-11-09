@@ -1,4 +1,5 @@
 export { AppShell } from './AppShell'
 export { Breadcrumb } from './Breadcrumb'
 export { buildBreadcrumb } from './breadcrumbTrail'
+export { LanguageSwitcher } from './LanguageSwitcher'
 export { PageContainer } from './PageContainer'

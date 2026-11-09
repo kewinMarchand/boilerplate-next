@@ -2,6 +2,7 @@ import { childCategories, findCategoryChain } from './categoryTree'
 
 import type { Catalog } from './catalog'
 import type { NavigationNode } from '@/shared/config'
+import type { LanguageAlternate } from '@/shared/i18n'
 
 export const CATALOG_ROOT_PATH = '/catalogue'
 export const MAX_CATEGORY_DEPTH = 3
@@ -23,6 +24,27 @@ export const resolveCategoryPath = (
       href: categoryHref(slugs.slice(0, index + 1)),
     })) ?? null
   )
+}
+
+/**
+ * Le chemin de catégories dans chaque langue où la dernière a un slug : chaque niveau prend son slug
+ * dans cette langue (`alternates` de l'arbre), sinon le sien. Racine du catalogue : aucun.
+ */
+export const categoryAlternates = (
+  tree: Catalog.Category[],
+  slugs: string[],
+): LanguageAlternate[] => {
+  const chain = findCategoryChain(tree, slugs) ?? []
+  return (chain.at(-1)?.alternates ?? []).map(({ locale }) => ({
+    locale,
+    path: categoryHref(
+      chain.map(
+        (category) =>
+          category.alternates?.find((alternate) => alternate.locale === locale)?.slug ??
+          category.slug,
+      ),
+    ),
+  }))
 }
 
 /** Liens vers les sous-catégories directes d'un chemin connu. */

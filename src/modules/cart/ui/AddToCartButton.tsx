@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import { Button } from '@kewinmarchand/boilerplates-ui/react'
 
+import { useDictionary } from '@/shared/i18n'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 import { Link } from '@/shared/ui/kit'
 
@@ -22,6 +23,7 @@ interface AddToCartButtonProps {
 
 /** Ajoute une unité du produit ; désactivé en rupture de stock. Absent sans JavaScript, le panier en dépend. */
 export const AddToCartButton = ({ item, isAvailable }: AddToCartButtonProps) => {
+  const t = useDictionary().cart
   const { add } = useCart()
   const [isAdded, setIsAdded] = useState(false)
 
@@ -38,14 +40,14 @@ export const AddToCartButton = ({ item, isAvailable }: AddToCartButtonProps) => 
         }}
         data-testid="add-to-cart"
       >
-        Ajouter au panier
+        {t.add}
       </Button>
       <p role="status" data-testid="add-to-cart-status">
         {isAdded && (
           <>
-            {item.name} ajouté au panier.{' '}
+            {t.added(item.name)}{' '}
             <Link href={CART_PATH} className="bui-link">
-              Voir le panier
+              {t.view}
             </Link>
           </>
         )}
