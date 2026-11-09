@@ -13,18 +13,23 @@ test.describe('Dictionnaire envoyé au navigateur', () => {
     expect(contact).not.toContain(fr.tasks.loadError)
     expect(contact).not.toContain(fr.opposition.refused)
 
-    const home = await (await request.get('/')).text()
-    expect(home).toContain(fr.carousel.goTo)
-    expect(home).not.toContain(fr.contact.validation.message)
-    expect(home).not.toContain(fr.catalog.closeFilters)
+    const product = await (await request.get('/produit/monstera-deliciosa')).text()
+    expect(product).toContain(fr.carousel.goTo)
+    expect(product).not.toContain(fr.contact.validation.message)
+    expect(product).not.toContain(fr.catalog.closeFilters)
   })
 
   test('une navigation dans le navigateur reçoit les sections de la page d’arrivée', async ({
     page,
+    isMobile,
   }) => {
-    await page.goto('/')
+    await page.goto('/produit/monstera-deliciosa')
     await expect(page.getByTestId('carousel-viewport')).toHaveAttribute('data-embla-ready', 'true')
-    await page.getByTestId('home-contact-link').click()
+    if (isMobile) await page.getByTestId('layout-mobile-menu-toggle').click()
+    const menu = isMobile
+      ? page.getByTestId('layout-mobile-menu')
+      : page.getByRole('navigation', { name: fr.layout.mainNavigation })
+    await menu.getByRole('link', { name: fr.nav.contact, exact: true }).click()
     await expect(page).toHaveURL(/\/contact$/)
 
     await page.getByTestId('contact-submit').click()
