@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation'
 
+import { PageDictionary } from '@/shared/i18n/PageDictionary'
+
 import { StyleguideView } from '@/views/styleguide'
 
 import type { Metadata } from 'next'
@@ -11,5 +13,9 @@ export const metadata: Metadata = {
 
 export default function StyleguidePage() {
   if (process.env.NODE_ENV === 'production') notFound()
-  return <StyleguideView />
+  return (
+    <PageDictionary sections={['catalog']}>
+      <StyleguideView />
+    </PageDictionary>
+  )
 }

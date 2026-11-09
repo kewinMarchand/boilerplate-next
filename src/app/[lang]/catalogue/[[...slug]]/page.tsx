@@ -1,3 +1,4 @@
+import { PageDictionary } from '@/shared/i18n/PageDictionary'
 import { getLocale } from '@/shared/i18n/server'
 
 import { buildCatalogMetadata, CatalogView } from '@/modules/catalog'
@@ -33,6 +34,8 @@ export default async function CatalogPage({ params, searchParams }: CatalogPageP
     getLocaleContext(lang),
   ])
   return (
-    <CatalogView slugs={slug} searchParams={query} salesEnabled={salesEnabled} locale={locale} />
+    <PageDictionary sections={['catalog', 'ui']}>
+      <CatalogView slugs={slug} searchParams={query} salesEnabled={salesEnabled} locale={locale} />
+    </PageDictionary>
   )
 }

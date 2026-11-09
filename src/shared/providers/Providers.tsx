@@ -13,7 +13,7 @@ import type { ReactNode } from 'react'
 
 interface ProvidersProps {
   locale: LocaleContext
-  dictionary: ClientDictionary
+  dictionary: Partial<ClientDictionary>
   children: ReactNode
 }
 

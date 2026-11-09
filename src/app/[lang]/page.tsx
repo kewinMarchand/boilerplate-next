@@ -1,3 +1,4 @@
+import { PageDictionary } from '@/shared/i18n/PageDictionary'
 import { getLocale } from '@/shared/i18n/server'
 import { buildMetadata } from '@/shared/seo'
 
@@ -23,5 +24,9 @@ export const generateMetadata = async (): Promise<Metadata> => {
 }
 
 export default function HomePage() {
-  return <HomeView />
+  return (
+    <PageDictionary sections={['carousel']}>
+      <HomeView />
+    </PageDictionary>
+  )
 }

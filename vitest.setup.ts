@@ -1,4 +1,4 @@
-import { clientDictionary, dictionaryFor } from '@/shared/i18n/dictionaries'
+import { dictionaryFor } from '@/shared/i18n/dictionaries'
 
 import '@testing-library/jest-dom/vitest'
 
@@ -8,5 +8,5 @@ vi.mock('next/root-params', () => ({ lang: async () => 'fr' }))
 // Hors du layout racine, les composants client lisent le dictionnaire français.
 vi.mock('@/shared/i18n/LocaleProvider', async (importOriginal) => ({
   ...(await importOriginal<object>()),
-  useDictionary: () => clientDictionary(dictionaryFor('fr')),
+  useDictionary: () => dictionaryFor('fr'),
 }))

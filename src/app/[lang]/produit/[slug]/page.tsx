@@ -1,3 +1,4 @@
+import { PageDictionary } from '@/shared/i18n/PageDictionary'
 import { getLocale } from '@/shared/i18n/server'
 
 import { AddToCartButton } from '@/modules/cart'
@@ -41,26 +42,28 @@ export default async function ProductPage({ params }: ProductPageProps) {
     getLocaleContext(lang),
   ])
   return (
-    <ProductView
-      slug={slug}
-      salesEnabled={salesEnabled}
-      locale={locale}
-      purchase={async (product) =>
-        salesEnabled ? (
-          <AddToCartButton
-            item={{
-              id: product.id,
-              slug: product.slug,
-              name: product.name,
-              price: product.price,
-              translations: await loadProductTranslations(product, lang),
-            }}
-            isAvailable={product.inStock}
-          />
-        ) : (
-          <ProductInquiryLink slug={product.slug} name={product.name} />
-        )
-      }
-    />
+    <PageDictionary sections={['product', 'carousel']}>
+      <ProductView
+        slug={slug}
+        salesEnabled={salesEnabled}
+        locale={locale}
+        purchase={async (product) =>
+          salesEnabled ? (
+            <AddToCartButton
+              item={{
+                id: product.id,
+                slug: product.slug,
+                name: product.name,
+                price: product.price,
+                translations: await loadProductTranslations(product, lang),
+              }}
+              isAvailable={product.inStock}
+            />
+          ) : (
+            <ProductInquiryLink slug={product.slug} name={product.name} />
+          )
+        }
+      />
+    </PageDictionary>
   )
 }

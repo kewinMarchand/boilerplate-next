@@ -1,3 +1,4 @@
+import { dictionarySections, DOCUMENT_SECTIONS } from './dictionaries'
 import { en } from './dictionaries/en'
 import { fr } from './dictionaries/fr'
 import { alternatesByKey, internalPath, languageLinks, localizePath } from './locale'
@@ -12,6 +13,11 @@ const keysOf = (value: object, prefix = ''): string[] =>
 describe('dictionnaires', () => {
   it('ont les mêmes clés en français et en anglais', () => {
     expect(keysOf(en).sort()).toEqual(keysOf(fr).sort())
+  })
+
+  it('ne donnent au navigateur que les sections demandées', () => {
+    expect(dictionarySections(en, ['cart', 'ui'])).toEqual({ cart: en.cart, ui: en.ui })
+    expect(Object.keys(dictionarySections(fr, DOCUMENT_SECTIONS))).not.toContain('catalog')
   })
 })
 

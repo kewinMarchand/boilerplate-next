@@ -150,7 +150,7 @@ Les conventions de code viennent du `CLAUDE.md` global de l'auteur. Le `CLAUDE.m
 ### Ajouter une page
 
 1. Page sans métier : créer `src/views/<nom>/` avec sa vue `<Nom>View.tsx` et son `index.ts`. Page d'un module : la vue va dans `ui/` du module et sort par son `index.ts`. La vue s'enveloppe dans `<PageContainer breadcrumb={buildBreadcrumb(t.nav, '/<route>')}>`, `t` venant de `getDictionary()` ; ses libellés vont dans les deux dictionnaires.
-2. Créer `src/app/[lang]/<route>/page.tsx`, dont `generateMetadata` renvoie `buildMetadata({ ...dictionaryFor(locale).meta.<page>, path, settings: await getSeoSettings(locale) })` (`locale` par `getLocale()`) et qui rend la vue. Le sélecteur de langue la couvre déjà (`@languages/[...rest]`) ; une page détaillée dont le slug change selon la langue a sa page dans `@languages/`.
+2. Créer `src/app/[lang]/<route>/page.tsx`, dont `generateMetadata` renvoie `buildMetadata({ ...dictionaryFor(locale).meta.<page>, path, settings: await getSeoSettings(locale) })` (`locale` par `getLocale()`) et qui rend la vue. Si des composants client de la page lisent des sections du dictionnaire autres que celles du document (`DOCUMENT_SECTIONS`), la page enveloppe sa vue dans `<PageDictionary sections={[...]}>` : sinon le pré-rendu ou le rendu de la page échoue. Le sélecteur de langue la couvre déjà (`@languages/[...rest]`) ; une page détaillée dont le slug change selon la langue a sa page dans `@languages/`.
 3. Ajouter la route à `src/shared/config/navigation.ts` (menu, plan du site, sitemap, fil d'Ariane) et à `tests/e2e/routes.ts` (réponse, SEO, débordement, axe), puis à `.lighthouserc.json`.
 4. Écrire `tests/e2e/<route>.e2e.ts`.
 

@@ -1,4 +1,5 @@
 import { dictionaryFor } from '@/shared/i18n/dictionaries'
+import { PageDictionary } from '@/shared/i18n/PageDictionary'
 import { getLocale } from '@/shared/i18n/server'
 import { buildMetadata } from '@/shared/seo'
 
@@ -21,5 +22,9 @@ interface ContactPageProps {
 }
 
 export default async function ContactPage({ searchParams }: ContactPageProps) {
-  return <ContactView searchParams={await searchParams} />
+  return (
+    <PageDictionary sections={['contact', 'ui']}>
+      <ContactView searchParams={await searchParams} />
+    </PageDictionary>
+  )
 }
