@@ -8,9 +8,8 @@ import { NotFoundView } from '@/views/errors'
 
 import type { Metadata } from 'next'
 
-// Adresse sans route : page pré-rendue hors du layout racine, sans segment [lang] (langue des libellés de repli).
-export const revalidate = 300
-
+// Adresse sans route : page hors du layout racine, sans segment [lang], dans la langue de l'adresse
+// (en-tête posé par src/proxy.ts), donc rendue à chaque requête.
 export const generateMetadata = async (): Promise<Metadata> => {
   const locale = await getLocale()
   const { name } = await getSiteIdentity(locale)

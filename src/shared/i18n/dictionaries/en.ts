@@ -68,6 +68,10 @@ export const en: Dictionary = {
     retry: 'Try again',
     home: 'Back to home',
   },
+  maintenance: {
+    title: 'Site under maintenance',
+    text: '{name} is undergoing maintenance. Please come back in about an hour.',
+  },
   home: {
     overline: 'Demonstration tropical garden centre',
     tasksLink: 'See the TanStack Query demo',

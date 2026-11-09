@@ -40,6 +40,19 @@ export const internalPath = (pathname: string, locales: string[]) => {
   return pathname === '/' ? `/${defaultLocale}` : `/${defaultLocale}${pathname}`
 }
 
+/** Langue d'une adresse publique : son préfixe s'il désigne une autre langue activée, sinon la langue par défaut. */
+export const pageLocale = (pathname: string, locales: string[]) => {
+  const [defaultLocale = FALLBACK_LOCALE, ...prefixed] = locales
+  const first = pathname.split('/')[1] ?? ''
+  return prefixed.includes(first) ? first : defaultLocale
+}
+
+/**
+ * En-tête de requête posé par `src/proxy.ts` : la langue de l'adresse, lue hors du segment `[lang]`
+ * (page introuvable globale).
+ */
+export const PAGE_LOCALE_HEADER = 'x-page-locale'
+
 /**
  * Une entrée par langue du site, dans l'ordre de `locales` : l'équivalent donné par `alternates`,
  * sinon `fallback` (l'accueil pour une page détaillée sans équivalent).

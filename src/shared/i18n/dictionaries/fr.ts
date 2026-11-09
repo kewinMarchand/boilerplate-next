@@ -68,6 +68,10 @@ export const fr = {
     retry: 'Réessayer',
     home: "Retour à l'accueil",
   },
+  maintenance: {
+    title: 'Site en maintenance',
+    text: '{name} est en cours de maintenance. Merci de revenir dans une heure environ.',
+  },
   home: {
     overline: 'Jardinerie tropicale de démonstration',
     tasksLink: 'Voir la démo TanStack Query',

@@ -201,7 +201,7 @@ Renseigner `accessibility` dans `src/shared/config/site.ts` (date, taux de confo
 
 ### Passer le site en maintenance
 
-Démarrer le serveur avec `MAINTENANCE=1`. Toutes les routes répondent 503 avec `Retry-After: 3600` et une page HTML autonome.
+Démarrer le serveur avec `MAINTENANCE=1`. Toutes les routes répondent 503 avec `Retry-After: 3600` et une page HTML autonome, dans la langue de l'adresse (préfixe, sinon langue par défaut du site).
 
 ## Tests
 

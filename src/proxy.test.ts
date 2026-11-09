@@ -37,4 +37,25 @@ describe('proxy', () => {
     expect(response.headers.get('Retry-After')).toBe('3600')
     expect(await response.text()).toContain('<h1>Site en maintenance</h1>')
   })
+
+  it('sert la page de maintenance dans la langue du préfixe, sinon dans la langue par défaut', async () => {
+    process.env.MAINTENANCE = '1'
+    const english = await (await proxy(request('/en/catalogue'))).text()
+    const unknown = await (await proxy(request('/de/catalogue'))).text()
+
+    expect(english).toContain('<html lang="en">')
+    expect(english).toContain('<h1>Site under maintenance</h1>')
+    expect(unknown).toContain('<html lang="fr">')
+    expect(unknown).toContain('<h1>Site en maintenance</h1>')
+  })
+
+  it('pose la langue de l’adresse sur la requête, pour la page introuvable globale', async () => {
+    const localeOf = async (path: string) =>
+      (await proxy(request(path))).headers.get('x-middleware-request-x-page-locale')
+
+    expect(await localeOf('/en/route-inexistante')).toBe('en')
+    expect(await localeOf('/route-inexistante')).toBe('fr')
+    expect(await localeOf('/de/route-inexistante')).toBe('fr')
+    expect(await localeOf('/fichier-absent.txt')).toBe('fr')
+  })
 })
