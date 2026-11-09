@@ -3,7 +3,7 @@ import { Fragment } from 'react'
 
 import { Alert, Badge } from '@kewinmarchand/boilerplates-ui/react'
 
-import { localizePath } from '@/shared/i18n'
+import { format, localizePath } from '@/shared/i18n'
 import { getDictionary } from '@/shared/i18n/server'
 import { JsonLd, productJsonLd } from '@/shared/seo'
 import { largestWebp, Link, Picture } from '@/shared/ui/kit'
@@ -127,7 +127,7 @@ export const ProductView = async ({ slug, salesEnabled, purchase, locale }: Prod
           {category && (
             <p>
               <Link href={category.href} className="bui-link">
-                {t.product.otherProducts(category.name)}
+                {format(t.product.otherProducts, { category: category.name })}
               </Link>
             </p>
           )}

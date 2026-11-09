@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 
 import { Cluster } from '@kewinmarchand/boilerplates-ui/react'
 
-import { localizePath } from '@/shared/i18n'
+import { localizePath, plural } from '@/shared/i18n'
 import { getDictionary } from '@/shared/i18n/server'
 import { itemListJsonLd, JsonLd } from '@/shared/seo'
 import { Link, PicturePreload } from '@/shared/ui/kit'
@@ -97,7 +97,7 @@ export const CatalogView = async ({
               />
               <Cluster justify="between" gap="4" className={styles.toolbar}>
                 <p role="status" className={styles.count} data-testid="catalog-results-count">
-                  {page ? t.catalog.productCount(page.total) : ''}
+                  {page ? plural(t.catalog.productCount, page.total, t.language.tag) : ''}
                 </p>
                 <Cluster gap="4">
                   <SortSelect path={path} query={query} salesEnabled={salesEnabled} />
@@ -120,6 +120,7 @@ export const CatalogView = async ({
                     query={query}
                     page={result.page.page}
                     pageCount={result.page.pageCount}
+                    locale={locale}
                   />
                   <JsonLd
                     data={itemListJsonLd(

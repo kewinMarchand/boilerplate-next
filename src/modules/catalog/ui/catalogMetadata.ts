@@ -1,4 +1,5 @@
-import { dictionaryFor, MONOLINGUAL } from '@/shared/i18n'
+import { format, MONOLINGUAL } from '@/shared/i18n'
+import { dictionaryFor } from '@/shared/i18n/dictionaries'
 import { buildMetadata } from '@/shared/seo'
 
 import { findCategoryAlternates, findCategoryPath } from '../application/catalogNavigation'
@@ -18,6 +19,7 @@ export const buildCatalogMetadata = async (
 ): Promise<Metadata> => {
   const { locale } = settings.locale ?? MONOLINGUAL
   const t = dictionaryFor(locale)
+  const meta = t.meta.catalog
   // API indisponible : métadonnées de la racine du catalogue, la page affiche l'erreur.
   const [categoryPath, alternates] = await Promise.all([
     findCategoryPath(slugs, locale).catch(() => []),
@@ -33,10 +35,15 @@ export const buildCatalogMetadata = async (
 
   return buildMetadata({
     // Vente coupée (section 27) : le prix n'est ni affiché ni filtrable, la description ne le cite pas
-    title: name ? t.catalog.metaTitle(name) : t.catalog.rootMetaTitle,
+    title: name ? format(meta.categoryTitle, { category: name }) : meta.rootTitle,
     description: name
-      ? t.catalog.categoryMetaDescription(name, salesEnabled)
-      : t.catalog.rootMetaDescription(salesEnabled),
+      ? format(meta.categoryDescription, {
+          category: name,
+          criteria: salesEnabled ? meta.categoryCriteria : meta.categoryCriteriaWithoutPrice,
+        })
+      : format(meta.rootDescription, {
+          criteria: salesEnabled ? meta.rootCriteria : meta.rootCriteriaWithoutPrice,
+        }),
     path: `${categoryHref(slugs)}${pageQuery}`,
     noindex: isFiltered(query),
     // Titre et description saisis pour la page fixe « catalogue » : sa racine seulement

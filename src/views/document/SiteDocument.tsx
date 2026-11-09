@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google'
 
 import { SITE } from '@/shared/config'
+import { clientDictionary, dictionaryFor } from '@/shared/i18n/dictionaries'
 import { Providers } from '@/shared/providers'
 import { A11Y_MODE_SCRIPT } from '@/shared/ui/a11y-mode/a11yMode'
 import { COLOR_SCHEME_SCRIPT } from '@/shared/ui/color-scheme/colorScheme'
@@ -72,7 +73,7 @@ export const SiteDocument = async ({ locale, languages, children }: SiteDocument
       </head>
       <body>
         <ImageFallback />
-        <Providers locale={locale}>
+        <Providers locale={locale} dictionary={clientDictionary(dictionaryFor(locale.locale))}>
           <AppShell
             brand={{ name: identity.name, logo: identity.logo }}
             categoryMenu={categoryMenu}

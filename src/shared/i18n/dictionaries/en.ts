@@ -1,8 +1,5 @@
 import type { Dictionary } from './dictionary'
 
-const plural = (count: number, singular: string, pluralForm = `${singular}s`) =>
-  count === 1 ? singular : pluralForm
-
 export const en: Dictionary = {
   language: { ogLocale: 'en_US', tag: 'en-US' },
   nav: {
@@ -20,12 +17,12 @@ export const en: Dictionary = {
     skipLink: 'Skip to main content',
     mainNavigation: 'Main navigation',
     legalLinks: 'Legal links',
-    accessibilityStatus: (status: string) => `Accessibility: ${status}`,
+    accessibilityStatus: 'Accessibility: {status}',
     styleguide: 'Style guide (development)',
     breadcrumb: 'Breadcrumb',
     menu: 'Menu',
     closeMenu: 'Close the menu',
-    back: (parent: string) => `Back: ${parent}`,
+    back: 'Back: {parent}',
     wholeCategory: 'See the whole category',
     wholeCatalog: 'The whole catalogue',
     languages: 'Language',
@@ -38,7 +35,7 @@ export const en: Dictionary = {
   a11yMode: { label: 'Enhanced accessibility' },
   colorScheme: {
     choices: { auto: 'system', light: 'light', dark: 'dark' },
-    label: (choice: string) => `Theme: ${choice}`,
+    label: 'Theme: {choice}',
     suspended: ', suspended by enhanced accessibility',
   },
   carousel: {
@@ -47,8 +44,8 @@ export const en: Dictionary = {
     previous: 'Previous',
     next: 'Next',
     slides: 'Slides',
-    position: (position: number, total: number) => `${position} of ${total}`,
-    goTo: (position: number) => `Go to slide ${position}`,
+    position: '{position} of {total}',
+    goTo: 'Go to slide {position}',
   },
   errors: {
     notFoundTitle: 'Page not found',
@@ -72,12 +69,12 @@ export const en: Dictionary = {
     loadError: 'The catalogue cannot be loaded at the moment.',
     title: 'Catalogue',
     subcategories: 'Subcategories',
-    productCount: (count: number) => `${count} ${plural(count, 'product')}`,
+    productCount: { one: '{count} product', other: '{count} products' },
     filters: 'Filters',
-    filterButton: (activeCount: number) =>
-      `Filter${activeCount > 0 ? ` (${activeCount} active)` : ''}`,
+    filterButton: 'Filter',
+    filterButtonActive: { one: 'Filter ({count} active)', other: 'Filter ({count} active)' },
     closeFilters: 'Close the filters',
-    showProducts: (total: number) => `See the ${total} products`,
+    showProducts: 'See the {total} products',
     category: 'Category',
     exposure: 'Exposure',
     size: 'Size',
@@ -90,8 +87,8 @@ export const en: Dictionary = {
     filtersHint: 'Filters apply as soon as they change.',
     removeFilter: 'Remove the filter: ',
     clearFilters: 'Clear all',
-    fromPrice: (euros: number) => `From €${euros}`,
-    upToPrice: (euros: number) => `Up to €${euros}`,
+    fromPrice: 'From €{euros}',
+    upToPrice: 'Up to €{euros}',
     inStock: 'In stock',
     outOfStock: 'Out of stock',
     loadingProducts: 'Loading products',
@@ -101,7 +98,7 @@ export const en: Dictionary = {
     previous: 'Previous',
     next: 'Next',
     page: 'Page ',
-    pageLink: (page: number) => `Page ${page}`,
+    pageLink: 'Page {page}',
     sortBy: 'Sort by',
     sort: 'Sort',
     sorts: {
@@ -113,14 +110,8 @@ export const en: Dictionary = {
     display: 'Display',
     views: { grille: 'Grid', liste: 'List' },
     exposures: { soleil: 'Sun', 'mi-ombre': 'Partial shade', ombre: 'Shade' },
-    sizeLabel: (size: string) => `Size ${size}`,
-    cardMeta: (exposure: string, size: string) => `Exposure: ${exposure} · Size ${size}`,
-    metaTitle: (category: string) => `${category} · Catalogue`,
-    rootMetaTitle: 'Tropical plant catalogue',
-    rootMetaDescription: (salesEnabled: boolean) =>
-      `Demonstration catalogue of a tropical garden centre: indoor, outdoor and aquatic plants, filterable by exposure, ${salesEnabled ? 'size, price and stock' : 'size and stock'}.`,
-    categoryMetaDescription: (category: string, salesEnabled: boolean) =>
-      `${category}: a demonstration selection of tropical plants, filterable by exposure, ${salesEnabled ? 'size, price and availability' : 'size and availability'}, with sorting and pagination.`,
+    sizeLabel: 'Size {size}',
+    cardMeta: 'Exposure: {exposure} · Size {size}',
   },
   product: {
     fallbackTitle: 'Product',
@@ -130,26 +121,24 @@ export const en: Dictionary = {
     availability: 'Availability',
     inStock: 'In stock',
     outOfStock: 'Out of stock',
-    otherProducts: (category: string) => `See the other products: ${category}`,
+    otherProducts: 'See the other products: {category}',
     similar: 'Similar products',
-    galleryImage: (position: number, total: number) => `See image ${position} of ${total}`,
-    metaDescription: (product) =>
-      `${product.name}: ${product.exposure.toLowerCase()} exposure, size ${product.size}${product.price ? `, ${product.price}` : ''}. ${product.inStock ? 'In stock' : 'Out of stock'}, ${product.category ?? 'catalogue'} department.`,
+    galleryImage: 'See image {position} of {total}',
   },
   cart: {
     title: 'Cart',
     link: 'Cart',
-    itemCount: (count: number) => ` ${plural(count, 'item')}`,
+    itemCount: { one: ' item', other: ' items' },
     noScript: 'The cart requires JavaScript.',
     add: 'Add to cart',
-    added: (name: string) => `${name} added to the cart.`,
+    added: '{name} added to the cart.',
     view: 'View the cart',
     empty: 'Your cart is empty.',
     browseCatalog: 'Browse the catalogue',
-    unitPrice: (price: string) => `${price} each`,
-    quantityOf: (name: string) => `Quantity of ${name}`,
+    unitPrice: '{price} each',
+    quantityOf: 'Quantity of {name}',
     remove: 'Remove',
-    removeItem: (name: string) => `Remove ${name}`,
+    removeItem: 'Remove {name}',
     total: 'Total: ',
     soon: 'Online ordering is coming soon.',
   },
@@ -165,7 +154,7 @@ export const en: Dictionary = {
     inquirySent: 'Your product enquiry has been sent.',
     sendError: 'Sending failed. Try again in a few moments.',
     inquiry: 'Product enquiry',
-    inquiryAbout: (name: string) => ` about ${name}`,
+    inquiryAbout: ' about {name}',
     validation: {
       name: 'Enter your name (2 characters minimum).',
       email: 'Enter a valid email address, for example name@domain.com.',
@@ -206,11 +195,32 @@ export const en: Dictionary = {
       'Visits to the site are measured with Matomo, hosted by the publisher, configured without cookies or identifiers: no tracking from one site to another, no data passed on to third parties. The statistics produced are anonymous and only serve to improve the site. Raw data is kept for 25 months at most.',
     oppositionText:
       'You can object to this measurement: your choice is kept in this browser, without a cookie.',
-    oppositionLabel: 'Do not measure my visits to this site',
+  },
+  opposition: {
+    label: 'Do not measure my visits to this site',
     refused: 'Your visits are no longer measured from this browser.',
     measured: 'Your visits are measured anonymously.',
   },
   meta: {
+    catalog: {
+      categoryTitle: '{category} · Catalogue',
+      rootTitle: 'Tropical plant catalogue',
+      rootDescription:
+        'Demonstration catalogue of a tropical garden centre: indoor, outdoor and aquatic plants, filterable by exposure, {criteria}.',
+      rootCriteria: 'size, price and stock',
+      rootCriteriaWithoutPrice: 'size and stock',
+      categoryDescription:
+        '{category}: a demonstration selection of tropical plants, filterable by exposure, {criteria}, with sorting and pagination.',
+      categoryCriteria: 'size, price and availability',
+      categoryCriteriaWithoutPrice: 'size and availability',
+    },
+    product: {
+      description:
+        '{name}: {exposure} exposure, size {size}{price}. {stock}, {category} department.',
+      inStock: 'In stock',
+      outOfStock: 'Out of stock',
+      noCategory: 'catalogue',
+    },
     accessibility: {
       title: 'Accessibility statement',
       description:

@@ -1,6 +1,7 @@
 import { Chip, Cluster } from '@kewinmarchand/boilerplates-ui/react'
 
-import { dictionaryFor, FALLBACK_LOCALE } from '@/shared/i18n'
+import { FALLBACK_LOCALE, MONOLINGUAL } from '@/shared/i18n'
+import { dictionaryFor } from '@/shared/i18n/dictionaries'
 import { Link } from '@/shared/ui/kit'
 import { Breadcrumb, buildBreadcrumb } from '@/shared/ui/layout'
 
@@ -33,6 +34,7 @@ export const NavigationSection = () => (
       query={{ ...QUERY, exposures: [], sizes: [], attributes: {} }}
       page={5}
       pageCount={10}
+      locale={MONOLINGUAL}
     />
     <ul className={`bui-chip-list ${styles.chips}`}>
       <li>

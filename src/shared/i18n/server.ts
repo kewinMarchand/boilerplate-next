@@ -1,4 +1,5 @@
-import { dictionaryFor, FALLBACK_LOCALE } from './locale'
+import { dictionaryFor } from './dictionaries'
+import { FALLBACK_LOCALE } from './locale'
 
 /**
  * Langue de la page : le segment `[lang]` du layout racine, réécrit par `src/proxy.ts` ; la langue de

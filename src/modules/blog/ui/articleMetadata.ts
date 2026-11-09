@@ -1,4 +1,5 @@
-import { alternatesByKey, dictionaryFor, MONOLINGUAL } from '@/shared/i18n'
+import { alternatesByKey, MONOLINGUAL } from '@/shared/i18n'
+import { dictionaryFor } from '@/shared/i18n/dictionaries'
 import { buildMetadata } from '@/shared/seo'
 import { largestWebp } from '@/shared/ui/kit'
 

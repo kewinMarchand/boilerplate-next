@@ -1,5 +1,6 @@
 import { SITE } from '@/shared/config'
-import { dictionaryFor, localizePath, samePathInEveryLocale } from '@/shared/i18n/locale'
+import { dictionaryFor } from '@/shared/i18n/dictionaries'
+import { localizePath, samePathInEveryLocale } from '@/shared/i18n/locale'
 
 import type { LanguageAlternate, LocaleContext } from '@/shared/i18n/locale'
 import type { Metadata } from 'next'
@@ -43,8 +44,6 @@ interface PageSeo {
   /** Page détaillée : l'élément dans chaque langue (`alternates` de l'API). Sinon le même chemin partout. */
   alternates?: LanguageAlternate[]
 }
-
-export const absoluteUrl = (path: string) => new URL(path, SITE.url).toString()
 
 /** `hreflang` de chaque langue où la page existe, plus `x-default` vers la langue par défaut. */
 const languageAlternates = (locale: LocaleContext, alternates: LanguageAlternate[]) => {

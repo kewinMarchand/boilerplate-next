@@ -4,7 +4,7 @@ import { useId, useState } from 'react'
 
 import { Button, Drawer } from '@kewinmarchand/boilerplates-ui/react'
 
-import { useDictionary } from '@/shared/i18n'
+import { format, plural, useDictionary } from '@/shared/i18n'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 import { Icon } from '@/shared/ui/kit'
 
@@ -32,7 +32,10 @@ export const CatalogFilters = ({
   total,
   salesEnabled,
 }: CatalogFiltersProps) => {
-  const t = useDictionary().catalog
+  const {
+    catalog: t,
+    language: { tag },
+  } = useDictionary()
   const isHydrated = useHydrated()
   const titleId = useId()
   const drawerId = useId()
@@ -52,7 +55,8 @@ export const CatalogFilters = ({
     />
   )
 
-  const filterLabel = t.filterButton(activeCount)
+  const filterLabel =
+    activeCount > 0 ? plural(t.filterButtonActive, activeCount, tag) : t.filterButton
 
   return (
     <>
@@ -99,7 +103,7 @@ export const CatalogFilters = ({
         closeLabel={t.closeFilters}
         footer={
           <Button fullWidth onClick={() => setIsOpen(false)}>
-            {t.showProducts(total)}
+            {format(t.showProducts, { total })}
           </Button>
         }
       >

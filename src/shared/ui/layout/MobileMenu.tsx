@@ -5,7 +5,7 @@ import { useId } from 'react'
 import { Button, Drawer, IconButton } from '@kewinmarchand/boilerplates-ui/react'
 
 import { CATALOG_NAVIGATION } from '@/shared/config'
-import { useDictionary } from '@/shared/i18n'
+import { format, useDictionary } from '@/shared/i18n'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 import { useMobileMenu } from '@/shared/ui/hooks/useMobileMenu'
 import { Icon, Link } from '@/shared/ui/kit'
@@ -83,7 +83,7 @@ export const MobileMenu = ({ navigation, categoryMenu }: MobileMenuProps) => {
             onClick={back}
             data-testid="layout-mobile-menu-back"
           >
-            {t.layout.back(parentName)}
+            {format(t.layout.back, { parent: parentName })}
           </Button>
         )}
 

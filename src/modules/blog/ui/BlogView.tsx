@@ -72,6 +72,7 @@ export const BlogView = async ({ searchParams, locale }: BlogViewProps) => {
               article={article}
               sizes={CARD_SIZES}
               heading="h2"
+              tag={t.language.tag}
               data-testid="blog-card"
             />
           ))}

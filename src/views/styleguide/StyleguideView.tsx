@@ -1,6 +1,7 @@
 import { Text } from '@kewinmarchand/boilerplates-ui/react'
 
-import { dictionaryFor, FALLBACK_LOCALE } from '@/shared/i18n'
+import { FALLBACK_LOCALE } from '@/shared/i18n'
+import { dictionaryFor } from '@/shared/i18n/dictionaries'
 import { buildBreadcrumb, PageContainer } from '@/shared/ui/layout'
 
 import { ButtonsSection } from './sections/ButtonsSection'

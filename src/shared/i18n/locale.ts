@@ -1,14 +1,5 @@
-import { en } from './dictionaries/en'
-import { fr } from './dictionaries/fr'
-
-import type { Dictionary } from './dictionaries/dictionary'
-
 /** Langue des libellés quand une langue activée n'a pas de fichier de traduction. */
 export const FALLBACK_LOCALE = 'fr'
-
-const DICTIONARIES: Record<string, Dictionary> = { fr, en }
-
-export const dictionaryFor = (locale: string): Dictionary => DICTIONARIES[locale] ?? fr
 
 /** Langue de la page et langues du site (`locales` de l'identité, la première est la langue par défaut). */
 export interface LocaleContext {

@@ -1,6 +1,6 @@
 import { SITE } from '@/shared/config'
 
-import { absoluteUrl } from './buildMetadata'
+export const absoluteUrl = (path: string) => new URL(path, SITE.url).toString()
 
 export interface BreadcrumbItem {
   label: string

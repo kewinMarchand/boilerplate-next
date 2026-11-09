@@ -1,8 +1,6 @@
-'use client'
-
 import { Alert, Skeleton } from '@kewinmarchand/boilerplates-ui/react'
 
-import { useDictionary } from '@/shared/i18n'
+import { getDictionary } from '@/shared/i18n/server'
 
 import { ArticleCard } from './ArticleCard'
 import styles from './BlogGrid.module.css'
@@ -20,8 +18,8 @@ interface BlogGridProps {
   errorMessage?: string
 }
 
-export const BlogGrid = ({ status, articles, errorMessage }: BlogGridProps) => {
-  const t = useDictionary().blog
+export const BlogGrid = async ({ status, articles, errorMessage }: BlogGridProps) => {
+  const { blog: t, language } = await getDictionary()
   if (status === 'pending') {
     return (
       <div
@@ -61,6 +59,7 @@ export const BlogGrid = ({ status, articles, errorMessage }: BlogGridProps) => {
           key={article.id}
           article={article}
           sizes={index === 0 ? FEATURED_SIZES : SIDE_SIZES}
+          tag={language.tag}
           data-testid="home-blog-card"
         />
       ))}

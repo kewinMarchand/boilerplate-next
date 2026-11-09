@@ -1,44 +1,42 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
 import { createContext, useContext } from 'react'
 
-import { dictionaryFor, localizePath, MONOLINGUAL } from './locale'
+import { localizePath, MONOLINGUAL } from './locale'
 
+import type { ClientDictionary } from './dictionaries/dictionary'
 import type { LocaleContext } from './locale'
 import type { ReactNode } from 'react'
 
-const Context = createContext<LocaleContext>(MONOLINGUAL)
+interface ClientLocale extends LocaleContext {
+  /** Absent hors du layout racine (page d'erreur globale). */
+  dictionary?: ClientDictionary
+}
+
+export const Context = createContext<ClientLocale>(MONOLINGUAL)
 
 interface LocaleProviderProps {
   value: LocaleContext
+  /** Le seul dictionnaire de la page, passé par le serveur : le navigateur ne charge pas les autres. */
+  dictionary: ClientDictionary
   children: ReactNode
 }
 
 /** Langue de la page pour les composants client, posée par le layout racine. */
-export const LocaleProvider = ({ value, children }: LocaleProviderProps) => (
-  <Context.Provider value={value}>{children}</Context.Provider>
+export const LocaleProvider = ({ value, dictionary, children }: LocaleProviderProps) => (
+  <Context.Provider value={{ ...value, dictionary }}>{children}</Context.Provider>
 )
 
-export const useLocale = () => useContext(Context)
+export const useLocale = (): LocaleContext => useContext(Context)
 
-export const useDictionary = () => dictionaryFor(useContext(Context).locale)
+export const useDictionary = (): ClientDictionary => {
+  const { dictionary } = useContext(Context)
+  if (!dictionary) throw new Error('useDictionary demande LocaleProvider (layout racine).')
+  return dictionary
+}
 
 /** Préfixe de la langue de la page sur un chemin interne. */
 export const useLocalizePath = () => {
   const { locale, defaultLocale } = useContext(Context)
   return (path: string) => localizePath(path, locale, defaultLocale)
-}
-
-/**
- * Chemin public de la page (`/en/catalogue`, `/catalogue`). Au pré-rendu, `usePathname` donne le
- * chemin interne réécrit par le proxy (`/fr/catalogue`) : le segment de la langue par défaut est retiré.
- */
-export const usePagePathname = () => {
-  const pathname = usePathname()
-  const { locale, defaultLocale } = useContext(Context)
-  const internal = `/${defaultLocale}`
-  if (locale !== defaultLocale) return pathname
-  if (pathname === internal) return '/'
-  return pathname.startsWith(`${internal}/`) ? pathname.slice(internal.length) : pathname
 }

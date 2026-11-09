@@ -1,6 +1,6 @@
 'use client'
 
-import { useDictionary } from '@/shared/i18n'
+import { plural, useDictionary } from '@/shared/i18n'
 import { Icon, Link } from '@/shared/ui/kit'
 
 import { countItems } from '../domain/cart'
@@ -13,7 +13,10 @@ import { useCart } from './useCart'
  * Nom accessible « Panier, 3 articles » composé du texte visible et de compléments masqués : il contient le texte affiché.
  */
 export const CartLink = () => {
-  const t = useDictionary().cart
+  const {
+    cart: t,
+    language: { tag },
+  } = useDictionary()
   const count = countItems(useCart().lines)
 
   return (
@@ -26,7 +29,7 @@ export const CartLink = () => {
           <span className={styles.count} data-testid="cart-count">
             {count}
           </span>
-          <span className="bui-visually-hidden">{t.itemCount(count)}</span>
+          <span className="bui-visually-hidden">{plural(t.itemCount, count, tag)}</span>
         </>
       )}
     </Link>

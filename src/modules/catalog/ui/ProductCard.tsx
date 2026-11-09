@@ -2,7 +2,7 @@
 
 import { Badge } from '@kewinmarchand/boilerplates-ui/react'
 
-import { useDictionary } from '@/shared/i18n'
+import { format, useDictionary } from '@/shared/i18n'
 import { AfterHydration, Link, Picture } from '@/shared/ui/kit'
 
 import { productHref } from '../domain/catalog'
@@ -70,7 +70,10 @@ export const ProductCard = ({
             </p>
           )}
           <p className={`bui-text bui-text--body-sm ${styles.meta}`}>
-            {t.catalog.cardMeta(t.catalog.exposures[product.exposure], product.size)}
+            {format(t.catalog.cardMeta, {
+              exposure: t.catalog.exposures[product.exposure],
+              size: product.size,
+            })}
           </p>
           {!product.inStock && (
             <p className={styles.stock}>

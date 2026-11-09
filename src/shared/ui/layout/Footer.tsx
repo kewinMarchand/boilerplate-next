@@ -1,6 +1,7 @@
 import { Container } from '@kewinmarchand/boilerplates-ui/react'
 
 import { ACCESSIBILITY_COMPLIANCE, labelNavigation, LEGAL_NAVIGATION } from '@/shared/config'
+import { format } from '@/shared/i18n'
 import { getDictionary } from '@/shared/i18n/server'
 import { Link, LogoMark } from '@/shared/ui/kit'
 
@@ -23,7 +24,9 @@ export const Footer = async ({ siteName }: FooterProps) => {
           {labelNavigation(LEGAL_NAVIGATION, t.nav).map(({ href, label }) => (
             <Link key={href} href={href} className={`bui-link ${styles.link}`}>
               {href === ACCESSIBILITY_PATH
-                ? t.layout.accessibilityStatus(t.compliance[ACCESSIBILITY_COMPLIANCE])
+                ? format(t.layout.accessibilityStatus, {
+                    status: t.compliance[ACCESSIBILITY_COMPLIANCE],
+                  })
                 : label}
             </Link>
           ))}

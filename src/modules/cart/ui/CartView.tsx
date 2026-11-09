@@ -2,7 +2,7 @@
 
 import { Button } from '@kewinmarchand/boilerplates-ui/react'
 
-import { useDictionary } from '@/shared/i18n'
+import { format, useDictionary } from '@/shared/i18n'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 import { Link } from '@/shared/ui/kit'
 
@@ -42,9 +42,11 @@ export const CartView = () => {
             <Link href={productHref(line.slug)} className={`bui-link ${styles.name}`}>
               {line.name}
             </Link>
-            <span>{t.cart.unitPrice(formatPrice(line.price, t.language.tag))}</span>
+            <span>
+              {format(t.cart.unitPrice, { price: formatPrice(line.price, t.language.tag) })}
+            </span>
             <label className={styles.quantity}>
-              <span>{t.cart.quantityOf(line.name)}</span>
+              <span>{format(t.cart.quantityOf, { name: line.name })}</span>
               <input
                 type="number"
                 min={1}
@@ -63,7 +65,7 @@ export const CartView = () => {
             </span>
             <Button
               variant="outline"
-              aria-label={t.cart.removeItem(line.name)}
+              aria-label={format(t.cart.removeItem, { name: line.name })}
               onClick={() => {
                 markRemoved(index)
                 remove(line.slug)

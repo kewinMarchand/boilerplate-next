@@ -1,5 +1,6 @@
 import { Cluster } from '@kewinmarchand/boilerplates-ui/react'
 
+import { format } from '@/shared/i18n'
 import { getDictionary } from '@/shared/i18n/server'
 import { Icon, Link } from '@/shared/ui/kit'
 
@@ -36,7 +37,7 @@ const activeFilters = (
     next: withFilter(query, { exposures: query.exposures.filter((item) => item !== value) }),
   })),
   ...query.sizes.map((value) => ({
-    label: t.sizeLabel(value),
+    label: format(t.sizeLabel, { size: value }),
     next: withFilter(query, { sizes: query.sizes.filter((item) => item !== value) }),
   })),
   ...Object.entries(query.attributes).flatMap(([code, values]) =>
@@ -50,10 +51,20 @@ const activeFilters = (
     })),
   ),
   ...(query.priceMin !== null
-    ? [{ label: t.fromPrice(query.priceMin), next: withFilter(query, { priceMin: null }) }]
+    ? [
+        {
+          label: format(t.fromPrice, { euros: query.priceMin }),
+          next: withFilter(query, { priceMin: null }),
+        },
+      ]
     : []),
   ...(query.priceMax !== null
-    ? [{ label: t.upToPrice(query.priceMax), next: withFilter(query, { priceMax: null }) }]
+    ? [
+        {
+          label: format(t.upToPrice, { euros: query.priceMax }),
+          next: withFilter(query, { priceMax: null }),
+        },
+      ]
     : []),
   ...(query.inStock ? [{ label: t.inStock, next: withFilter(query, { inStock: false }) }] : []),
 ]

@@ -1,8 +1,9 @@
-export type { Dictionary } from './dictionaries/dictionary'
+export type { ClientDictionary, Dictionary } from './dictionaries/dictionary'
+export type { Plural } from './format'
+export { format, plural } from './format'
 export type { LanguageAlternate, LocaleContext } from './locale'
 export {
   alternatesByKey,
-  dictionaryFor,
   FALLBACK_LOCALE,
   internalPath,
   languageLinks,
@@ -11,10 +12,5 @@ export {
   MONOLINGUAL,
   samePathInEveryLocale,
 } from './locale'
-export {
-  LocaleProvider,
-  useDictionary,
-  useLocale,
-  useLocalizePath,
-  usePagePathname,
-} from './LocaleProvider'
+export { LocaleProvider, useDictionary, useLocale, useLocalizePath } from './LocaleProvider'
+export { usePagePathname } from './usePagePathname'

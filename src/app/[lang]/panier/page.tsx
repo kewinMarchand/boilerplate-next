@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 
-import { dictionaryFor } from '@/shared/i18n'
+import { dictionaryFor } from '@/shared/i18n/dictionaries'
 import { getLocale } from '@/shared/i18n/server'
 import { buildMetadata } from '@/shared/seo'
 import { buildBreadcrumb, PageContainer } from '@/shared/ui/layout'

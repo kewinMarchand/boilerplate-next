@@ -1,8 +1,5 @@
 import type { ComplianceStatus } from '@/shared/config/accessibility'
 
-const plural = (count: number, singular: string, pluralForm = `${singular}s`) =>
-  count > 1 ? pluralForm : singular
-
 export const fr = {
   language: { ogLocale: 'fr_FR', tag: 'fr-FR' },
   nav: {
@@ -20,12 +17,12 @@ export const fr = {
     skipLink: 'Aller au contenu principal',
     mainNavigation: 'Navigation principale',
     legalLinks: 'Liens légaux',
-    accessibilityStatus: (status: string) => `Accessibilité : ${status}`,
+    accessibilityStatus: 'Accessibilité : {status}',
     styleguide: 'Charte graphique (développement)',
     breadcrumb: "Fil d'Ariane",
     menu: 'Menu',
     closeMenu: 'Fermer le menu',
-    back: (parent: string) => `Retour : ${parent}`,
+    back: 'Retour : {parent}',
     wholeCategory: 'Voir toute la catégorie',
     wholeCatalog: 'Tout le catalogue',
     languages: 'Langue',
@@ -38,7 +35,7 @@ export const fr = {
   a11yMode: { label: 'Accessibilité renforcée' },
   colorScheme: {
     choices: { auto: 'système', light: 'clair', dark: 'sombre' },
-    label: (choice: string) => `Thème : ${choice}`,
+    label: 'Thème : {choice}',
     suspended: ", suspendu par l'accessibilité renforcée",
   },
   carousel: {
@@ -47,8 +44,8 @@ export const fr = {
     previous: 'Précédent',
     next: 'Suivant',
     slides: 'Diapositives',
-    position: (position: number, total: number) => `${position} sur ${total}`,
-    goTo: (position: number) => `Aller à la diapositive ${position}`,
+    position: '{position} sur {total}',
+    goTo: 'Aller à la diapositive {position}',
   },
   errors: {
     notFoundTitle: 'Page introuvable',
@@ -72,12 +69,12 @@ export const fr = {
     loadError: 'Impossible de charger le catalogue pour le moment.',
     title: 'Catalogue',
     subcategories: 'Sous-catégories',
-    productCount: (count: number) => `${count} ${plural(count, 'produit')}`,
+    productCount: { one: '{count} produit', other: '{count} produits' },
     filters: 'Filtres',
-    filterButton: (activeCount: number) =>
-      `Filtrer${activeCount > 0 ? ` (${activeCount} ${plural(activeCount, 'actif')})` : ''}`,
+    filterButton: 'Filtrer',
+    filterButtonActive: { one: 'Filtrer ({count} actif)', other: 'Filtrer ({count} actifs)' },
     closeFilters: 'Fermer les filtres',
-    showProducts: (total: number) => `Voir les ${total} produits`,
+    showProducts: 'Voir les {total} produits',
     category: 'Catégorie',
     exposure: 'Exposition',
     size: 'Taille',
@@ -90,8 +87,8 @@ export const fr = {
     filtersHint: "Les filtres s'appliquent dès qu'ils changent.",
     removeFilter: 'Retirer le filtre : ',
     clearFilters: 'Tout effacer',
-    fromPrice: (euros: number) => `Dès ${euros} €`,
-    upToPrice: (euros: number) => `Jusqu'à ${euros} €`,
+    fromPrice: 'Dès {euros} €',
+    upToPrice: "Jusqu'à {euros} €",
     inStock: 'En stock',
     outOfStock: 'Rupture de stock',
     loadingProducts: 'Chargement des produits',
@@ -101,7 +98,7 @@ export const fr = {
     previous: 'Précédent',
     next: 'Suivant',
     page: 'Page ',
-    pageLink: (page: number) => `Page ${page}`,
+    pageLink: 'Page {page}',
     sortBy: 'Trier par',
     sort: 'Trier',
     sorts: {
@@ -113,14 +110,8 @@ export const fr = {
     display: 'Affichage',
     views: { grille: 'Grille', liste: 'Liste' },
     exposures: { soleil: 'Soleil', 'mi-ombre': 'Mi-ombre', ombre: 'Ombre' },
-    sizeLabel: (size: string) => `Taille ${size}`,
-    cardMeta: (exposure: string, size: string) => `Exposition : ${exposure} · Taille ${size}`,
-    metaTitle: (category: string) => `${category} · Catalogue`,
-    rootMetaTitle: 'Catalogue de plantes tropicales',
-    rootMetaDescription: (salesEnabled: boolean) =>
-      `Catalogue de démonstration d’une jardinerie tropicale : plantes d’intérieur, d’extérieur et aquatiques, filtrables par exposition, ${salesEnabled ? 'taille, prix et stock' : 'taille et stock'}.`,
-    categoryMetaDescription: (category: string, salesEnabled: boolean) =>
-      `${category} : sélection de plantes tropicales de démonstration, à filtrer par exposition, ${salesEnabled ? 'taille, prix et disponibilité' : 'taille et disponibilité'}, avec tri et pagination.`,
+    sizeLabel: 'Taille {size}',
+    cardMeta: 'Exposition : {exposure} · Taille {size}',
   },
   product: {
     fallbackTitle: 'Produit',
@@ -130,33 +121,24 @@ export const fr = {
     availability: 'Disponibilité',
     inStock: 'En stock',
     outOfStock: 'Rupture de stock',
-    otherProducts: (category: string) => `Voir les autres produits : ${category}`,
+    otherProducts: 'Voir les autres produits : {category}',
     similar: 'Produits similaires',
-    galleryImage: (position: number, total: number) => `Voir l’image ${position} sur ${total}`,
-    metaDescription: (product: {
-      name: string
-      exposure: string
-      size: string
-      price: string | null
-      inStock: boolean
-      category: string | undefined
-    }) =>
-      `${product.name} : exposition ${product.exposure.toLowerCase()}, taille ${product.size}${product.price ? `, ${product.price}` : ''}. ${product.inStock ? 'En stock' : 'En rupture de stock'}, rayon ${product.category ?? 'catalogue'}.`,
+    galleryImage: 'Voir l’image {position} sur {total}',
   },
   cart: {
     title: 'Panier',
     link: 'Panier',
-    itemCount: (count: number) => ` ${plural(count, 'article')}`,
+    itemCount: { one: ' article', other: ' articles' },
     noScript: 'Le panier demande JavaScript.',
     add: 'Ajouter au panier',
-    added: (name: string) => `${name} ajouté au panier.`,
+    added: '{name} ajouté au panier.',
     view: 'Voir le panier',
     empty: 'Votre panier est vide.',
     browseCatalog: 'Parcourir le catalogue',
-    unitPrice: (price: string) => `${price} l’unité`,
-    quantityOf: (name: string) => `Quantité de ${name}`,
+    unitPrice: '{price} l’unité',
+    quantityOf: 'Quantité de {name}',
     remove: 'Retirer',
-    removeItem: (name: string) => `Retirer ${name}`,
+    removeItem: 'Retirer {name}',
     total: 'Total : ',
     soon: 'La commande en ligne arrive bientôt.',
   },
@@ -172,7 +154,7 @@ export const fr = {
     inquirySent: 'Votre demande de renseignement a bien été envoyée.',
     sendError: "L'envoi a échoué. Réessayez dans quelques instants.",
     inquiry: 'Demande de renseignement',
-    inquiryAbout: (name: string) => ` sur ${name}`,
+    inquiryAbout: ' sur {name}',
     validation: {
       name: 'Indiquez votre nom (2 caractères minimum).',
       email: 'Indiquez une adresse e-mail valide, par exemple nom@domaine.fr.',
@@ -213,11 +195,32 @@ export const fr = {
       "La fréquentation du site est mesurée avec Matomo, hébergé par l'éditeur, configuré sans cookie et sans identifiant : aucun suivi d'un site à l'autre, aucune donnée transmise à un tiers. Les statistiques produites sont anonymes et servent uniquement à améliorer le site. Les données brutes sont conservées 25 mois au plus.",
     oppositionText:
       'Vous pouvez vous opposer à cette mesure : votre choix est gardé dans ce navigateur, sans cookie.',
-    oppositionLabel: 'Ne pas mesurer mes visites sur ce site',
+  },
+  opposition: {
+    label: 'Ne pas mesurer mes visites sur ce site',
     refused: 'Vos visites ne sont plus mesurées depuis ce navigateur.',
     measured: 'Vos visites sont mesurées, de façon anonyme.',
   },
   meta: {
+    catalog: {
+      categoryTitle: '{category} · Catalogue',
+      rootTitle: 'Catalogue de plantes tropicales',
+      rootDescription:
+        'Catalogue de démonstration d’une jardinerie tropicale : plantes d’intérieur, d’extérieur et aquatiques, filtrables par exposition, {criteria}.',
+      rootCriteria: 'taille, prix et stock',
+      rootCriteriaWithoutPrice: 'taille et stock',
+      categoryDescription:
+        '{category} : sélection de plantes tropicales de démonstration, à filtrer par exposition, {criteria}, avec tri et pagination.',
+      categoryCriteria: 'taille, prix et disponibilité',
+      categoryCriteriaWithoutPrice: 'taille et disponibilité',
+    },
+    product: {
+      description:
+        '{name} : exposition {exposure}, taille {size}{price}. {stock}, rayon {category}.',
+      inStock: 'En stock',
+      outOfStock: 'En rupture de stock',
+      noCategory: 'catalogue',
+    },
     accessibility: {
       title: 'Déclaration d’accessibilité',
       description:

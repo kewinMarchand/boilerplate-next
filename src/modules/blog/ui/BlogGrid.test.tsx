@@ -30,31 +30,31 @@ const ARTICLES = [
 ]
 
 describe('BlogGrid', () => {
-  it('affiche un squelette pendant le chargement', () => {
-    render(<BlogGrid status="pending" articles={undefined} />)
+  it('affiche un squelette pendant le chargement', async () => {
+    render(await BlogGrid({ status: 'pending', articles: undefined }))
     expect(screen.getByTestId('home-blog-loading')).toBeInTheDocument()
   })
 
-  it("affiche le message d'erreur", () => {
-    render(<BlogGrid status="error" articles={undefined} errorMessage="Oups" />)
+  it("affiche le message d'erreur", async () => {
+    render(await BlogGrid({ status: 'error', articles: undefined, errorMessage: 'Oups' }))
     expect(screen.getByTestId('home-blog-error')).toHaveTextContent('Oups')
   })
 
-  it('affiche un message amical quand il n’y a aucun article', () => {
-    render(<BlogGrid status="success" articles={[]} />)
+  it('affiche un message amical quand il n’y a aucun article', async () => {
+    render(await BlogGrid({ status: 'success', articles: [] }))
     expect(screen.getByTestId('home-blog-empty')).toBeInTheDocument()
     expect(screen.queryByTestId('home-blog-card')).not.toBeInTheDocument()
   })
 
-  it('affiche chaque article avec sa date lisible et machine', () => {
-    render(<BlogGrid status="success" articles={ARTICLES} />)
+  it('affiche chaque article avec sa date lisible et machine', async () => {
+    render(await BlogGrid({ status: 'success', articles: ARTICLES }))
 
     expect(screen.getAllByTestId('home-blog-card')).toHaveLength(2)
     expect(screen.getByRole('heading', { level: 3, name: 'Premier' })).toBeInTheDocument()
     expect(screen.getByText('29 septembre 2026')).toHaveAttribute('datetime', '2026-09-29')
   })
 
-  it('se limite aux trois articles les plus récents', () => {
+  it('se limite aux trois articles les plus récents', async () => {
     const articles = ['a', 'b', 'c', 'd'].map((slug, index) => ({
       id: slug,
       slug,
@@ -64,20 +64,20 @@ describe('BlogGrid', () => {
       image: null,
       section: null,
     }))
-    render(<BlogGrid status="success" articles={articles} />)
+    render(await BlogGrid({ status: 'success', articles }))
 
     expect(screen.getAllByTestId('home-blog-card')).toHaveLength(3)
     expect(screen.queryByRole('heading', { name: 'Article 4' })).not.toBeInTheDocument()
   })
 
-  it('relie chaque carte à sa fiche par son titre', () => {
-    render(<BlogGrid status="success" articles={ARTICLES} />)
+  it('relie chaque carte à sa fiche par son titre', async () => {
+    render(await BlogGrid({ status: 'success', articles: ARTICLES }))
 
     expect(screen.getByRole('link', { name: 'Premier' })).toHaveAttribute('href', '/blog/premier')
   })
 
-  it('pose l’image de l’API, et aucune image quand l’article n’en a pas', () => {
-    render(<BlogGrid status="success" articles={ARTICLES} />)
+  it('pose l’image de l’API, et aucune image quand l’article n’en a pas', async () => {
+    render(await BlogGrid({ status: 'success', articles: ARTICLES }))
 
     const [withImage, withoutImage] = screen.getAllByTestId('home-blog-card')
     expect(withImage?.querySelector('img')).toHaveAttribute(
@@ -91,8 +91,8 @@ describe('BlogGrid', () => {
     expect(withoutImage?.querySelector('img')).toBeNull()
   })
 
-  it('pose la rubrique en sur-titre, et rien sans rubrique', () => {
-    render(<BlogGrid status="success" articles={ARTICLES} />)
+  it('pose la rubrique en sur-titre, et rien sans rubrique', async () => {
+    render(await BlogGrid({ status: 'success', articles: ARTICLES }))
 
     const [withSection, withoutSection] = screen.getAllByTestId('home-blog-card')
     expect(withSection?.querySelector('[data-testid="article-section"]')).toHaveTextContent(

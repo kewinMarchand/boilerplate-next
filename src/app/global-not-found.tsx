@@ -1,4 +1,4 @@
-import { dictionaryFor } from '@/shared/i18n'
+import { dictionaryFor } from '@/shared/i18n/dictionaries'
 import { getLocale } from '@/shared/i18n/server'
 
 import { getLocaleContext, getSiteIdentity } from '@/modules/site'

@@ -9,7 +9,7 @@ import { useOppositionMesure } from '@/shared/observability'
 
 /** Case d'opposition à la mesure d'audience, gardée dans ce navigateur (fiche CNIL n° 17). */
 export const OppositionMesure = () => {
-  const t = useDictionary().legal
+  const t = useDictionary().opposition
   const { refusee, changer } = useOppositionMesure()
   const inputId = useId()
 
@@ -17,7 +17,7 @@ export const OppositionMesure = () => {
     <>
       <Checkbox
         id={inputId}
-        label={t.oppositionLabel}
+        label={t.label}
         checked={refusee}
         onChange={(event) => changer(event.target.checked)}
         data-testid="legal-opposition-mesure"

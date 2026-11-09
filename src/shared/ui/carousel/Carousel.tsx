@@ -4,7 +4,7 @@ import { useId } from 'react'
 
 import { Cluster } from '@kewinmarchand/boilerplates-ui/react'
 
-import { useDictionary } from '@/shared/i18n'
+import { format, useDictionary } from '@/shared/i18n'
 import { AfterHydration, Icon, Link, Picture } from '@/shared/ui/kit'
 
 import styles from './Carousel.module.css'
@@ -110,7 +110,7 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
                 key={slide.id}
                 role="group"
                 aria-roledescription={t.slideRoleDescription}
-                aria-label={t.position(position + 1, slides.length)}
+                aria-label={format(t.position, { position: position + 1, total: slides.length })}
                 data-testid="carousel-slide"
                 className={styles.slide}
               >
@@ -154,7 +154,7 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
             <button
               key={index}
               type="button"
-              aria-label={t.goTo(index + 1)}
+              aria-label={format(t.goTo, { position: index + 1 })}
               aria-current={index === selected ? 'true' : undefined}
               onClick={() => goTo(index)}
               data-testid="carousel-dot"

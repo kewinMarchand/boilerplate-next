@@ -4,7 +4,7 @@ import { useId } from 'react'
 
 import { Button, Checkbox, Switch } from '@kewinmarchand/boilerplates-ui/react'
 
-import { useDictionary, useLocalizePath } from '@/shared/i18n'
+import { format, useDictionary, useLocalizePath } from '@/shared/i18n'
 import { Link } from '@/shared/ui/kit'
 
 import { attributeParam, withAttribute, withFilter } from '../domain/catalogQuery'
@@ -158,7 +158,7 @@ export const FiltersForm = ({
               <Checkbox
                 key={facet.value}
                 id={`${idPrefix}-taille-${facet.value}`}
-                label={`${t.sizeLabel(facet.value)} (${facet.count})`}
+                label={`${format(t.sizeLabel, { size: facet.value })} (${facet.count})`}
                 name="taille"
                 value={facet.value}
                 checked={checked}

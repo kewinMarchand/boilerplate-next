@@ -1,6 +1,3 @@
-'use client'
-
-import { useDictionary } from '@/shared/i18n'
 import { Link, Picture } from '@/shared/ui/kit'
 
 import { articleHref, formatPublishedAt } from '../domain/article'
@@ -13,6 +10,8 @@ interface ArticleCardProps {
   sizes: string
   /** `h2` quand aucun intertitre ne précède la grille (page `/blog`), pour ne pas sauter de niveau. */
   heading?: 'h2' | 'h3'
+  /** Langue de la page (BCP 47), pour la date. */
+  tag: string
   'data-testid': string
 }
 
@@ -20,9 +19,9 @@ export const ArticleCard = ({
   article,
   sizes,
   heading: Heading = 'h3',
+  tag,
   'data-testid': testId,
 }: ArticleCardProps) => {
-  const { tag } = useDictionary().language
   return (
     <article data-testid={testId} className={`bui-card ${styles.card}`}>
       {article.image && <Picture image={article.image} sizes={sizes} />}

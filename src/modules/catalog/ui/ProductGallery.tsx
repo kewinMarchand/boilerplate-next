@@ -1,6 +1,6 @@
 'use client'
 
-import { useDictionary } from '@/shared/i18n'
+import { format, useDictionary } from '@/shared/i18n'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 import { largestWebp, Picture } from '@/shared/ui/kit'
 
@@ -41,7 +41,7 @@ export const ProductGallery = ({ images, sizes }: ProductGalleryProps) => {
       )}
       <ul className={styles.thumbs} ref={thumbsRef}>
         {images.map((thumb, index) => {
-          const label = t.galleryImage(index + 1, images.length)
+          const label = format(t.galleryImage, { position: index + 1, total: images.length })
           const isCurrent = index === selected ? 'true' : undefined
           const picture = (
             <Picture image={{ ...thumb, alt: '' }} sizes={THUMB_SIZES} style={IMAGE_STYLE} />

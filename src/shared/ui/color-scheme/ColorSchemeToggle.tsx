@@ -2,7 +2,7 @@
 
 import { Menu } from '@kewinmarchand/boilerplates-ui/react'
 
-import { useDictionary } from '@/shared/i18n'
+import { format, useDictionary } from '@/shared/i18n'
 import { useA11yMode } from '@/shared/ui/a11y-mode/useA11yMode'
 import { useColorScheme } from '@/shared/ui/color-scheme/useColorScheme'
 
@@ -30,7 +30,7 @@ export const ColorSchemeToggle = () => {
   return (
     <Menu
       id="color-scheme"
-      label={`${t.label(t.choices[colorScheme])}${suspended ? t.suspended : ''}`}
+      label={`${format(t.label, { choice: t.choices[colorScheme] })}${suspended ? t.suspended : ''}`}
       items={items}
       checked={colorScheme}
       triggerIcon={ICONS[colorScheme]}

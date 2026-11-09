@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 import { Button } from '@kewinmarchand/boilerplates-ui/react'
 
-import { useDictionary } from '@/shared/i18n'
+import { format, useDictionary } from '@/shared/i18n'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 import { Link } from '@/shared/ui/kit'
 
@@ -45,7 +45,7 @@ export const AddToCartButton = ({ item, isAvailable }: AddToCartButtonProps) => 
       <p role="status" data-testid="add-to-cart-status">
         {isAdded && (
           <>
-            {t.added(item.name)}{' '}
+            {format(t.added, { name: item.name })}{' '}
             <Link href={CART_PATH} className="bui-link">
               {t.view}
             </Link>

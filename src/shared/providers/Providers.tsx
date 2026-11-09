@@ -8,20 +8,23 @@ import { LocaleProvider } from '@/shared/i18n'
 
 import { makeQueryClient } from './makeQueryClient'
 
-import type { LocaleContext } from '@/shared/i18n'
+import type { ClientDictionary, LocaleContext } from '@/shared/i18n'
 import type { ReactNode } from 'react'
 
 interface ProvidersProps {
   locale: LocaleContext
+  dictionary: ClientDictionary
   children: ReactNode
 }
 
-export const Providers = ({ locale, children }: ProvidersProps) => {
+export const Providers = ({ locale, dictionary, children }: ProvidersProps) => {
   const [queryClient] = useState(makeQueryClient)
 
   return (
     <QueryClientProvider client={queryClient}>
-      <LocaleProvider value={locale}>{children}</LocaleProvider>
+      <LocaleProvider value={locale} dictionary={dictionary}>
+        {children}
+      </LocaleProvider>
       {process.env.NODE_ENV === 'development' && (
         <ReactQueryDevtools buttonPosition="bottom-left" />
       )}

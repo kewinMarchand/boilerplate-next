@@ -1,3 +1,4 @@
+import { format } from '@/shared/i18n'
 import { getDictionary } from '@/shared/i18n/server'
 import { Link } from '@/shared/ui/kit'
 
@@ -15,7 +16,7 @@ export const ProductInquiryLink = async ({ slug, name }: ProductInquiryLinkProps
     <p>
       <Link href={inquiryHref(slug)} className="bui-button" data-testid="product-inquiry">
         {t.inquiry}
-        <span className="bui-visually-hidden">{t.inquiryAbout(name)}</span>
+        <span className="bui-visually-hidden">{format(t.inquiryAbout, { name })}</span>
       </Link>
     </p>
   )

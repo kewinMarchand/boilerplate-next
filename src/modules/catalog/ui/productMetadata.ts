@@ -1,4 +1,5 @@
-import { dictionaryFor, MONOLINGUAL } from '@/shared/i18n'
+import { format, MONOLINGUAL } from '@/shared/i18n'
+import { dictionaryFor } from '@/shared/i18n/dictionaries'
 import { buildMetadata } from '@/shared/seo'
 import { largestWebp } from '@/shared/ui/kit'
 
@@ -25,13 +26,13 @@ export const buildProductMetadata = async (
 
   return buildMetadata({
     title: product.name,
-    description: t.product.metaDescription({
+    description: format(t.meta.product.description, {
       name: product.name,
-      exposure: t.catalog.exposures[product.exposure],
+      exposure: t.catalog.exposures[product.exposure].toLowerCase(),
       size: product.size,
-      price: salesEnabled ? formatPrice(product.price, t.language.tag) : null,
-      inStock: product.inStock,
-      category: product.categoryPath.at(-1)?.name,
+      price: salesEnabled ? `, ${formatPrice(product.price, t.language.tag)}` : '',
+      stock: product.inStock ? t.meta.product.inStock : t.meta.product.outOfStock,
+      category: product.categoryPath.at(-1)?.name ?? t.meta.product.noCategory,
     }),
     path: productHref(product.slug),
     settings: { ...settings, title: product.metaTitle, description: product.metaDescription },
