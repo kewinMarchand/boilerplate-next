@@ -43,7 +43,9 @@ export const ArticleView = async ({ slug, locale }: ArticleViewProps) => {
       >
         <h1 className={`bui-text bui-text--h1 ${styles.title}`}>{t.blog.articleFallbackTitle}</h1>
         <div data-testid="article-error">
-          <Alert variant="error">{t.blog.articleError}</Alert>
+          <Alert variant="error" prefix={t.ui.alert.error}>
+            {t.blog.articleError}
+          </Alert>
         </div>
       </PageContainer>
     )

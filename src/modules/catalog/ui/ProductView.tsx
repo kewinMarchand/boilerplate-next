@@ -53,7 +53,9 @@ export const ProductView = async ({ slug, salesEnabled, purchase, locale }: Prod
       >
         <h1 className="bui-text bui-text--h1">{t.product.fallbackTitle}</h1>
         <div data-testid="product-error">
-          <Alert variant="error">{t.product.loadError}</Alert>
+          <Alert variant="error" prefix={t.ui.alert.error}>
+            {t.product.loadError}
+          </Alert>
         </div>
       </PageContainer>
     )

@@ -14,7 +14,7 @@ interface TaskListProps {
 }
 
 export const TaskList = ({ status, tasks, onRetry }: TaskListProps) => {
-  const t = useDictionary().tasks
+  const { tasks: t, ui } = useDictionary()
   if (status === 'pending') {
     return (
       <Stack
@@ -36,6 +36,7 @@ export const TaskList = ({ status, tasks, onRetry }: TaskListProps) => {
       <div data-testid="tasks-error">
         <Alert
           variant="error"
+          prefix={ui.alert.error}
           action={
             <Button variant="ghost" onClick={onRetry} data-testid="tasks-retry">
               <Icon name="rotate-cw" />
@@ -52,7 +53,7 @@ export const TaskList = ({ status, tasks, onRetry }: TaskListProps) => {
   if (!tasks?.length) {
     return (
       <div data-testid="tasks-empty">
-        <Alert>{t.empty}</Alert>
+        <Alert prefix={ui.alert.info}>{t.empty}</Alert>
       </div>
     )
   }

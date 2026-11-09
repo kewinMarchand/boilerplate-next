@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.1",
-    "@kewinmarchand/boilerplates-ui": "github:kewinMarchand/boilerplates-ui#v0.12.0",
+    "@kewinmarchand/boilerplates-ui": "github:kewinMarchand/boilerplates-ui#v0.13.0",
     "@kewinmarchand/csp": "github:kewinMarchand/csp#v0.1.1",
     "@sentry/nextjs": "^11.6.0",
     "@tanstack/react-query": "^5.104.0",

@@ -9,6 +9,7 @@ export type ClientDictionary = Pick<
   | 'language'
   | 'nav'
   | 'layout'
+  | 'ui'
   | 'a11yMode'
   | 'colorScheme'
   | 'carousel'

@@ -22,7 +22,9 @@ export const FeaturedProducts = async ({ showPrices }: { showPrices: boolean }) 
   if (!products) {
     return (
       <div data-testid="home-carousel-error">
-        <Alert variant="error">{t.catalog.featuredError}</Alert>
+        <Alert variant="error" prefix={t.ui.alert.error}>
+          {t.catalog.featuredError}
+        </Alert>
       </div>
     )
   }

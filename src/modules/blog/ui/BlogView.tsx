@@ -47,6 +47,7 @@ export const BlogView = async ({ searchParams, locale }: BlogViewProps) => {
         <div data-testid="blog-error">
           <Alert
             variant="error"
+            prefix={t.ui.alert.error}
             action={
               <Link
                 href={section ? `${BLOG_PATH}?rubrique=${encodeURIComponent(section)}` : BLOG_PATH}
@@ -62,7 +63,7 @@ export const BlogView = async ({ searchParams, locale }: BlogViewProps) => {
         </div>
       ) : articles.length === 0 ? (
         <div data-testid="blog-empty">
-          <Alert>{t.blog.empty}</Alert>
+          <Alert prefix={t.ui.alert.info}>{t.blog.empty}</Alert>
         </div>
       ) : (
         <div className={styles.list} data-testid="blog-list">

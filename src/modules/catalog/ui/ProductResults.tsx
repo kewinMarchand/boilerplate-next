@@ -34,7 +34,7 @@ export const ProductResults = ({
   clearHref = '',
   salesEnabled = true,
 }: ProductResultsProps) => {
-  const t = useDictionary().catalog
+  const { catalog: t, ui } = useDictionary()
   if (status === 'pending') {
     return (
       <div
@@ -55,6 +55,7 @@ export const ProductResults = ({
       <div data-testid="catalog-error">
         <Alert
           variant="error"
+          prefix={ui.alert.error}
           action={
             <Link
               href={retryHref}
@@ -74,7 +75,7 @@ export const ProductResults = ({
   if (!products?.length) {
     return (
       <div data-testid="catalog-empty">
-        <Alert>
+        <Alert prefix={ui.alert.info}>
           {t.empty}{' '}
           <TitleFocusLink href={clearHref} data-testid="catalog-clear-filters" className="bui-link">
             {t.clearFilters}

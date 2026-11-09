@@ -16,6 +16,7 @@ export const clientDictionary = (t: Dictionary): ClientDictionary => ({
   language: t.language,
   nav: t.nav,
   layout: t.layout,
+  ui: t.ui,
   a11yMode: t.a11yMode,
   colorScheme: t.colorScheme,
   carousel: t.carousel,

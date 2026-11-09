@@ -34,7 +34,9 @@ export const LegalPageContent = async ({ slug, fallbackTitle }: LegalPageContent
       <>
         <h1 className={`bui-text bui-text--h1 ${styles.title}`}>{fallbackTitle}</h1>
         <div data-testid="legal-error">
-          <Alert variant="error">{t.legal.loadError}</Alert>
+          <Alert variant="error" prefix={t.ui.alert.error}>
+            {t.legal.loadError}
+          </Alert>
         </div>
       </>
     )

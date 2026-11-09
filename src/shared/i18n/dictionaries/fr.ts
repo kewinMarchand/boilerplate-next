@@ -32,6 +32,16 @@ export const fr = {
     'partiellement conforme': 'partiellement conforme',
     'totalement conforme': 'totalement conforme',
   } satisfies Record<ComplianceStatus, string>,
+  ui: {
+    alert: {
+      info: 'Information :',
+      success: 'Succès :',
+      warning: 'Attention :',
+      error: 'Erreur :',
+    },
+    required: '(obligatoire)',
+    loading: '(chargement en cours)',
+  },
   a11yMode: { label: 'Accessibilité renforcée' },
   colorScheme: {
     choices: { auto: 'système', light: 'clair', dark: 'sombre' },

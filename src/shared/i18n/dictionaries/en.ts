@@ -32,6 +32,16 @@ export const en: Dictionary = {
     'partiellement conforme': 'partially compliant',
     'totalement conforme': 'fully compliant',
   },
+  ui: {
+    alert: {
+      info: 'Information:',
+      success: 'Success:',
+      warning: 'Warning:',
+      error: 'Error:',
+    },
+    required: '(required)',
+    loading: '(loading)',
+  },
   a11yMode: { label: 'Enhanced accessibility' },
   colorScheme: {
     choices: { auto: 'system', light: 'light', dark: 'dark' },

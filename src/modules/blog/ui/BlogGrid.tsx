@@ -19,7 +19,7 @@ interface BlogGridProps {
 }
 
 export const BlogGrid = async ({ status, articles, errorMessage }: BlogGridProps) => {
-  const { blog: t, language } = await getDictionary()
+  const { blog: t, language, ui } = await getDictionary()
   if (status === 'pending') {
     return (
       <div
@@ -39,7 +39,9 @@ export const BlogGrid = async ({ status, articles, errorMessage }: BlogGridProps
   if (status === 'error') {
     return (
       <div data-testid="home-blog-error">
-        <Alert variant="error">{errorMessage}</Alert>
+        <Alert variant="error" prefix={ui.alert.error}>
+          {errorMessage}
+        </Alert>
       </div>
     )
   }
@@ -47,7 +49,7 @@ export const BlogGrid = async ({ status, articles, errorMessage }: BlogGridProps
   if (!articles?.length) {
     return (
       <div data-testid="home-blog-empty">
-        <Alert>{t.empty}</Alert>
+        <Alert prefix={ui.alert.info}>{t.empty}</Alert>
       </div>
     )
   }
