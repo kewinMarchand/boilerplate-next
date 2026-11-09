@@ -127,6 +127,7 @@ const config = [
       '.next/**',
       '.next-obs/**',
       '.next-identite/**',
+      '.next-bilingue/**',
       'node_modules/**',
       'playwright-report/**',
       'test-results/**',

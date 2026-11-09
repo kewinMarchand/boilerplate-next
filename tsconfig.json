@@ -37,7 +37,9 @@
     ".next-obs/dev/types/**/*.ts",
     ".next-identite/types/**/*.ts",
     ".next-identite/dev/types/**/*.ts",
+    ".next-bilingue/types/**/*.ts",
+    ".next-bilingue/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", ".next-obs", ".next-identite"]
+  "exclude": ["node_modules", ".next-obs", ".next-identite", ".next-bilingue"]
 }
