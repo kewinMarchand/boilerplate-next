@@ -10,7 +10,6 @@ import { MODES } from './routes'
 import type { Page } from '@playwright/test'
 import type { ChildProcess } from 'node:child_process'
 
-const API_URL = process.env.API_URL ?? 'http://localhost:8090'
 const APP_PORT = 3106
 const APP_URL = `http://localhost:${APP_PORT}`
 
@@ -59,25 +58,8 @@ const run = (command: string, args: string[]) =>
     )
   })
 
-// L'API n'autorise pas l'origine du build bilingue (port 3106) : le navigateur du test ajoute
-// l'en-tête CORS aux réponses de l'API (tâches, envoi du contact).
-const allowApiFromApp = (page: Page) =>
-  page.route(`${API_URL}/**`, async (route) => {
-    const response = await route.fetch()
-    await route.fulfill({
-      response,
-      headers: {
-        ...response.headers(),
-        'access-control-allow-origin': APP_URL,
-        'access-control-allow-headers': 'content-type, accept, accept-language, x-scenario',
-      },
-    })
-  })
-
-const goto = async (page: Page, path: string) => {
-  await allowApiFromApp(page)
-  return page.goto(`${APP_URL}${path}`)
-}
+// Les deux API autorisent l'origine du build bilingue (port 3106) : le navigateur les appelle directement.
+const goto = (page: Page, path: string) => page.goto(`${APP_URL}${path}`)
 
 const hreflangs = (page: Page) =>
   page
