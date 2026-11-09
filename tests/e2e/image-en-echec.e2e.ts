@@ -76,6 +76,26 @@ test.describe('Image de l’API en échec', () => {
     ).not.toHaveAttribute('data-image-error')
   })
 
+  test('une diapositive en 404 garde la taille de son image, fond sans débordement', async ({
+    page,
+  }) => {
+    await page.goto('/')
+    const slide = page.getByTestId('carousel-slide').first()
+    const image = slide.locator('img')
+    await expect(image).toHaveJSProperty('complete', true)
+    const loadedBox = await image.boundingBox()
+    expect(await slide.locator('picture').boundingBox()).toEqual(loadedBox)
+
+    await failImage(page, (await image.getAttribute('src'))!.replace(/-\d+\.webp$/, ''))
+    await page.reload()
+
+    await expect(slide.locator('picture')).toHaveAttribute('data-image-error')
+    const failedBox = await slide.locator('picture').boundingBox()
+    expect(failedBox?.height).toBe(loadedBox?.height)
+    expect(failedBox?.width).toBe(loadedBox?.width)
+    expect(await image.boundingBox()).toEqual(failedBox)
+  })
+
   for (const mode of MODES) {
     test(`une image en 404 en mode ${mode} ne présente aucune violation axe`, async ({ page }) => {
       const base = await firstImageBase(page)

@@ -102,7 +102,7 @@ export const Carousel = ({ title, slides, 'data-testid': testId }: CarouselProps
                 image={slide.image}
                 draggable={false}
                 sizes="(min-width: 1440px) 460px, (min-width: 1024px) 33vw, (min-width: 600px) 50vw, 100vw"
-                style={{ width: '100%', height: 'auto', borderRadius: 8 }}
+                style={{ display: 'block', width: '100%', height: 'auto', borderRadius: 8 }}
               />
             )
             return (
