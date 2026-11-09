@@ -13,8 +13,8 @@ export const useCart = () => {
   return {
     lines,
     add: (item: Cart.Item) => saveCart(addItem(parseCart(currentRawCart()), item)),
-    changeQuantity: (slug: string, quantity: number) =>
-      saveCart(setQuantity(parseCart(currentRawCart()), slug, quantity)),
-    remove: (slug: string) => saveCart(removeItem(parseCart(currentRawCart()), slug)),
+    changeQuantity: (id: string, quantity: number) =>
+      saveCart(setQuantity(parseCart(currentRawCart()), id, quantity)),
+    remove: (id: string) => saveCart(removeItem(parseCart(currentRawCart()), id)),
   }
 }

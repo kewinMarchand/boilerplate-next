@@ -8,12 +8,25 @@ const STORAGE_KEY = 'panier'
 const CHANGE_EVENT = 'panier:change'
 
 const linesSchema = z.array(
-  z.object({
-    slug: z.string().min(1),
-    name: z.string().min(1),
-    price: z.int().min(0),
-    quantity: z.int().min(1).max(MAX_QUANTITY),
-  }),
+  z
+    .object({
+      id: z.string().min(1).optional(),
+      slug: z.string().min(1),
+      name: z.string().min(1),
+      price: z.int().min(0),
+      quantity: z.int().min(1).max(MAX_QUANTITY),
+      translations: z
+        .array(
+          z.object({
+            locale: z.string().min(1),
+            slug: z.string().min(1),
+            name: z.string().min(1),
+          }),
+        )
+        .default([]),
+    })
+    // Panier enregistré avant les langues : sans identifiant ni traductions, le slug identifie la ligne.
+    .transform(({ id, ...line }) => ({ ...line, id: id ?? line.slug })),
 )
 
 /** Panier enregistré ; vide si le stockage est indisponible, illisible ou invalide. */

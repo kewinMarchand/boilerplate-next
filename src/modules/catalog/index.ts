@@ -3,7 +3,11 @@ export {
   getCategoryMenu,
   listCatalogPaths,
 } from './application/catalogNavigation'
-export { listProductPaths, loadProductAlternates } from './application/products'
+export {
+  listProductPaths,
+  loadProductAlternates,
+  loadProductTranslations,
+} from './application/products'
 export type { Catalog } from './domain/catalog'
 export { Price } from './domain/price'
 export { buildCatalogMetadata } from './ui/catalogMetadata'

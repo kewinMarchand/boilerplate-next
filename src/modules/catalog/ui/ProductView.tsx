@@ -28,7 +28,7 @@ interface ProductViewProps {
   /** Vente en ligne coupée : ni prix ni `offers` dans le JSON-LD. */
   salesEnabled: boolean
   /** Bouton d'achat (module panier) ou lien de demande de renseignement, fourni par la couche de routage. */
-  purchase?: (product: Catalog.ProductDetail) => ReactNode
+  purchase?: (product: Catalog.ProductDetail) => ReactNode | Promise<ReactNode>
   locale: LocaleContext
 }
 
@@ -125,7 +125,7 @@ export const ProductView = async ({ slug, salesEnabled, purchase, locale }: Prod
               ))}
             </dl>
           )}
-          {purchase?.(product)}
+          {await purchase?.(product)}
           {category && (
             <p>
               <Link href={category.href} className="bui-link">

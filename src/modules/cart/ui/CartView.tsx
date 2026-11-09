@@ -2,22 +2,28 @@
 
 import { Button } from '@kewinmarchand/boilerplates-ui/react'
 
-import { format, useDictionary } from '@/shared/i18n'
+import { format, useDictionary, useLocale } from '@/shared/i18n'
 import { useHydrated } from '@/shared/ui/hooks/useHydrated'
 import { Link } from '@/shared/ui/kit'
 
-import { totalPrice } from '../domain/cart'
+import { lineIn, totalPrice } from '../domain/cart'
 import { formatPrice } from '../domain/price'
 import styles from './CartView.module.css'
 import { useCart } from './useCart'
 import { useFocusAfterRemoval } from './useFocusAfterRemoval'
 
+import type { Cart } from '../domain/cart'
+
 const CATALOG_PATH = '/catalogue'
 const productHref = (slug: string) => `/produit/${slug}`
+
+const localized = (lines: Cart.Line[], locale: string) =>
+  lines.map((line) => ({ ...line, ...lineIn(line, locale) }))
 
 /** Contenu de la page panier : le panier n'existe que dans le navigateur, il est lu après l'hydratation. */
 export const CartView = () => {
   const t = useDictionary()
+  const { locale } = useLocale()
   const { lines, changeQuantity, remove } = useCart()
   const { listRef, emptyRef, markRemoved } = useFocusAfterRemoval(lines.length)
 
@@ -37,8 +43,8 @@ export const CartView = () => {
   return (
     <>
       <ul ref={listRef} className={styles.lines}>
-        {lines.map((line, index) => (
-          <li key={line.slug} className={styles.line} data-testid="cart-line">
+        {localized(lines, locale).map((line, index) => (
+          <li key={line.id} className={styles.line} data-testid="cart-line">
             <Link href={productHref(line.slug)} className={`bui-link ${styles.name}`}>
               {line.name}
             </Link>
@@ -54,7 +60,7 @@ export const CartView = () => {
                 value={line.quantity}
                 onChange={(event) => {
                   const quantity = event.currentTarget.valueAsNumber
-                  if (!Number.isNaN(quantity)) changeQuantity(line.slug, quantity)
+                  if (!Number.isNaN(quantity)) changeQuantity(line.id, quantity)
                 }}
                 className="bui-input"
                 data-testid="cart-quantity"
@@ -68,7 +74,7 @@ export const CartView = () => {
               aria-label={format(t.cart.removeItem, { name: line.name })}
               onClick={() => {
                 markRemoved(index)
-                remove(line.slug)
+                remove(line.id)
               }}
               data-testid="cart-remove"
             >

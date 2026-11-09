@@ -157,6 +157,26 @@ test.describe('Site bilingue fr, en (X-Scenario: bilingual, build dédié)', () 
     await expect(page).toHaveTitle('Swiss cheese plant (Monstera deliciosa)')
   })
 
+  test('une ligne du panier prend le nom et le lien de la langue de la page', async ({ page }) => {
+    await goto(page, PRODUCT.en)
+    await page.getByTestId('add-to-cart').click()
+    await expect(page.getByTestId('cart-count')).toHaveText('1')
+
+    await goto(page, '/panier')
+    await expect(page.getByTestId('cart-line')).toContainText('Monstera deliciosa')
+    await expect(page.getByTestId('cart-line').getByRole('link')).toHaveAttribute(
+      'href',
+      PRODUCT.fr,
+    )
+
+    await goto(page, '/en/panier')
+    await expect(page.getByTestId('cart-line')).toContainText('Swiss cheese plant')
+    await expect(page.getByTestId('cart-line').getByRole('link')).toHaveAttribute(
+      'href',
+      PRODUCT.en,
+    )
+  })
+
   test('le sélecteur mène à l’équivalent de la fiche dans l’autre langue', async ({ page }) => {
     await goto(page, PRODUCT.en)
     const french = page.getByTestId('layout-language-fr')

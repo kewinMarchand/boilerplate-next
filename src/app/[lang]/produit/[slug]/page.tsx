@@ -1,7 +1,12 @@
 import { getLocale } from '@/shared/i18n/server'
 
 import { AddToCartButton } from '@/modules/cart'
-import { buildProductMetadata, listProductPaths, ProductView } from '@/modules/catalog'
+import {
+  buildProductMetadata,
+  listProductPaths,
+  loadProductTranslations,
+  ProductView,
+} from '@/modules/catalog'
 import { ProductInquiryLink } from '@/modules/contact'
 import { getLocaleContext, getSeoSettings, getSiteIdentity } from '@/modules/site'
 
@@ -40,10 +45,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
       slug={slug}
       salesEnabled={salesEnabled}
       locale={locale}
-      purchase={(product) =>
+      purchase={async (product) =>
         salesEnabled ? (
           <AddToCartButton
-            item={{ slug: product.slug, name: product.name, price: product.price }}
+            item={{
+              id: product.id,
+              slug: product.slug,
+              name: product.name,
+              price: product.price,
+              translations: await loadProductTranslations(product, lang),
+            }}
             isAvailable={product.inStock}
           />
         ) : (
