@@ -15,6 +15,8 @@ Les pages de démonstration montrent chaque brique en situation :
 
 Le header porte le logo, la navigation, le menu de catégories (cascade sur ordinateur, panneau par niveaux sur mobile) et le bouton du **mode accessibilité renforcée**.
 
+Le site est **multilingue quand l'API l'active** (`locales` de `GET /api/site-identity`) : la langue par défaut garde ses adresses sans préfixe, les autres sont préfixées (`/en/produit/swiss-cheese-plant`), un sélecteur de langue apparaît dans le header, avec `hreflang` et un sitemap par langue. Un site monolingue ne change en rien. Les libellés de l'interface sont dans `src/shared/i18n/dictionaries/` (français et anglais).
+
 ## Stack
 
 | Brique                                 | Rôle                                                                      |
@@ -95,8 +97,12 @@ Le front est un seul contexte borné, découpé en **modules** par sous-domaine 
 ```
 src/
   app/                    routage uniquement : chaque route délègue à une vue ou à l'index d'un module
-  proxy.ts                mode maintenance (503), couche de routage lui aussi
-  views/                  pages sans métier ou qui composent des modules : home, legal, errors, styleguide
+    [lang]/               pages et layout racine, sous la langue de la page (réécrite par proxy.ts)
+      @languages/         sélecteur de langue de chaque page (route parallèle)
+    global-not-found.tsx  404 d'une adresse sans route ; sitemap, robots, manifeste, theme.css à la racine
+  proxy.ts                mode maintenance (503) et langue de l'adresse, couche de routage lui aussi
+  views/                  pages sans métier ou qui composent des modules : home, legal, errors, styleguide,
+                          document (le document complet : <html>, en-tête, pied de page)
   modules/
     catalog/              forme complète
       domain/             types (namespace Catalog), value objects, règles pures, sans framework
@@ -106,7 +112,7 @@ src/
       ui/                 vue serveur, filtres et tri client, cartes, pagination, métadonnées SEO
       index.ts            seul export public
     blog/, contact/, task/   forme réduite : domain/, infrastructure/, ui/, sans application/
-  shared/                 socle sans métier : config, seo, theme, providers,
+  shared/                 socle sans métier : config, seo, theme, providers, i18n (langues, dictionnaires),
                           ui/ (kit, layout, carousel, a11y-mode, hooks), api/ (client typé, types générés)
 tests/
   e2e/                    un fichier par page ou par brique transverse
@@ -121,7 +127,7 @@ Règles de dépendance, vérifiées par ESLint (`@boundaries/eslint-plugin`) :
 - le routage importe les vues, l'index public des modules et le socle ;
 - une vue importe l'index public des modules et le socle ;
 - un module n'importe jamais un autre module, la composition se fait dans `views/` (l'accueil assemble le blog) ;
-- le socle n'importe ni module, ni vue, ni routage : il reçoit les données métier en propriétés (le menu de catégories est fourni par `src/app/layout.tsx`) ;
+- le socle n'importe ni module, ni vue, ni routage : il reçoit les données métier en propriétés (le menu de catégories est fourni par `src/views/document/SiteDocument.tsx`) ;
 - dans un module, `domain/` n'importe que lui-même (et des types du socle), `application/` le domaine et l'infrastructure, `infrastructure/` le domaine et les types générés de l'API, `ui/` le domaine, l'application, l'interface du module et le socle (l'infrastructure seulement si le module n'a pas d'`application/`) ;
 - les types générés de l'API (`shared/api/`) ne sont importés que par `infrastructure/`.
 
@@ -131,7 +137,8 @@ Règles de dépendance, vérifiées par ESLint (`@boundaries/eslint-plugin`) :
 
 - `src/shared/config/site.ts` : nom, description, URL, éditeur (valeurs fictives, pour le SEO), état d'audit d'accessibilité (lien du footer).
 - `GET /api/slides` et `GET /api/legal_pages/{slug}` : carrousel de l'accueil et texte des pages légales, administrés dans l'admin de l'API Platform.
-- `src/shared/config/navigation.ts` : navigation principale et liens légaux. Le header, le footer, le plan du site, le sitemap XML et le fil d'Ariane en dérivent.
+- `src/shared/config/navigation.ts` : navigation principale et liens légaux, libellés par clé de dictionnaire. Le header, le footer, le plan du site, le sitemap XML et le fil d'Ariane en dérivent.
+- `src/shared/i18n/dictionaries/fr.ts` et `en.ts` : libellés de l'interface, mêmes clés dans les deux langues (vérifié par le type et par un test). `GET /api/site-identity` (`locales`) : langues du site, la première par défaut.
 - `GET /api/categories` : arbre des catégories, lu par le module catalogue. Le layout racine en tire le menu (`getCategoryMenu`), le plan du site et le sitemap leurs liens (`listCatalogPaths`).
 - `src/shared/seo/` : `buildMetadata` construit title, description, canonique, robots, Open Graph et Twitter de chaque route. Les JSON-LD (`Organization`, `WebSite`, `BreadcrumbList`, `ItemList`) en partagent les URL absolues.
 
@@ -141,8 +148,8 @@ Les conventions de code viennent du `CLAUDE.md` global de l'auteur. Le `CLAUDE.m
 
 ### Ajouter une page
 
-1. Page sans métier : créer `src/views/<nom>/` avec sa vue `<Nom>View.tsx` et son `index.ts`. Page d'un module : la vue va dans `ui/` du module et sort par son `index.ts`. La vue s'enveloppe dans `<PageContainer breadcrumb={buildBreadcrumb('/<route>')}>`.
-2. Créer `src/app/<route>/page.tsx`, qui exporte `metadata = buildMetadata({ title, description, path })` et rend la vue.
+1. Page sans métier : créer `src/views/<nom>/` avec sa vue `<Nom>View.tsx` et son `index.ts`. Page d'un module : la vue va dans `ui/` du module et sort par son `index.ts`. La vue s'enveloppe dans `<PageContainer breadcrumb={buildBreadcrumb(t.nav, '/<route>')}>`, `t` venant de `getDictionary()` ; ses libellés vont dans les deux dictionnaires.
+2. Créer `src/app/[lang]/<route>/page.tsx`, dont `generateMetadata` renvoie `buildMetadata({ ...dictionaryFor(locale).meta.<page>, path, settings: await getSeoSettings(locale) })` (`locale` par `getLocale()`) et qui rend la vue. Le sélecteur de langue la couvre déjà (`@languages/[...rest]`) ; une page détaillée dont le slug change selon la langue a sa page dans `@languages/`.
 3. Ajouter la route à `src/shared/config/navigation.ts` (menu, plan du site, sitemap, fil d'Ariane) et à `tests/e2e/routes.ts` (réponse, SEO, débordement, axe), puis à `.lighthouserc.json`.
 4. Écrire `tests/e2e/<route>.e2e.ts`.
 
@@ -202,6 +209,7 @@ Démarrer le serveur avec `MAINTENANCE=1`. Toutes les routes répondent 503 avec
 - **End-to-end** : Playwright sert le build de production sur le port 3150, avec `ENABLE_TEST_ROUTES=1` pour la route de test de la 500. Les éléments sont ciblés par `data-testid`, préfixé par le module ou la zone (`tasks-list`, `catalog-product`, `layout-breadcrumb`). Chaque rendu conditionnel est testé présent et absent. Un test vérifie qu'aucune page ne déborde horizontalement à 375, 768 et 1280 px dans les deux modes et enregistre des captures de l'accueil et du catalogue dans `test-results/`.
 - **Accessibilité** : `tests/a11y/` passe axe-core sur chaque route de `tests/e2e/routes.ts`, sur le catalogue filtré, la 404, la 500 et les menus ouverts, dans les deux modes. Axe ne couvre qu'une partie du RGAA, un audit manuel reste nécessaire.
 - **Pages de développement** : `tests/dev/` vérifie la charte graphique sur `next dev` (port 3151). Le build de production, lui, vérifie qu'elle répond 404.
+- **Site bilingue** : `tests/e2e/bilingue.e2e.ts` construit une version dans `.next-bilingue` avec `API_SCENARIO=bilingual` (l'API active `en` et sert quelques traductions) et la sert sur le port 3106 : routes préfixées, contenu et libellés en anglais, sélecteur, `hreflang`, `<html lang>`, sitemap, 404 d'un préfixe non activé, axe sur les pages anglaises dans les trois affichages. Il vérifie aussi l'absence de sélecteur sur le site monolingue.
 
 ## Intégration continue
 
